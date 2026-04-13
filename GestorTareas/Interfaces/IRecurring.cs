@@ -1,11 +1,10 @@
 using System;
-
+using GestorTareas.Models;
 namespace GestorTareas.Interfaces;
 
 public interface IRecurring
 {
-     Task GenerateNewInstance();
+     void GenerateNewInstance();
 
      bool IsRecurrenceActive();
 }
-ç

@@ -4,26 +4,32 @@ namespace GestorTareas.Models;
 
 public class CompositeTask : Task
 {
-    public List<Task>? TaskList{get;set;}
+    public List<SubTask>? SubTaskList { get; set; }
 
-    public double Progress{get;set;}
+    // public int? LinkedTaskOrder{get;set;}
 
-    public int Order{get;set;}
-
-    public CompositeTask(string title, string description, TaskPriority taskPriority, TaskStatus taskStatuts, List<Task> taskList, double progress, int order) : base(title, description, TaskPriority.Normal, TaskStatus.Pending)
+    // public double Progress { get; set; }
+    public CompositeTask(string title, string description, TaskPriority taskPriority, TaskStatus taskStatuts) : base(title, description, TaskPriority.Normal, TaskStatus.Pending)
     {
-        this.TaskList = taskList;
-        this.Progress = progress;
-        this.Order = order;
+        this.SubTaskList = new List<SubTask>(10);
+
     }
 
-    public void AddSubTask(Task task)
+    public void AddSubTask(SubTask subTask, int order)
     {
-        
+
     }
 
-    public void RemoveSubTask(Guid taskId)
+    public void ReorderSubTask(Guid subTaskId, int newOrder)
     {
-        
+
     }
+
+    //CREO QUE LA ESTO DEBERIA HACERLO LA CLASE SUBTASK, YA QUE ES LA QUE TIENE EL ESTADO DE CADA SUBTAREA
+    // public void CompleteSubTask(Guid taskId)
+    // {
+
+    // }
+
+    public void CalculateProgress() { }
 }
