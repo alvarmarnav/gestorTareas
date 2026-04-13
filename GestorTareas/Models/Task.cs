@@ -39,7 +39,7 @@ public abstract class Task
         }
     }
 
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     public TaskPriority Priority { get; set; }
 
@@ -69,7 +69,11 @@ public abstract class Task
     // public List<string> Tags{get;set;}
     // public Tag tag { get; set; }
 
-    protected Task(string title, string description, TaskPriority priority = TaskPriority.Normal, TaskStatus status = TaskStatus.Pending)
+    protected Task(string title,
+    string? description = null,
+    TaskPriority? priority = TaskPriority.Normal,
+    TaskStatus? status = TaskStatus.Pending,
+    DateTime? dueTime = null)
     {
         // if (string.IsNullOrWhiteSpace(title))
         //     throw new ArgumentException("El título es obligatorio");
@@ -80,12 +84,12 @@ public abstract class Task
 
         this.Id = Guid.NewGuid();
         this.Title = title;
-        this.Description = description;
-        this.Priority = priority;
-        this.Status = status;
+        this.Description=description;
+        this.Priority = (TaskPriority)priority;
+        this.Status = (TaskStatus)status;
         this.CreatedAt = DateTime.Now;
         this.UpdatedAt = null;
-        this.DueTime = null;
+        this.DueTime = dueTime;
         this.CancelReason = null;
     }
 
@@ -107,7 +111,14 @@ public abstract class Task
     public void RemoveTag(string tag) { }
     public bool CompleteTask()
     {
-        return true;
+        if (this.Status != TaskStatus.Completed || this.Status != TaskStatus.Cancelled)
+        {
+            this.Status = TaskStatus.Completed;
+            return true;
+        }
+
+        return false;
+
     }
 
     public bool ReopenTask()
@@ -117,8 +128,33 @@ public abstract class Task
 
     public void CancelTask(string reason)
     {
-        this.CancelReason = reason;
-        this.Status = TaskStatus.Cancelled;
+        if(this.Status != TaskStatus.Completed  || this.Status != TaskStatus.Cancelled){
+            this.CancelReason = reason??"Sin motivo.";
+            this.Status = TaskStatus.Cancelled;
+        }
+        else
+        {
+            throw new Exception($"La tarea no se pudo Cancelar porque la tarea estaba {this.Status}");
+        }
     }
+
+    public void StartTask()
+    {
+        if(this.Status == TaskStatus.Pending)
+            this.Status = TaskStatus.InProgress;
+        else
+        {
+            throw new Exception($"La Tareas no se pudo iniciar porque la tarea está {this.Status}");
+        }
+    }
+    public bool IsOverdue()
+    {
+        if (this.Status != TaskStatus.Completed || this.Status != TaskStatus.Cancelled)
+            return false;
+        
+        return DateTime.Now>this.DueTime;
+    }
+
+    public abstract string ResumeTask();
 
 }
