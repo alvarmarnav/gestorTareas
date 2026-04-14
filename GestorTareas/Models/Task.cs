@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.Tracing;
 using System.Net;
+using GestorTareas.Interfaces;
 
 namespace GestorTareas.Models;
 
@@ -53,22 +54,7 @@ public abstract class Task
     public DateTime? DueTime { get; set; }
 
     private string? _cancelReason;
-    public string? CancelReason
-    {
-        get; set => field = value;
-    }
-
-    // public string? TaskCategory {get; set;}
-    // public Guid OwnerId { get; set; }
-
-    //Las llevo a otra CLASE para Composicion
-    // public DateTime? DueTime { get; set; }
-
-    // public DateTime? CompletedAt { get; set; }
-
-    // public List<string> Tags{get;set;}
-    // public Tag tag { get; set; }
-
+    public string? CancelReason{get; set => field = value;}
     protected Task(
         string title,
         string? description = null,
@@ -96,20 +82,22 @@ public abstract class Task
 
     public void RenameTask(string newTitle)
     {
-
+        this.Title = newTitle;
     }
 
     public void UpdateDescription(string newDescription)
     {
-
+        this.Description = newDescription;
     }
 
-    public void ChangePriority() { }
-    public void AssignOwner(Guid ownerId) { }
-
-    public void SetDueTime(DateTime dueTime) { }
-    public void AddTag(string tag) { }
-    public void RemoveTag(string tag) { }
+    public void ChangePriority(TaskPriority newTaskPriority)
+    {
+        this.Priority = newTaskPriority;
+    }
+    public void SetDueTime(DateTime newDueTime)
+    {
+        this.DueTime = newDueTime;
+    }
     public bool CompleteTask()
     {
         if (this.Status != TaskStatus.Completed || this.Status != TaskStatus.Cancelled)
@@ -124,13 +112,18 @@ public abstract class Task
 
     public bool ReopenTask()
     {
-        return true;
+        if(this.Status != TaskStatus.InProgress)
+        {
+            this.Status = TaskStatus.InProgress;
+            return true;
+        }
+            return false;
     }
 
     public void CancelTask(string reason)
     {
         if(this.Status != TaskStatus.Completed  || this.Status != TaskStatus.Cancelled){
-            this.CancelReason = reason??"Sin motivo.";
+            this.CancelReason = reason??"No se aporta motivo.";
             this.Status = TaskStatus.Cancelled;
         }
         else

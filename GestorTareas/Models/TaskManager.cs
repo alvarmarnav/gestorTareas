@@ -9,9 +9,16 @@ public class TaskManager
     {
         
     }
-    public List<Task> ListAllTask()
+    // public List<Task> ListAllTask()
+    // {
+    //     List<Task> taskList = new List<Task>(10);
+
+    //     return taskList;
+    // }
+
+     public IReadOnlyList<Task> ListAllTask()
     {
-        List<Task> taskList = new List<Task>(10);
+        IReadOnlyList<Task> taskList = new List<Task>(10);
 
         return taskList;
     }
