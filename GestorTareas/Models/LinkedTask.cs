@@ -6,7 +6,18 @@ public class LinkedTask : CompositeTask
 {
     public int? LinkedTaskOrder { get; set; }
 
-    public LinkedTask(string title, string description, TaskPriority taskPriority, TaskStatus taskStatuts, int? linkedTaskOrder = null) : base(title, description, TaskPriority.Normal, TaskStatus.Pending)
+    public LinkedTask(
+        string title,
+        string description,
+        TaskPriority taskPriority,
+        TaskStatus taskStatuts,
+        DateTime dueTime,
+        int? linkedTaskOrder = null) : base(
+            title,
+            description,
+            TaskPriority.Normal,
+            TaskStatus.Pending,
+            dueTime)
     {
         this.LinkedTaskOrder = linkedTaskOrder;
     }

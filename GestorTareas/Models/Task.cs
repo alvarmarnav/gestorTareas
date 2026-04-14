@@ -69,11 +69,12 @@ public abstract class Task
     // public List<string> Tags{get;set;}
     // public Tag tag { get; set; }
 
-    protected Task(string title,
-    string? description = null,
-    TaskPriority? priority = TaskPriority.Normal,
-    TaskStatus? status = TaskStatus.Pending,
-    DateTime? dueTime = null)
+    protected Task(
+        string title,
+        string? description = null,
+        TaskPriority? priority = TaskPriority.Normal,
+        TaskStatus? status = TaskStatus.Pending,
+        DateTime? dueTime = null)
     {
         // if (string.IsNullOrWhiteSpace(title))
         //     throw new ArgumentException("El título es obligatorio");
