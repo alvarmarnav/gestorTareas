@@ -71,11 +71,11 @@ public abstract class Task
 
         this.Id = Guid.NewGuid();
         this.Title = title;
-        this.Description=description;
+        this.Description=description?.Trim()??"Undefined";
         this.Priority = (TaskPriority)priority;
         this.Status = (TaskStatus)status;
         this.CreatedAt = DateTime.Now;
-        this.UpdatedAt = null;
+        this.UpdatedAt = DateTime.Now;
         this.DueTime = dueTime;
         this.CancelReason = null;
     }
