@@ -38,14 +38,16 @@ public class CompositeTask : Task
 
         var subTaskSelectedList = this._subTaskList
         .Where(sub => sub.Id.Equals(subTaskId));
+
+        // if(subTaskSelectedList.)
       
         int subTaskCounted = CountSubTasks();
 
         if(newOrder>subTaskCounted || newOrder<=0)
             throw new ArgumentException("Posición nó válida");
         
-        _subTaskList.Remove(subTaskSelectedList.ElementAt(0));
-        _subTaskList.Insert(--newOrder,subTaskSelectedList.ElementAt(0));
+        _subTaskList.Remove(subTaskSelectedList.First());
+        _subTaskList.Insert(--newOrder,subTaskSelectedList.First());
 
     }
 
