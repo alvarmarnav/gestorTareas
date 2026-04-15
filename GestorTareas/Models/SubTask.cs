@@ -27,11 +27,6 @@ public class SubTask : CompositeTask
             this.SubTaskOrder = 0;
     }
 
-    // public SubTask(string subTaskTitle, string subTaskDescription, TaskPriority subTaskPriority, TaskStatus subTaskStatus, DateTime dueTime, int? subTaskOrder = null) : this(subTaskTitle, subTaskDescription, subTaskPriority, subTaskStatus, dueTime, subTaskOrder)
-    // {
-    // }
-
-
     // public void CompleteSubTask()
     // {
 
@@ -56,7 +51,7 @@ public class SubTask : CompositeTask
 
     public override string ResumeTask()
     {
-                return $"SubTarea Id: {this.Id}\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
+        return $"SubTarea Id: {this.Id}\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
 
     }
 }

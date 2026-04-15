@@ -103,6 +103,7 @@ public abstract class Task
         if (this.Status != TaskStatus.Completed || this.Status != TaskStatus.Cancelled)
         {
             this.Status = TaskStatus.Completed;
+            this.UpdatedAt=DateTime.Now;
             return true;
         }
 
@@ -115,6 +116,7 @@ public abstract class Task
         if(this.Status != TaskStatus.InProgress)
         {
             this.Status = TaskStatus.InProgress;
+            this.UpdatedAt=DateTime.Now;
             return true;
         }
             return false;
@@ -125,6 +127,7 @@ public abstract class Task
         if(this.Status != TaskStatus.Completed  || this.Status != TaskStatus.Cancelled){
             this.CancelReason = reason??"No se aporta motivo.";
             this.Status = TaskStatus.Cancelled;
+            this.UpdatedAt=DateTime.Now;
         }
         else
         {
@@ -134,8 +137,10 @@ public abstract class Task
 
     public void StartTask()
     {
-        if(this.Status == TaskStatus.Pending)
+        if(this.Status == TaskStatus.Pending){
             this.Status = TaskStatus.InProgress;
+            this.UpdatedAt=DateTime.Now;
+        }
         else
         {
             throw new Exception($"La Tareas no se pudo iniciar porque la tarea está {this.Status}");
