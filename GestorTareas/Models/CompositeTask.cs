@@ -33,18 +33,20 @@ public class CompositeTask : Task
     public void ReorderSubTask(Guid subTaskId, int newOrder)
     {
         //TODO: Implementar metodo para reorganizar subtareas.
+        //Metodos Remove e Insert
 
+
+        var subTaskSelectedList = this._subTaskList
+        .Where(sub => sub.Id.Equals(subTaskId));
+      
+        int subTaskCounted = CountSubTasks();
+
+        if(newOrder>subTaskCounted || newOrder<=0)
+            throw new ArgumentException("Posición nó válida");
         
-        // SubTask <IEnumerable>subTaskSelected = this._subTaskList
-        // .Where(sub => sub.Id.Equals(subTaskId));
-        
-        // int subTaskCounted = CountSubTasks();
+        _subTaskList.Remove(subTaskSelectedList.ElementAt(0));
+        _subTaskList.Insert(--newOrder,subTaskSelectedList.ElementAt(0));
 
-        // if(newOrder>subTaskCounted))
-        //     _subTaskList.Insert(--subTaskCounted,subTaskSelected));
-
-        // if(subTaskSelected)
-        // this._subTaskList;
     }
 
     public int CountSubTasks()=>_subTaskList.Count();
