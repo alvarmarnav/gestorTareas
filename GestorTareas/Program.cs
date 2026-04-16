@@ -81,9 +81,15 @@ var taskList = new List<GestorTareas.Models.Task>
             //     0)
 };
 
+
+
 foreach(var t in taskList)
 {
-    Console.Write(t.ResumeTask());
+    TaskManager.AddTask(t);
 
+
+    Console.Write(t.ResumeTask());
 }
+
+TaskSerializer.SerializateListTaskToJson()
 

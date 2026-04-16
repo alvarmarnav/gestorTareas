@@ -1,32 +1,40 @@
 using System;
+using System.ComponentModel.Design;
 
 namespace GestorTareas.Models;
 
 public class TaskManager
 {
 
-    public void AddTask(Task task)
+    public List<Task> _taskList = new List<Task>();
+    public Dictionary<Guid, Task> _taskDictionary = new Dictionary<Guid,Task>();
+    public static void AddTask(Task task)
     {
         
+        _taskList.Add(task);
+
+        //Añadir al Dictionary
+        _taskDictionary.Add(task.Id,task);
     }
-    // public List<Task> ListAllTask()
-    // {
-    //     List<Task> taskList = new List<Task>(10);
-
-    //     return taskList;
-    // }
-
-     public IReadOnlyList<Task> ListAllTask()
+    
+     public IReadOnlyList<Task> ShowAllTasks()
     {
-        IReadOnlyList<Task> taskList = new List<Task>(10);
-
-        return taskList;
+        IReadOnlyList<Task> readOnlyTaskList =  this._taskList;
+        return readOnlyTaskList;
     }
 
-    // public Task IdSearch(Guid id)
-    // {
-    //     return ;
-    // }
+    public Task IdSearch(Guid id)
+    {
+        var searchTask = (Task)_taskDictionary.
+            Where(t=>t.Key == id)
+            .Select(t=> t.Key ==id);
+            
+        return searchTask;
+
+    // var tasks = _taskDictionary
+    // .Where(t=> t.Key == id)
+    // .Select(t=> t.Key==id);
+    }
 
     public void ShowResumeTask(IEnumerable<Task> taskList)
     {
@@ -35,4 +43,12 @@ public class TaskManager
             Console.WriteLine(t.ResumeTask());
         }
     }
+
+    public IEnumerable<Task> GenericTaskSearch(Func<Task,bool> condition)
+    {
+        ArgumentNullException.ThrowIfNull(condition);
+        
+        return _taskList.Where(condition);
+    }
+
 }

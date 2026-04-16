@@ -5,12 +5,16 @@ namespace GestorTareas.Models;
 public class CollaborativeTask : Task
 {
     private List<User>? _TeamMembers { get; set; }
+    private User _taskSupervisor;
+
+    public User _TaskSupervisor{get;set;}
 
     public CollaborativeTask(
         string title,
         string description,
         TaskPriority taskPriority,
         TaskStatus taskStatus,
+        User taskUser,
         List<User> teamMembers,
         DateTime dueTime) : base(
             title,
@@ -19,7 +23,8 @@ public class CollaborativeTask : Task
             TaskStatus.Pending,
             dueTime)
     {
-        this._TeamMembers = teamMembers;
+        // this._TaskSupervisor =
+        // this._TeamMembers = teamMembers;
     }
 
     // public CollaborativeTask(string title, string? description = null, TaskPriority? priority = TaskPriority.Normal, TaskStatus? status = TaskStatus.Pending, DateTime? dueTime = null) : base(title, description, priority, status, dueTime)

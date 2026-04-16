@@ -35,19 +35,27 @@ public class CompositeTask : Task
         //TODO: Implementar metodo para reorganizar subtareas.
         //Metodos Remove e Insert
 
+    try{
+        SubTask subTaskSelected = this._subTaskList.First(sub => sub.Id==subTaskId);
 
-        var subTaskSelectedList = this._subTaskList
-        .Where(sub => sub.Id.Equals(subTaskId));
-
-        // if(subTaskSelectedList.)
-      
-        int subTaskCounted = CountSubTasks();
-
-        if(newOrder>subTaskCounted || newOrder<=0)
+        if(newOrder>CountSubTasks() || newOrder<=0)
             throw new ArgumentException("Posición nó válida");
         
-        _subTaskList.Remove(subTaskSelectedList.First());
-        _subTaskList.Insert(--newOrder,subTaskSelectedList.First());
+        
+        SubTask tempSubTask = subTaskSelected;
+        
+        _subTaskList.Remove(subTaskSelected);
+        
+        _subTaskList.Insert(--newOrder,tempSubTask);
+                  
+        }
+        catch (Exception)
+        {
+            
+        }
+        
+
+        
 
     }
 

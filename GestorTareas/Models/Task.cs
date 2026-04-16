@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.Tracing;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using GestorTareas.Interfaces;
 
 namespace GestorTareas.Models;
@@ -72,12 +73,12 @@ public abstract class Task
         this.Id = Guid.NewGuid();
         this.Title = title;
         this.Description=description?.Trim()??"Undefined";
-        this.Priority = (TaskPriority)priority;
-        this.Status = (TaskStatus)status;
+        this.Priority = priority ?? TaskPriority.Normal;
+        this.Status = status ?? TaskStatus.Pending;
         this.CreatedAt = DateTime.Now;
         this.UpdatedAt = DateTime.Now;
         this.DueTime = dueTime;
-        this.CancelReason = null;
+        // this.CancelReason = "";
     }
 
     public void RenameTask(string newTitle)
@@ -154,6 +155,20 @@ public abstract class Task
         return DateTime.Now>this.DueTime;
     }
 
+    public int CalculateDays()
+    {
+        if(this.DueTime is null)
+            throw new Exception("No existe fecha de fin establecida.");
+        
+        TimeSpan daysDiference = (TimeSpan)(DateTime.Now - this.DueTime);
+        return (int)daysDiference.Days;
+        
+    }
+
     public abstract string ResumeTask();
 
+    public static explicit operator Task(bool v)
+    {
+        throw new NotImplementedException();
+    }
 }
