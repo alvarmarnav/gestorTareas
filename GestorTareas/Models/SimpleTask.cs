@@ -1,24 +1,27 @@
 using System;
 using System.Data.Common;
+using System.Text.Json.Serialization;
 
 namespace GestorTareas.Models;
 
+
 public class SimpleTask : Task
 {
+
+    // ESTO ES LO QUE FALTA:
+    [JsonConstructor]
+    public SimpleTask() : base() { } 
     public SimpleTask(
         string title,
-        string description,
-        TaskPriority taskPriority,
-        TaskStatus taskStatus,
-        DateTime dueTime): base(
+        string? description,
+        TaskPriority? taskPriority = TaskPriority.Normal,
+        TaskStatus? taskStatus = TaskStatus.Pending,
+        DateTime? dueTime = null) : base(
             title,
             description,
-            TaskPriority.Normal,
-            TaskStatus.Pending,
-            dueTime)
-    {
-        
-    }
+            taskPriority,
+            taskStatus,
+            dueTime){}
 
     public override string ResumeTask()
     {

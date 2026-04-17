@@ -53,7 +53,7 @@ public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
 
     }
 
-    public void ShowResumeAllTasks(IEnumerable<T> taskList)
+    public static void ShowResumeAllTasks(IEnumerable<T> taskList)
     {
         foreach (T t in taskList)
         {

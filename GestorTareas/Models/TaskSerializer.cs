@@ -10,23 +10,15 @@ public class TaskSerializer<T> where T : class, IIdentificable
 {
     private static JsonSerializerOptions _jsonOptions = new()
     {
+        PropertyNameCaseInsensitive = true,
+        IncludeFields = true,
         WriteIndented = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-
-    // public static void SerializateListTaskToJson(List<Task> taskList)
-    // {
-    //     // return JsonSerializer.Serialize(taskList, _jsonOptions);
-    //     var json = JsonSerializer.Serialize(taskList, _jsonOptions);
-    //     File.WriteAllText("taskList.json", json);
-
-    // }
-
     public static void SerializateListTaskToJson(IEnumerable<T> taskList)
     {
         
-        // return JsonSerializer.Serialize(taskList, _jsonOptions);
         var json = JsonSerializer.Serialize(taskList, _jsonOptions);
         File.WriteAllText("taskList.json", json);
 
@@ -37,23 +29,22 @@ public class TaskSerializer<T> where T : class, IIdentificable
         if (File.Exists("taskList.json"))
         {
 
-            List<T>? loaded = JsonSerializer.Deserialize<List<T>>(File.ReadAllText("taskList.json"));
+            IEnumerable<T>? loaded = JsonSerializer.Deserialize<List<T>>(File.ReadAllText("taskList.json"),_jsonOptions);
 
-            // IEnumerable<T>? loaded = JsonSerializer.Deserialize<IEnumerable<T>>(File.ReadAllText("taskList.json"));
-Console.WriteLine("Serializando lista de tareas a JSON...");
+            // Console.WriteLine("Serializando lista de tareas a JSON...");
             if (loaded is not null && loaded.Count() > 0)
             {
-                Console.WriteLine("Deserializando lista de tareas desde JSON...");
+                // Console.WriteLine("Deserializando lista de tareas desde JSON...");
 
-                foreach (var t in loaded)
-                {
-                    Console.WriteLine(t.Title);
-                }
-                return loaded ?? throw new NullReferenceException("Contenido null");
+                // foreach (var t in loaded)
+                // {
+                //     Console.WriteLine(t.Title);
+                // }
+                return loaded ?? throw new NullReferenceException("Lista null");
             }
             else
             {
-                throw new Exception("Lista vacia.");
+                throw new NullReferenceException("Lista vacia.");
             }
         }
         else

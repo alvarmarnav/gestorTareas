@@ -3,9 +3,32 @@ using System.Data.Common;
 using System.Diagnostics.Tracing;
 using System.Net;
 using System.Reflection.Metadata.Ecma335;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using GestorTareas.Interfaces;
 
+
+
 namespace GestorTareas.Models;
+
+//TODO: Revisar
+//1. Configura la clase base con atributos de polimorfismo
+// [System.Text.Json.Serialization.JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+// [System.Text.Json.Serialization.JsonDerivedType(typeof(SimpleTask),0)]
+// [System.Text.Json.Serialization.JsonDerivedType(typeof(RecurringTask), 1)]
+// [System.Text.Json.Serialization.JsonDerivedType(typeof(CompositeTask), 2)]
+// [System.Text.Json.Serialization.JsonDerivedType(typeof(SubTask), 3)]
+// [System.Text.Json.Serialization.JsonDerivedType(typeof(LinkedTask), 4)]
+
+
+//2. Configura la clase base con atributos de polimorfismo
+
+[System.Text.Json.Serialization.JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(SimpleTask), "SimpleTask")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(RecurringTask), "RecurringTask")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(CompositeTask), "CompositeTask")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(SubTask), "SubTask")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(LinkedTask), "LinkedTask")]
 
 public abstract class Task : IIdentificable, ITaskDisplayable
 {
@@ -31,10 +54,9 @@ public abstract class Task : IIdentificable, ITaskDisplayable
         get;
         set
         {
+            Console.WriteLine(value);
             if (string.IsNullOrWhiteSpace(value))
                 throw new Exception("El título no puede estar vacío");
-            // if (Convert.ToString(value))
-            //     throw new Exception("El título no tiene un formato válido");
             if (value.Length > 20)
                 throw new Exception("El título no puede contener más de 20 caracteres");
 
@@ -55,6 +77,11 @@ public abstract class Task : IIdentificable, ITaskDisplayable
 
     public DateTime? DueTime { get; set; }
     public string? CancelReason{get; set;} = null;
+    
+    // Constructor vacio para trabajar la serialización
+    // con polimorfismo
+    [JsonConstructor]
+    protected Task() : base() { } 
     protected Task(
         string title,
         string? description = null,
@@ -166,8 +193,4 @@ public abstract class Task : IIdentificable, ITaskDisplayable
 
     public abstract string ResumeTask();
 
-    // public static explicit operator Task(bool v)
-    // {
-    //     throw new NotImplementedException();
-    // }
 }

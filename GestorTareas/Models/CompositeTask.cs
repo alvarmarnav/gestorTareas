@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json.Serialization;
 namespace GestorTareas.Models;
 
 public class CompositeTask : Task
@@ -9,16 +10,20 @@ public class CompositeTask : Task
     protected readonly List<SubTask> _subTaskList = new List<SubTask>();
     // private  List<SubTask> _SubTaskList { get; set; }
 
+// ESTO ES LO QUE FALTA:
+    [JsonConstructor]
+    public CompositeTask() : base() { } 
+
     public CompositeTask(
         string title,
-        string description,
-        TaskPriority taskPriority,
-        TaskStatus taskStatuts,
-        DateTime dueTime) : base(
+        string? description =  null,
+        TaskPriority? taskPriority = TaskPriority.Normal,
+        TaskStatus? taskStatus = TaskStatus.Pending,
+        DateTime? dueTime = null) : base(
             title,
             description,
-            TaskPriority.Normal,
-            TaskStatus.Pending,
+            taskPriority,
+            taskStatus,
             dueTime)
     {
         //Esto solo tiene sentido si la creamos con el setter
