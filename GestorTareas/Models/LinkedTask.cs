@@ -3,8 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace GestorTareas.Models;
 
-public class LinkedTask : CompositeTask
+public class LinkedTask : Task
 {
+    //TODO: pendiente linkedTask logica de dependencias.
     public int? LinkedTaskOrder { get; set; }
 
 // ESTO ES LO QUE FALTA:
@@ -31,5 +32,10 @@ public class LinkedTask : CompositeTask
     public void CanStartLinkedTask(Guid linkedTaskId) { }
 
     public void CompleteLinkedTask(Guid linkedTaskId) { }
+
+    public override string ResumeTask()
+    {
+        throw new NotImplementedException();    
+    }
 
 }

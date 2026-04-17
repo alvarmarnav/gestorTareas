@@ -14,6 +14,8 @@ public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
 
         ArgumentNullException.ThrowIfNull(item);
 
+        
+
         _taskList.Add(item);
 
         if (!_taskDictionary.TryAdd(item.Id, item))
@@ -63,13 +65,18 @@ public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
     }
 
 //TODO: REVISAR ESTE METODO
-    public IEnumerable<T> GenericTaskSearch(Func<T, bool> condition)
+    public static IEnumerable<T> GenericTaskSearch(Func<T, bool> condition)
     {
         ArgumentNullException.ThrowIfNull(condition);
 
 
 
         return _taskList.Where(condition);
+    }
+
+    public static void SaveTasksToJson(string filePath)
+    {
+        TaskSerializer<T>.SerializateListTaskToJson(_taskList, filePath);
     }
 
 }

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 namespace GestorTareas.Models;
 
-public class TaskDTO
+public abstract class TaskDTO
 {
 
     public Guid Id { get; set; }
@@ -11,7 +11,7 @@ public class TaskDTO
     public string Title { get; set; } = default!;
     [Required]
     public string Description { get; set; } = default!;
-    public TaskStatus Priority { get; set; }
+    public Task.TaskPriority Priority { get; set; }
     public TaskStatus Status { get; set; }
     public DateTime DueTime { get; set; }
 

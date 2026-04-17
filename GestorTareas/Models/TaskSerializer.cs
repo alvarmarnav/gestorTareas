@@ -16,11 +16,14 @@ public class TaskSerializer<T> where T : class, IIdentificable
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-    public static void SerializateListTaskToJson(IEnumerable<T> taskList)
+    public static void SerializateListTaskToJson(IEnumerable<T> taskList, string filePath)
     {
         
+        if(string.IsNullOrWhiteSpace(filePath) || Path.IsPathFullyQualified(filePath) || Path.GetInvalidPathChars().Any(c=>filePath.Contains(c)))
+            throw new ArgumentException("Ruta no válida.");
+
         var json = JsonSerializer.Serialize(taskList, _jsonOptions);
-        File.WriteAllText("taskList.json", json);
+        File.WriteAllText(filePath, json);
 
     }
 
@@ -40,6 +43,8 @@ public class TaskSerializer<T> where T : class, IIdentificable
                 // {
                 //     Console.WriteLine(t.Title);
                 // }
+
+                TaskManager._taskList = loaded.Cast<GestorTareas.Models.TaskDTO>().ToList();
                 return loaded ?? throw new NullReferenceException("Lista null");
             }
             else

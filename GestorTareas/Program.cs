@@ -79,6 +79,7 @@ using Microsoft.VisualBasic;
 // TaskSerializer<GestorTareas.Models.Task>.SerializateListTaskToJson(TaskManager._taskList);
 
 
+
 //Deserializar
 IEnumerable<GestorTareas.Models.Task> deserializedTasks = TaskSerializer<GestorTareas.Models.Task>.DesSerializeJsonList();
 var cont = 0;
@@ -89,6 +90,13 @@ foreach(var t in deserializedTasks)
     Console.WriteLine($"Nª: {++cont} __ "+t.ResumeTask()+$"\n");
 }
 
+SimpleTask simpleTask1 = new SimpleTask(
+    "Titulo simpleTask1",
+    "Descripcion simpleTask1",
+    GestorTareas.Models.Task.TaskPriority.Normal,
+    GestorTareas.Models.Task.TaskStatus.Pending,
+    DateTime.Today.AddDays(10)
+);
 
-
+TaskManager.AddTask(simpleTask1);
 
