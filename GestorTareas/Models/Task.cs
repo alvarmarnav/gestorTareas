@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.Diagnostics.Tracing;
 using System.Net;
 using System.Reflection.Metadata.Ecma335;
@@ -6,7 +7,7 @@ using GestorTareas.Interfaces;
 
 namespace GestorTareas.Models;
 
-public abstract class Task
+public abstract class Task : IIdentificable, ITaskDisplayable
 {
     public enum TaskPriority
     {
@@ -53,9 +54,7 @@ public abstract class Task
     public DateTime? UpdatedAt { get; set; }
 
     public DateTime? DueTime { get; set; }
-
-    private string? _cancelReason;
-    public string? CancelReason{get; set => field = value;}
+    public string? CancelReason{get; set;} = null;
     protected Task(
         string title,
         string? description = null,
@@ -78,7 +77,7 @@ public abstract class Task
         this.CreatedAt = DateTime.Now;
         this.UpdatedAt = DateTime.Now;
         this.DueTime = dueTime;
-        // this.CancelReason = "";
+        this.CancelReason ??= $"Tarea no cancelada. Estdo: {this.Status.ToString()}";
     }
 
     public void RenameTask(string newTitle)
@@ -123,10 +122,10 @@ public abstract class Task
             return false;
     }
 
-    public void CancelTask(string reason)
+    public void CancelTask(string cancelReason)
     {
         if(this.Status != TaskStatus.Completed  || this.Status != TaskStatus.Cancelled){
-            this.CancelReason = reason??"No se aporta motivo.";
+            this.CancelReason = cancelReason??"No se aporta motivo.";
             this.Status = TaskStatus.Cancelled;
             this.UpdatedAt=DateTime.Now;
         }
@@ -167,8 +166,8 @@ public abstract class Task
 
     public abstract string ResumeTask();
 
-    public static explicit operator Task(bool v)
-    {
-        throw new NotImplementedException();
-    }
+    // public static explicit operator Task(bool v)
+    // {
+    //     throw new NotImplementedException();
+    // }
 }

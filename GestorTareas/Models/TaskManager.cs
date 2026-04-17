@@ -1,53 +1,74 @@
 using System;
 using System.ComponentModel.Design;
+using GestorTareas.Interfaces;
 
 namespace GestorTareas.Models;
 
-public class TaskManager
+public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
 {
 
-    public List<Task> _taskList = new List<Task>();
-    public Dictionary<Guid, Task> _taskDictionary = new Dictionary<Guid,Task>();
-    public static void AddTask(Task task)
+    protected static readonly List<T> _taskList = new(60);
+    protected static readonly Dictionary<Guid, T> _taskDictionary = new(60);
+    public static void AddTask(T item)
+    {
+
+        ArgumentNullException.ThrowIfNull(item);
+
+        _taskList.Add(item);
+
+        if (!_taskDictionary.TryAdd(item.Id, item))
+        {
+            throw new ArgumentException("$La tarea con el id: {item.Id} ya existe en el diccionario.");
+        }
+
+        //TODO: ELIMINAR ESTE CONSOLE.WRITE
+        // Console.WriteLine($"Tarea '{item.Title}' añadida con éxito.");
+    }
+
+    public IReadOnlyList<T> ShowAllItems()
+    {
+        IReadOnlyList<T> readOnlyItemList = _taskList;
+        return readOnlyItemList;
+    }
+
+    public T? IdSearch(Guid id)
     {
         
-        _taskList.Add(task);
-
-        //Añadir al Dictionary
-        _taskDictionary.Add(task.Id,task);
-    }
-    
-     public IReadOnlyList<Task> ShowAllTasks()
-    {
-        IReadOnlyList<Task> readOnlyTaskList =  this._taskList;
-        return readOnlyTaskList;
-    }
-
-    public Task IdSearch(Guid id)
-    {
-        var searchTask = (Task)_taskDictionary.
-            Where(t=>t.Key == id)
-            .Select(t=> t.Key ==id);
-            
-        return searchTask;
-
-    // var tasks = _taskDictionary
-    // .Where(t=> t.Key == id)
-    // .Select(t=> t.Key==id);
-    }
-
-    public void ShowResumeTask(IEnumerable<Task> taskList)
-    {
-        foreach (Task t in taskList)
+        if (!_taskDictionary.TryGetValue(id, out T? item))
         {
+            throw new KeyNotFoundException($"No se encontró una tarea con el id: {id}");
+        }
+       return item;
+
+    }
+
+    public void RemoveTask(Guid id)
+    {
+        if (!_taskDictionary.Remove(id))
+        {
+            throw new KeyNotFoundException($"La id: {id} no se encuentra en el diccionario.");
+        }
+        //TODO: ELIMINAR ESTE CONSOLE.WRITE
+        Console.WriteLine($"Tarea con id: {id} eliminada con éxito.");
+
+    }
+
+    public void ShowResumeAllTasks(IEnumerable<T> taskList)
+    {
+        foreach (T t in taskList)
+        {
+
             Console.WriteLine(t.ResumeTask());
         }
     }
 
-    public IEnumerable<Task> GenericTaskSearch(Func<Task,bool> condition)
+//TODO: REVISAR ESTE METODO
+    public IEnumerable<T> GenericTaskSearch(Func<T, bool> condition)
     {
         ArgumentNullException.ThrowIfNull(condition);
-        
+
+
+
         return _taskList.Where(condition);
     }
 

@@ -87,9 +87,15 @@ foreach(var t in taskList)
 {
     TaskManager.AddTask(t);
 
-
-    Console.Write(t.ResumeTask());
+    
+    // Console.Write(t.ResumeTask());
 }
+Console.WriteLine(TaskManager._taskList);
+TaskSerializer<GestorTareas.Models.Task>.SerializateListTaskToJson(TaskManager._taskList);
 
-TaskSerializer.SerializateListTaskToJson()
+IEnumerable<GestorTareas.Models.Task> deserializedTasks = TaskSerializer<GestorTareas.Models.Task>.DesSerializeJsonList();
 
+foreach(var t in deserializedTasks)
+{
+    Console.WriteLine(t.ResumeTask());
+}
