@@ -1,11 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+
 namespace GestorTareas.Models;
 
-public class TaskDTO
+public class CompositeTaskDTO
 {
-
-    public Guid Id { get; set; }
+public Guid Id { get; set; }
 
     [Required]
     public string Title { get; set; } = default!;
@@ -15,5 +15,5 @@ public class TaskDTO
     public TaskStatus Status { get; set; }
     public DateTime DueTime { get; set; }
 
-
+    //TODO: pendiente subtasklist
 }
