@@ -8,7 +8,6 @@ public class LinkedTask : Task
     //TODO: pendiente linkedTask logica de dependencias.
     public int? LinkedTaskOrder { get; set; }
 
-// ESTO ES LO QUE FALTA:
     [JsonConstructor]
     public LinkedTask() : base() { } 
     public LinkedTask(

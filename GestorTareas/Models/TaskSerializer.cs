@@ -6,7 +6,7 @@ using Microsoft.VisualBasic;
 
 namespace GestorTareas.Models;
 
-public class TaskSerializer<T> where T : class, IIdentificable
+public class TaskSerializer
 {
     private static JsonSerializerOptions _jsonOptions = new()
     {
@@ -16,35 +16,27 @@ public class TaskSerializer<T> where T : class, IIdentificable
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-    public static void SerializateListTaskToJson(IEnumerable<T> taskList, string filePath)
+    public static void SerializateListTaskToJson(TaskManagerDto taskManagerDto, string filePath)
     {
         
         if(string.IsNullOrWhiteSpace(filePath) || Path.IsPathFullyQualified(filePath) || Path.GetInvalidPathChars().Any(c=>filePath.Contains(c)))
             throw new ArgumentException("Ruta no válida.");
 
-        var json = JsonSerializer.Serialize(taskList, _jsonOptions);
+        var json = JsonSerializer.Serialize(taskManagerDto, _jsonOptions);
         File.WriteAllText(filePath, json);
 
     }
 
-    public static IEnumerable<T> DesSerializeJsonList()
+    public static TaskManagerDto DesSerializeJsonList(string filePath)
     {
-        if (File.Exists("taskList.json"))
+        if (File.Exists(filePath))
         {
 
-            IEnumerable<T>? loaded = JsonSerializer.Deserialize<List<T>>(File.ReadAllText("taskList.json"),_jsonOptions);
+            var loaded = JsonSerializer.Deserialize<TaskManagerDto>(File.ReadAllText(filePath),_jsonOptions);
 
             // Console.WriteLine("Serializando lista de tareas a JSON...");
-            if (loaded is not null && loaded.Count() > 0)
-            {
-                // Console.WriteLine("Deserializando lista de tareas desde JSON...");
-
-                // foreach (var t in loaded)
-                // {
-                //     Console.WriteLine(t.Title);
-                // }
-
-                TaskManager._taskList = loaded.Cast<GestorTareas.Models.TaskDTO>().ToList();
+            if (loaded is not null)
+            {                
                 return loaded ?? throw new NullReferenceException("Lista null");
             }
             else
@@ -57,6 +49,4 @@ public class TaskSerializer<T> where T : class, IIdentificable
             throw new FileNotFoundException("No se encuentra el archivo *.json");
         }
     }
-
-
 }

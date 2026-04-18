@@ -1,119 +1,118 @@
 using System;
-using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
-using GestorTareas.Models;
+using static GestorTareas.Models.Task;
 
 namespace GestorTareas.Models;
 
-public class DtoManager
+public static class DTOManager
 {
-    protected static readonly List<TaskDTO> _dtoList = new(60);
 
-    public static void ConvertTaskToDto(Task item){
-        ArgumentNullException.ThrowIfNull(item);
-
-        TaskDTO dto = item switch
+    public static TaskDTO TaskToDto(Task task)
+    {
+        return task switch
         {
-            SimpleTask st => new SimpleTaskDTO()
+            SubTask sub => new SubTaskDTO
             {
-                Id=st.Id,
-                Title = st.Title,
-                Description = st.Description ?? string.Empty,
-                Priority = (Task.TaskPriority) st.Priority,
-                Status = (TaskStatus)st.Status,
-                DueTime = st.DueTime ?? DateTime.Now.AddDays(7)
+                Id = sub.Id,
+                Title = sub.Title,
+                Description = sub.Description,
+                Priority = (int)sub.Priority,
+                Status = (int)sub.Status,
+                DueTime = (DateTime)sub.DueTime,
+                // ParentId = sub.ParentId
             },
-            RecurringTask rt => new RecurringTaskDTO()
-            {
-                Id = rt.Id,
-                Title = rt.Title,
-                Description = rt.Description ?? string.Empty,
-                Priority = (Task.TaskPriority)rt.Priority,
-                Status = (TaskStatus)rt.Status,
-                DueTime = rt.DueTime ??  DateTime.Now.AddDays(7),
-                RecurrenceRule = (int)rt.RecurrenceRule,
-            },
-            SubTask subt => new SubTaskDTO()
-            {
-                Id = subt.Id,
-                Title = subt.Title,
-                Description = subt.Description,
-                Priority = (Task.TaskPriority)subt.Priority,
-                Status = (TaskStatus)subt.Status,
-                DueTime = subt.DueTime ?? DateTime.Now.AddDays(7),
-                SubTaskOrder = (int)subt.SubTaskOrder,
-            },
-            CompositeTask ct => new CompositeTaskDTO()
+
+            CompositeTask ct => new CompositeTaskDTO
             {
                 Id = ct.Id,
                 Title = ct.Title,
-                Description = ct.Description ?? string.Empty,
-                Priority = (Task.TaskPriority) ct.Priority,
-                Status = (TaskStatus)ct.Status,
-                DueTime = ct.DueTime ?? DateTime.Now.AddDays(7),
+                Description = ct.Description,
+                Priority = (int)ct.Priority,
+                Status = (int)ct.Status,
+                DueTime = (DateTime)ct.DueTime,
+                // SubTasks = ct.SubTasks?.Select(TaskToDto).ToList()
             },
-            LinkedTask lt => new LinkedTaskDTO(){
-                Id = lt.Id,
-                Title = lt.Title,
-                Description = lt.Description ?? string.Empty,
-                Priority = (Task.TaskPriority)lt.Priority,
-                Status = (TaskStatus)lt.Status,
-                DueTime = lt.DueTime ?? DateTime.Now.AddDays(7),
-                LinkedTaskOrder = lt.LinkedTaskOrder ?? 0
-            },
-            _ => throw new ArgumentException("Error, no es válido el tipo de tarea")
-        };
 
+            RecurringTask rt => new RecurringTaskDTO
+            {
+                Id = rt.Id,
+                Title = rt.Title,
+                Description = rt.Description,
+                Priority = (int)rt.Priority,
+                Status = (int)rt.Status,
+                DueTime = (DateTime)rt.DueTime,
+                RecurrenceRule = rt.RecurrenceRule
+            },
+
+            SimpleTask st => new SimpleTaskDTO
+            {
+                Id = st.Id,
+                Title = st.Title,
+                Description = st.Description,
+                Priority = (int)st.Priority,
+                Status = (int)st.Status,
+                DueTime = (DateTime)st.DueTime
+            },
+
+            _ => throw new NotSupportedException("Tipo de tarea no soportado")
+        };
     }
 
-    // public static TaskDTO ConvertToDto(IEnumerable<T> itemList)
-    // {
+    public static Task DtoToTask(TaskDTO taskDto)
+    {
+       return taskDto switch
+        {
+            SubTaskDTO sub => new SubTask(
+                sub.Title!,
+                sub.Description!,
+                (TaskPriority)sub.Priority,
+                (Task.TaskStatus)sub.Status,
+                sub.DueTime
+                // sub.ParentId
+            )
+            {
+                Id = sub.Id
+            },
 
-    //     List<T>? dtoList = new List<T>(itemList.Count());
+            CompositeTaskDTO ct =>
+                new CompositeTask(
+                    ct.Title!,
+                    ct.Description!,
+                    (TaskPriority)ct.Priority,
+                    (Task.TaskStatus)ct.Status,
+                    ct.DueTime
+                )
+                {
+                    Id = ct.Id,
+                //     SubTasks = ct.SubTasks?.Select(DtoToTask).ToList()
+                },
 
-    //     foreach(var item in itemList)
-    //     {
-    //         var dto = item switch
-    //         {
-    //             SimpleTask st => new SimpleTaskDTO()
-    //             {
-    //                 Id=st.Id,
-    //                 Title = st.Title,
-    //                 Description = st.Description,
-    //                 Priority = (Task.TaskPriority) st.Priority,
-    //                 Status = (TaskStatus)st.Status,
-    //                 DueTime = (DateTime)st.DueTime,
-    //             },
-    //             RecurringTask rt => new RecurringTaskDTO()
-    //             {
-    //                 Id = rt.Id,
-    //                 Title = rt.Title,
-    //                 Description = rt.Description,
-    //                 Priority = (Task.TaskPriority)rt.Priority,
-    //                 Status = (TaskStatus)rt.Status,
-    //                 DueTime = (DateTime)rt.DueTime,
-    //                 RecurrenceRule = (int)rt.RecurrenceRule
-    //             },
-    //             CompositeTask ct => new CompositeTaskDTO()
-    //             {
-    //                 Id = ct.Id,
-    //                 Title = ct.Title,
-    //                 Description = ct.Description,
-    //                 Priority = (Task.TaskPriority) ct.Priority,
-    //                 Status = (TaskStatus)ct.Status,
-    //                 DueTime = (DateTime)ct.DueTime
-    //             },
-    //             SubTask st => new SubTaskDTO()
-    //             {
-    //                 Id = st.Id,
-    //                 Title = st.Title,
-    //                 Description = st.Description,
-    //                 Priority = (Task.TaskPriority)st.Priority,
-    //                 Status = (TaskStatus)st.Status,
-    //                 DueTime = (DateTime)st.DueTime
-    //             },
-    //             _ => throw new ArgumentException("Error, no es válido el tipo de tarea")
-    //         }; 
-    //     }
-    // }
+            RecurringTaskDTO rt => new RecurringTask(
+                rt.Title!,
+                rt.Description!,
+                (TaskPriority)rt.Priority,
+                (Task.TaskStatus)rt.Status,
+                rt.DueTime,
+                rt.RecurrenceRule
+            )
+            {
+                Id = rt.Id
+            },
+
+            SimpleTaskDTO st => new SimpleTask(
+                st.Title!,
+                st.Description!,
+                (TaskPriority)st.Priority,
+                (Task.TaskStatus)st.Status,
+                st.DueTime
+            )
+            {
+                Id = st.Id
+            },
+
+            _ => throw new NotSupportedException("Tipo de DTO no soportado")
+        };
+    }
+
 }

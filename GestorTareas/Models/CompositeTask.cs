@@ -10,7 +10,6 @@ public class CompositeTask : Task
     protected readonly List<SubTask> _subTaskList = new List<SubTask>();
     // private  List<SubTask> _SubTaskList { get; set; }
 
-// ESTO ES LO QUE FALTA:
     [JsonConstructor]
     public CompositeTask() : base() { } 
 
@@ -26,8 +25,7 @@ public class CompositeTask : Task
             taskStatus,
             dueTime)
     {
-        //Esto solo tiene sentido si la creamos con el setter
-        // this._SubTaskList = new List<SubTask>();
+        
     }
 
     public void AddSubTask(SubTask subTask, int order)
@@ -59,9 +57,6 @@ public class CompositeTask : Task
             
         }
         
-
-        
-
     }
 
     public int CountSubTasks()=>_subTaskList.Count();

@@ -4,21 +4,57 @@ using GestorTareas.Interfaces;
 
 namespace GestorTareas.Models;
 
-public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
+public class TaskManager
 {
 
-    protected static readonly List<T> _taskList = new(60);
-    protected static readonly Dictionary<Guid, T> _taskDictionary = new(60);
-    public static void AddTask(T item)
+    public List<Task> TaskList{get;set;} = new(60);
+    
+    public Dictionary<Guid, Task> TaskDictionary{get;set;} = new(60);
+
+    public TaskRepository Repository {get;set;}
+
+    public TaskManager(TaskRepository repository)
+    {
+        TaskList = new (60);
+        TaskDictionary = new Dictionary<Guid, Task>(60);
+        Repository = repository;
+        LoadRepository();
+    }
+
+    public void LoadRepository()
+    {
+        var listTasksDto = Repository.Load();
+        TaskList = listTasksDto.TaskList.Select(DTOManager.DtoToTask).ToList();
+        TaskDictionary = listTasksDto.TaskDictionary.ToDictionary(
+            keyVal =>keyVal.Key,
+            keyVal => DTOManager.DtoToTask(keyVal.Value)
+        );
+    }
+
+    public void SaveRepository()
+    {
+
+        var listTasksDto = new TaskManagerDto()
+        {
+            TaskList = TaskList.Select(DTOManager.TaskToDto).ToList(),
+            TaskDictionary = TaskDictionary.ToDictionary(
+                keyval => keyval.Key,
+                keyval => DTOManager.TaskToDto(keyval.Value)
+            )
+        };
+        Repository.Save(listTasksDto);
+    }
+
+    public void AddTask(Task item)
     {
 
         ArgumentNullException.ThrowIfNull(item);
 
         
 
-        _taskList.Add(item);
+        TaskList.Add(item);
 
-        if (!_taskDictionary.TryAdd(item.Id, item))
+        if (!TaskDictionary.TryAdd(item.Id, item))
         {
             throw new ArgumentException("$La tarea con el id: {item.Id} ya existe en el diccionario.");
         }
@@ -27,16 +63,16 @@ public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
         // Console.WriteLine($"Tarea '{item.Title}' añadida con éxito.");
     }
 
-    public IReadOnlyList<T> ShowAllItems()
+    public IReadOnlyList<Task> ShowAllItems()
     {
-        IReadOnlyList<T> readOnlyItemList = _taskList;
+        IReadOnlyList<Task> readOnlyItemList = TaskList;
         return readOnlyItemList;
     }
 
-    public T? IdSearch(Guid id)
+    public Task? IdSearch(Guid id)
     {
         
-        if (!_taskDictionary.TryGetValue(id, out T? item))
+        if (!TaskDictionary.TryGetValue(id, out Task? item))
         {
             throw new KeyNotFoundException($"No se encontró una tarea con el id: {id}");
         }
@@ -46,7 +82,7 @@ public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
 
     public void RemoveTask(Guid id)
     {
-        if (!_taskDictionary.Remove(id))
+        if (!TaskDictionary.Remove(id))
         {
             throw new KeyNotFoundException($"La id: {id} no se encuentra en el diccionario.");
         }
@@ -55,9 +91,9 @@ public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
 
     }
 
-    public static void ShowResumeAllTasks(IEnumerable<T> taskList)
+    public void ShowResumeAllTasks(IEnumerable<Task> taskList)
     {
-        foreach (T t in taskList)
+        foreach (var t in taskList)
         {
 
             Console.WriteLine(t.ResumeTask());
@@ -65,18 +101,18 @@ public class TaskManager<T> where T : class, IIdentificable, ITaskDisplayable
     }
 
 //TODO: REVISAR ESTE METODO
-    public static IEnumerable<T> GenericTaskSearch(Func<T, bool> condition)
+    public IEnumerable<Task> GenericTaskSearch(Func<Task, bool> condition)
     {
         ArgumentNullException.ThrowIfNull(condition);
 
 
 
-        return _taskList.Where(condition);
+        return TaskList.Where(condition);
     }
 
-    public static void SaveTasksToJson(string filePath)
-    {
-        TaskSerializer<T>.SerializateListTaskToJson(_taskList, filePath);
-    }
+    // public void SaveTasksToJson(string filePath)
+    // {
+    //     TaskSerializer<Task>.SerializateListTaskToJson(TaskList, filePath);
+    // }
 
 }

@@ -11,17 +11,7 @@ using GestorTareas.Interfaces;
 
 namespace GestorTareas.Models;
 
-//TODO: Revisar
-//1. Configura la clase base con atributos de polimorfismo
-// [System.Text.Json.Serialization.JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
-// [System.Text.Json.Serialization.JsonDerivedType(typeof(SimpleTask),0)]
-// [System.Text.Json.Serialization.JsonDerivedType(typeof(RecurringTask), 1)]
-// [System.Text.Json.Serialization.JsonDerivedType(typeof(CompositeTask), 2)]
-// [System.Text.Json.Serialization.JsonDerivedType(typeof(SubTask), 3)]
-// [System.Text.Json.Serialization.JsonDerivedType(typeof(LinkedTask), 4)]
-
-
-//2. Configura la clase base con atributos de polimorfismo
+//Para trabajar con polimorfismo y JSON
 
 [System.Text.Json.Serialization.JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
 [System.Text.Json.Serialization.JsonDerivedType(typeof(SimpleTask), "SimpleTask")]
@@ -30,7 +20,7 @@ namespace GestorTareas.Models;
 [System.Text.Json.Serialization.JsonDerivedType(typeof(SubTask), "SubTask")]
 [System.Text.Json.Serialization.JsonDerivedType(typeof(LinkedTask), "LinkedTask")]
 
-public abstract class Task : IIdentificable, ITaskDisplayable
+public abstract class Task : IIdentificable
 {
     public enum TaskPriority
     {
@@ -75,7 +65,7 @@ public abstract class Task : IIdentificable, ITaskDisplayable
 
     public TaskPriority? Priority { get; set
         {
-            if(value is not null && Enum.IsDefined(typeof(TaskPriority),value))
+            if(value is not null && !Enum.IsDefined(typeof(TaskPriority),value))
                 throw new ArgumentException("La prioridad NO es válida.");
             else if(value is null)
                 field = TaskPriority.Normal;
@@ -88,15 +78,15 @@ public abstract class Task : IIdentificable, ITaskDisplayable
         {
          if(value is not null && !Enum.IsDefined(typeof(TaskStatus), value))
             {
-                this._status = value.Value;
-                           }
+                throw new ArgumentException("El estado no es válido.");
+            }
         else if(value is null)
             {
                 this._status = TaskStatus.Pending;
             }
          else
             {
-                throw new ArgumentException("El estado no es válido.");
+                this._status = value.Value;
             }   
         } }
 
@@ -106,7 +96,7 @@ public abstract class Task : IIdentificable, ITaskDisplayable
 
     public DateTime? DueTime { get; set
         {
-            if(value is not null && value >= DateTime.Now)
+            if(value is not null && value <= DateTime.Now)
                 throw new ArgumentException("La fecha introducida para su vencimiento no puede ser anterior a la actual.");
             field = value;
         } }

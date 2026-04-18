@@ -1,7 +1,9 @@
 ﻿using System.Formats.Tar;
+using System.Net;
 using GestorTareas;
 using GestorTareas.Models;
 using Microsoft.VisualBasic;
+
 
 // //Creacion 1 tarea
 // var compositeT =  new CompositeTask(
@@ -80,23 +82,45 @@ using Microsoft.VisualBasic;
 
 
 
-//Deserializar
-IEnumerable<GestorTareas.Models.Task> deserializedTasks = TaskSerializer<GestorTareas.Models.Task>.DesSerializeJsonList();
-var cont = 0;
+// //Deserializar
+// IEnumerable<GestorTareas.Models.Task> deserializedTasks = TaskSerializer<GestorTareas.Models.Task>.DesSerializeJsonList();
+// var cont = 0;
 
-foreach(var t in deserializedTasks)
+// foreach(var t in deserializedTasks)
+// {
+
+//     Console.WriteLine($"Nª: {++cont} __ "+t.ResumeTask()+$"\n");
+// }
+
+// SimpleTask simpleTask1 = new SimpleTask(
+//     "Titulo simpleTask1",
+//     "Descripcion simpleTask1",
+//     GestorTareas.Models.Task.TaskPriority.Normal,
+//     GestorTareas.Models.Task.TaskStatus.Pending,
+//     DateTime.Today.AddDays(10)
+// );
+
+// TaskManager.AddTask(simpleTask1);
+
+var repo = new TaskRepository();
+var manager = new TaskManager(repo);
+
+// var task = new SimpleTask(
+//     title: "Viajar a Turin",
+//     description: "Recorrer Turin",
+//     taskStatus: GestorTareas.Models.Task.TaskStatus.InProgress,
+//     taskPriority: GestorTareas.Models.Task.TaskPriority.High,
+//     dueTime: DateTime.Now.AddHours(15)
+// );
+// manager.AddTask(task);
+
+// manager.SaveRepository();
+
+var lista = manager.ShowAllItems();
+
+int cont = 0;
+foreach (var item in lista)
 {
-
-    Console.WriteLine($"Nª: {++cont} __ "+t.ResumeTask()+$"\n");
+    Console.WriteLine($"Tarea: {++cont}\n{item.ResumeTask()}");
+    // item.ResumeTask();
 }
-
-SimpleTask simpleTask1 = new SimpleTask(
-    "Titulo simpleTask1",
-    "Descripcion simpleTask1",
-    GestorTareas.Models.Task.TaskPriority.Normal,
-    GestorTareas.Models.Task.TaskStatus.Pending,
-    DateTime.Today.AddDays(10)
-);
-
-TaskManager.AddTask(simpleTask1);
-

@@ -8,7 +8,6 @@ namespace GestorTareas.Models;
 public class SimpleTask : Task
 {
 
-    // ESTO ES LO QUE FALTA:
     [JsonConstructor]
     public SimpleTask() : base() { } 
     public SimpleTask(

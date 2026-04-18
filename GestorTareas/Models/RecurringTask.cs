@@ -36,15 +36,12 @@ public class RecurringTask : Task
 
     public void GenerateNewInstance()
     {
-        // Lógica para generar una nueva instancia de la tarea recurrente según la regla de recurrencia
-
-        // DateTime validDueTime = this.DueTime is not null ? (DateTime)this.DueTime : throw new ArgumentNullException(nameof(this.DueTime),"No se puede admitir nulos.");
 
         new RecurringTask(
             this.Title,
             this.Description,
-            this.Priority,
-            this.Status,
+            (TaskPriority)this.Priority,
+            (TaskStatus)this.Status,
             ValidateDueTime().AddDays(this.RecurrenceRule),
             this.RecurrenceRule);
     }

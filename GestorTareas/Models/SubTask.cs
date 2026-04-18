@@ -31,21 +31,6 @@ public class SubTask : CompositeTask
             this.SubTaskOrder = 0;
     }
 
-    // public void CompleteSubTask()
-    // {
-
-    // }
-
-    // public void ReopenSubTask()
-    // {
-
-    // }
-    // public void UpdateSubTaskDescription(string newDescription)
-    // {
-
-    // }
-    // public void UpdateSubTaskTitle(string newTitle) { }
-
     public void UpdateSubTaskOrder(int newOrder)
     {
         //DEBO ACCEDER A LA LIST SUBTASK DEL ELEMENTO SUPERIOR
