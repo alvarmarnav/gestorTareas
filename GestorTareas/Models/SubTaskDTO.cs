@@ -5,6 +5,5 @@ namespace GestorTareas.Models;
 
 public class SubTaskDTO : TaskDTO
 {
-    // public int SubTaskOrder {get;set;}
-    // public Guid ParentID {get; set;}
+   
 }

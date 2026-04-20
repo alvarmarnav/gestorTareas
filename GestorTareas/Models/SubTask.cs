@@ -7,8 +7,6 @@ namespace GestorTareas.Models;
 public class SubTask : CompositeTask
 {
 
-    public int? SubTaskOrder { get; set; }
-
 // ESTO ES LO QUE FALTA:
     [JsonConstructor]
     public SubTask() : base() { } 
@@ -17,18 +15,15 @@ public class SubTask : CompositeTask
         string? subTaskDescription = null,
         TaskPriority? subTaskPriority = TaskPriority.Normal,
         TaskStatus? subTaskStatus = TaskStatus.Pending,
-        DateTime? dueTime = null,
-        int? subTaskOrder = null) : base(
+        DateTime? dueTime = null
+        ) : base(
             subTaskTitle,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
             dueTime)
     {
-        if(_subTaskList.Count()>0)
-            this.SubTaskOrder = --subTaskOrder;
-        else
-            this.SubTaskOrder = 0;
+       
     }
 
     public void UpdateSubTaskOrder(int newOrder)

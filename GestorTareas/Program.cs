@@ -5,76 +5,72 @@ using GestorTareas.Models;
 using Microsoft.VisualBasic;
 
 
-// //Creacion 1 tarea
-// var compositeT =  new CompositeTask(
-//                "Recurring Task",
-//                "",
-//                GestorTareas.Models.Task.TaskPriority.Critical,
-//                GestorTareas.Models.Task.TaskStatus.Completed,
-//                DateTime.Today.AddDays(25) 
-//             );
+var repo = new TaskRepository();
+var manager = new TaskManager(repo);
 
-// // //Creacion varias tareas
-// var taskList = new List<GestorTareas.Models.Task>
-// {
-//     new SimpleTask(
-//         "Revisar pull request",
-//         "Descripcion",
-//         GestorTareas.Models.Task.TaskPriority.Normal,
-//         GestorTareas.Models.Task.TaskStatus.Pending,
-//         DateTime.Today.AddDays(1)),
-//         new RecurringTask(
-//             "Reunión de equipo",
-//             "",
-//             GestorTareas.Models.Task.TaskPriority.Normal,
-//             GestorTareas.Models.Task.TaskStatus.Pending,
-//             DateTime.Today.AddDays(7),
-//             recurrenceRule:7),
-//             // new CompositeTask(
-//             //    "Recurring Task",
-//             //    "",
-//             //    GestorTareas.Models.Task.TaskPriority.Critical,
-//             //    GestorTareas.Models.Task.TaskStatus.Completed,
-//             //    DateTime.Today.AddDays(25) 
-//             // ),
-//             // new SubTask(
-//             //     "SubTAsk",
-//             //     "",
-//             //     GestorTareas.Models.Task.TaskPriority.High,
-//             //     GestorTareas.Models.Task.TaskStatus.Pending,
-//             //     DateTime.Today.AddDays(31)
-//             // )
-//             // compositeT,
-//             compositeT.CreateSubTask(
-//                 "SubTAsk",
-//                 "",
-//                 GestorTareas.Models.Task.TaskPriority.High,
-//                 GestorTareas.Models.Task.TaskStatus.Pending,
-//                 DateTime.Today.AddDays(31),
-//                 0),
-//                  new RecurringTask(
-//             "Reunión de equipo 2",
-//             "",
-//             GestorTareas.Models.Task.TaskPriority.Normal,
-//             GestorTareas.Models.Task.TaskStatus.Pending,
-//             DateTime.Today.AddDays(30),
-//             recurrenceRule:98),
-//             // ),
-//             // new SubTask( "SubTAsk2",
-//             //     "",
-//             //     GestorTareas.Models.Task.TaskPriority.High,
-//             //     GestorTareas.Models.Task.TaskStatus.Pending,
-//             //     DateTime.Today.AddDays(31),
-//             //     0)
-// };
+// ******************************
+// ******CREACION DE TAREAS******
+// ******************************
+var taskList = new List<GestorTareas.Models.Task>
+{
+    new SimpleTask(
+        "Revisar pull request",
+        "Descripcion",
+        GestorTareas.Models.Task.TaskPriority.Normal,
+        GestorTareas.Models.Task.TaskStatus.Pending,
+        DateTime.Today.AddDays(1)),
+    new RecurringTask(
+        "Reunión de equipo",
+            "",
+            GestorTareas.Models.Task.TaskPriority.Normal,
+            GestorTareas.Models.Task.TaskStatus.Pending,
+            DateTime.Today.AddDays(7),
+            recurrenceRule:7),
+            new CompositeTask(
+               "Recurring Task",
+               "",
+               GestorTareas.Models.Task.TaskPriority.Critical,
+               GestorTareas.Models.Task.TaskStatus.Completed,
+               DateTime.Today.AddDays(25)
+            ),
+            new SubTask(
+                "SubTAsk",
+                "",
+                GestorTareas.Models.Task.TaskPriority.High,
+                GestorTareas.Models.Task.TaskStatus.Pending,
+                DateTime.Today.AddDays(31)
+            ),
+            // CreateSubTask(
+            //     "SubTAsk",
+            //     "",
+            //     GestorTareas.Models.Task.TaskPriority.High,
+            //     GestorTareas.Models.Task.TaskStatus.Pending,
+            //     DateTime.Today.AddDays(31),
+            //     0),
+                 new RecurringTask(
+            "Reunión de equipo 2",
+            "",
+            GestorTareas.Models.Task.TaskPriority.Normal,
+            GestorTareas.Models.Task.TaskStatus.Pending,
+            DateTime.Today.AddDays(30),
+            recurrenceRule:98),
+            // ),
+            // new SubTask( "SubTAsk2",
+            //     "",
+            //     GestorTareas.Models.Task.TaskPriority.High,
+            //     GestorTareas.Models.Task.TaskStatus.Pending,
+            //     DateTime.Today.AddDays(31),
+            //     0)
+};
 
+//*************************
+// Añadiendo las creadas
+//*************************
+foreach(var t in taskList)
+{
+    manager.AddTask(t);
 
-//Añadiendo las creadas
-// foreach(var t in taskList)
-// {
-//     TaskManager.AddTask(t);
-
-// }
+}
 // Console.WriteLine(TaskManager._taskList);
 
 //Serializar
@@ -102,8 +98,7 @@ using Microsoft.VisualBasic;
 
 // TaskManager.AddTask(simpleTask1);
 
-var repo = new TaskRepository();
-var manager = new TaskManager(repo);
+
 
 // var task = new SimpleTask(
 //     title: "Viajar a Turin",
@@ -137,9 +132,14 @@ Console.WriteLine($"El GUID: {selectedId}");
 
 manager.RemoveTask(selectedId);
 
+// manager.TaskList.RemoveAll(t =>
+// {
+//     return true;
+// });
+
 manager.SaveRepository();
 
-Console.WriteLine($"Camsadp {manager.TaskList.Count()}");
+Console.WriteLine($"Numero Tasks: {manager.TaskList.Count()}");
 
 // lista = manager.ShowAllItems();
 // Console.WriteLine();

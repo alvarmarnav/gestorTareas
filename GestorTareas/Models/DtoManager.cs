@@ -19,8 +19,17 @@ public static class DTOManager
                 Description = sub.Description,
                 Priority = (int)sub.Priority,
                 Status = (int)sub.Status,
-                DueTime = (DateTime)sub.DueTime,
-                // ParentId = sub.ParentId
+                DueTime = (DateTime)sub.DueTime
+            },
+            LinkedTask link => new LinkedTaskDTO
+            {
+                Id = link.Id,
+                Title = link.Title,
+                Description = link.Description,
+                Priority = (int)link.Priority,
+                Status = (int)link.Status,
+                DueTime = (DateTime)link.DueTime,
+                LinkedTaskOrder = (int)link.Order 
             },
 
             CompositeTask ct => new CompositeTaskDTO
@@ -31,7 +40,8 @@ public static class DTOManager
                 Priority = (int)ct.Priority,
                 Status = (int)ct.Status,
                 DueTime = (DateTime)ct.DueTime,
-                // SubTasks = ct.SubTasks?.Select(TaskToDto).ToList()
+                SubTasks = ct.SubTaskList,
+                LinkedTaskList = ct.LinkedTaskList
             },
 
             RecurringTask rt => new RecurringTaskDTO
@@ -69,10 +79,20 @@ public static class DTOManager
                 (TaskPriority)sub.Priority,
                 (Task.TaskStatus)sub.Status,
                 sub.DueTime
-                // sub.ParentId
             )
             {
                 Id = sub.Id
+            },
+            LinkedTaskDTO link => new LinkedTask(
+                link.Title!,
+                link.Description!,
+                (TaskPriority)link.Priority,
+                (Task.TaskStatus)link.Status,
+                link.DueTime,
+                link.LinkedTaskOrder
+            )
+            {
+                Id = link.Id
             },
 
             CompositeTaskDTO ct =>
@@ -81,11 +101,12 @@ public static class DTOManager
                     ct.Description!,
                     (TaskPriority)ct.Priority,
                     (Task.TaskStatus)ct.Status,
-                    ct.DueTime
+                    ct.DueTime                    
                 )
                 {
                     Id = ct.Id,
-                //     SubTasks = ct.SubTasks?.Select(DtoToTask).ToList()
+                    SubTaskList = ct.SubTasks,
+                    LinkedTaskList = ct.LinkedTaskList
                 },
 
             RecurringTaskDTO rt => new RecurringTask(

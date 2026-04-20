@@ -9,9 +9,9 @@ public class CompositeTask : Task
 {
     // //ReadOnly, asegura que una vez creada la instancia solo se va a crear una vez
     //Lo ccambio de private a protected para poder leer desde la clase hija
-    protected readonly List<SubTask> _subTaskList = new List<SubTask>();
+    public List<SubTask> SubTaskList {get;set;} = new List<SubTask>();
 
-    protected readonly List<LinkedTask> _linkedTaskList = new List<LinkedTask>();
+    public List<LinkedTask> LinkedTaskList {get;set;} = new List<LinkedTask>();
 
     [JsonConstructor]
     public CompositeTask() : base() { }
@@ -31,62 +31,67 @@ public class CompositeTask : Task
 
     }
 
-    public void AddSubTask(SubTask subTask, int order)
+    public void AddSubTask(
+        string subTaskTitle,
+        string subTaskDescription,
+        TaskPriority subTaskPriority,
+        TaskStatus subTaskStatus,
+        DateTime dueTime)
     {
-        _subTaskList.Insert(--order, subTask);
+        SubTask subTask = CreateSubTask(
+            subTaskTitle,
+            subTaskDescription,
+            subTaskPriority,
+            subTaskStatus,
+            dueTime);
+
+        SubTaskList.Add(subTask);
     }
 
-    public void ReorderSubTask(Guid subTaskId, int newOrder)
-    {
-        //TODO: Implementar metodo para reorganizar subtareas.
-        //Metodos Remove e Insert
+    // public void ReorderSubTask(Guid subTaskId, int newOrder)
+    // {
+    //     //TODO: Implementar metodo para reorganizar subtareas.
+    //     //Metodos Remove e Insert
 
-        try
-        {
-            SubTask subTaskSelected = this._subTaskList.First(sub => sub.Id == subTaskId);
+    //     try
+    //     {
+    //         SubTask subTaskSelected = this.subTaskList.First(sub => sub.Id == subTaskId);
 
-            if (newOrder > CountSubTasks() || newOrder <= 0)
-                throw new ArgumentException("Posición nó válida");
+    //         if (newOrder > CountSubTasks() || newOrder <= 0)
+    //             throw new ArgumentException("Posición nó válida");
 
 
-            SubTask tempSubTask = subTaskSelected;
+    //         SubTask tempSubTask = subTaskSelected;
 
-            _subTaskList.Remove(subTaskSelected);
+    //         subTaskList.Remove(subTaskSelected);
 
-            _subTaskList.Insert(--newOrder, tempSubTask);
+    //         subTaskList.Insert(--newOrder, tempSubTask);
 
-        }
-        catch (Exception)
-        {
+    //     }
+    //     catch (Exception)
+    //     {
 
-        }
+    //     }
 
-    }
+    // }
 
-    public int CountSubTasks() => _subTaskList.Count();
 
-    public decimal CalculateProgress()
-    {
-        int completedSubTask = _subTaskList.Count(t => t.Status == TaskStatus.Completed);
-
-        return (completedSubTask / CountSubTasks()) * 100;
-    }
 
     public SubTask CreateSubTask(
         string subTaskTitle,
         string subTaskDescription,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
-        DateTime dueTime,
-        int? subTaskOrder)
+        DateTime dueTime
+        )
     {
         return new SubTask(
             subTaskTitle,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
-            dueTime,
-            subTaskOrder);
+            dueTime
+            );
     }
 
 
@@ -102,17 +107,17 @@ public class CompositeTask : Task
         if (order < 0)
             throw new ArgumentException("La posición no es válida.");
         //devuelve true si hay algo en la list
-        else if (!_linkedTaskList.Any())
+        else if (!LinkedTaskList.Any())
         {
             order = 0;
         }
-        else if (order is null || order > _linkedTaskList.Count())
+        else if (order is null || order > LinkedTaskList.Count())
         {
-            order = _linkedTaskList.Count();
+            order = LinkedTaskList.Count();
         }
         else
         {
-            foreach (var i in _linkedTaskList
+            foreach (var i in LinkedTaskList
             .Where(i => i.Order > order))
             {
                 if (i.Status == TaskStatus.Completed)
@@ -128,9 +133,9 @@ public class CompositeTask : Task
             dueTime,
             (int)order);
 
-        _linkedTaskList.Insert(order.Value, linkedTask);
+        LinkedTaskList.Insert(order.Value, linkedTask);
 
-        foreach (var item in _linkedTaskList.Where(item => item.Order >= order))
+        foreach (var item in LinkedTaskList.Where(item => item.Order >= order))
         {
             ++item.Order;
         }
@@ -158,8 +163,17 @@ public class CompositeTask : Task
     // public bool CanStartLinkedTask(List<LinkedTask> linkedTasks, LinkedTask lTask)
 
 
+    public int CountSubTasks() => SubTaskList.Count;
+
+    public decimal CalculateProgress()
+    {
+        int completedSubTask = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
+
+        return (completedSubTask / CountSubTasks()) * 100;
+    }
+
     public override string ResumeTask()
     {
-        return $"Tarea con Subtareas\nTitulo: {this.Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}\nFecha Limite: {this.DueTime}\nNumero Subtareas: {this._subTaskList.Count()}";
+        return $"Tarea con Subtareas\nTitulo: {this.Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}\nFecha Limite: {this.DueTime}\nNumero Subtareas: {this.SubTaskList.Count()}";
     }
 }
