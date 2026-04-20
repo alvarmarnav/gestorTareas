@@ -110,11 +110,11 @@ var manager = new TaskManager(repo);
 //     description: "Recorrer Turin",
 //     taskStatus: GestorTareas.Models.Task.TaskStatus.InProgress,
 //     taskPriority: GestorTareas.Models.Task.TaskPriority.High,
-//     dueTime: DateTime.Now.AddHours(15)
+//     dueTime: DateTime.Now.AddHours(65)
 // );
 // manager.AddTask(task);
 
-// manager.SaveRepository();
+manager.SaveRepository();
 
 var lista = manager.ShowAllItems();
 
@@ -124,3 +124,31 @@ foreach (var item in lista)
     Console.WriteLine($"Tarea: {++cont}\n{item.ResumeTask()}");
     // item.ResumeTask();
 }
+
+cont = 0;
+Guid selectedId = manager.TaskList.First().Id;
+Console.WriteLine($"El GUID: {selectedId}");
+
+
+
+// var selectedItem = manager.IdSearch(manager.TaskDictionary
+// .Where(t => t.Value.Id == selectedId)
+// .Select(t=> t.Value.Id));
+
+manager.RemoveTask(selectedId);
+
+manager.SaveRepository();
+
+Console.WriteLine($"Camsadp {manager.TaskList.Count()}");
+
+// lista = manager.ShowAllItems();
+// Console.WriteLine();
+// if(lista.Count()<=0)
+//     Console.WriteLine("NAda");
+
+// foreach (var item in lista)
+// {
+//     Console.WriteLine($"Tarea: {++cont}\n{item.ResumeTask()}");
+//     // item.ResumeTask();
+// }
+

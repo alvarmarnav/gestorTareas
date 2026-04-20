@@ -25,10 +25,12 @@ public class TaskManager
     {
         var listTasksDto = Repository.Load();
         TaskList = listTasksDto.TaskList.Select(DTOManager.DtoToTask).ToList();
-        TaskDictionary = listTasksDto.TaskDictionary.ToDictionary(
-            keyVal =>keyVal.Key,
-            keyVal => DTOManager.DtoToTask(keyVal.Value)
-        );
+        //Evitar Duplicados
+        // TaskDictionary = listTasksDto.TaskDictionary.ToDictionary(
+        //     keyVal =>keyVal.Key,
+        //     keyVal => DTOManager.DtoToTask(keyVal.Value)
+        // );
+        TaskDictionary = TaskList.ToDictionary(t => t.Id);
     }
 
     public void SaveRepository()
@@ -37,10 +39,11 @@ public class TaskManager
         var listTasksDto = new TaskManagerDto()
         {
             TaskList = TaskList.Select(DTOManager.TaskToDto).ToList(),
-            TaskDictionary = TaskDictionary.ToDictionary(
-                keyval => keyval.Key,
-                keyval => DTOManager.TaskToDto(keyval.Value)
-            )
+            //Evitar Duplicados
+            // TaskDictionary = TaskDictionary.ToDictionary(
+            //     keyval => keyval.Key,
+            //     keyval => DTOManager.TaskToDto(keyval.Value)
+            // )
         };
         Repository.Save(listTasksDto);
     }
@@ -82,10 +85,17 @@ public class TaskManager
 
     public void RemoveTask(Guid id)
     {
+
         if (!TaskDictionary.Remove(id))
         {
+            foreach (var i in TaskDictionary)
+            {
+                Console.WriteLine($"Valor id: {i.Key} valor de valor: {i.Value}");
+            }
             throw new KeyNotFoundException($"La id: {id} no se encuentra en el diccionario.");
         }
+
+        TaskList.RemoveAll(t => t.Id == id);
         //TODO: ELIMINAR ESTE CONSOLE.WRITE
         Console.WriteLine($"Tarea con id: {id} eliminada con éxito.");
 

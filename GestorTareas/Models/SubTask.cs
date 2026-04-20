@@ -25,7 +25,7 @@ public class SubTask : CompositeTask
             subTaskStatus,
             dueTime)
     {
-        if(_subTaskList.Count>0)
+        if(_subTaskList.Count()>0)
             this.SubTaskOrder = --subTaskOrder;
         else
             this.SubTaskOrder = 0;

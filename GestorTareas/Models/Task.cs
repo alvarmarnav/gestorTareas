@@ -37,7 +37,7 @@ public abstract class Task : IIdentificable
         Completed,
         Cancelled
     }
-
+  
     public Guid Id { get; set; }
     public string Title
     {
