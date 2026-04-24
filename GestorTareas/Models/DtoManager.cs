@@ -5,7 +5,7 @@ using static GestorTareas.Models.Task;
 
 namespace GestorTareas.Models;
 
-public static class DTOManager
+public static class DtoManager
 {
 
     public static TaskDTO TaskToDto(Task task)

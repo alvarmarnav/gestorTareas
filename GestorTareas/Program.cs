@@ -79,7 +79,7 @@ foreach(var t in taskList)
 
 
 // //Deserializar
-// IEnumerable<GestorTareas.Models.Task> deserializedTasks = TaskSerializer<GestorTareas.Models.Task>.DesSerializeJsonList();
+// IEnumerable<GestorTareas.Models.Task> deserializedTasks = TaskSerializer<GestorTareas.Models.Task>.DeserializeJsonList();
 // var cont = 0;
 
 // foreach(var t in deserializedTasks)
@@ -121,7 +121,7 @@ foreach (var item in lista)
 }
 
 cont = 0;
-Guid selectedId = manager.TaskList.First().Id;
+Guid selectedId = manager.ShowAllItems().First().Id;
 Console.WriteLine($"El GUID: {selectedId}");
 
 
@@ -139,7 +139,7 @@ manager.RemoveTask(selectedId);
 
 manager.SaveRepository();
 
-Console.WriteLine($"Numero Tasks: {manager.TaskList.Count()}");
+Console.WriteLine($"Numero Tasks: {manager.ShowAllItems().Count()}");
 
 // lista = manager.ShowAllItems();
 // Console.WriteLine();

@@ -9,9 +9,9 @@ public class CompositeTask : Task
 {
     // //ReadOnly, asegura que una vez creada la instancia solo se va a crear una vez
     //Lo ccambio de private a protected para poder leer desde la clase hija
-    public List<SubTask> SubTaskList {get;set;} = new List<SubTask>();
+    private List<SubTask> SubTaskList {get;set;} = new List<SubTask>();
 
-    public List<LinkedTask> LinkedTaskList {get;set;} = new List<LinkedTask>();
+    private List<LinkedTask> LinkedTaskList {get;set;} = new List<LinkedTask>();
 
     [JsonConstructor]
     public CompositeTask() : base() { }

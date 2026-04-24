@@ -5,31 +5,28 @@ namespace GestorTareas.Models;
 public class CollaborativeTask : Task
 {
     private List<User>? _TeamMembers { get; set; }
-    private User _taskSupervisor;
+    // private User _taskSupervisor;
 
-    public User _TaskSupervisor{get;set;}
+    public User? TaskSupervisor{get;set;}
 
     public CollaborativeTask(
         string title,
-        string description,
-        TaskPriority taskPriority,
-        TaskStatus taskStatus,
-        User taskUser,
-        List<User> teamMembers,
-        DateTime dueTime) : base(
+        string? description,
+        TaskPriority? taskPriority = TaskPriority.Normal,
+        TaskStatus? taskStatus = TaskStatus.Pending,
+        DateTime dueTime,
+        User? taskUser
+        // List<User> teamMembers,
+        ) : base(
             title,
             description,
-            TaskPriority.Normal,
-            TaskStatus.Pending,
+            taskPriority,
+            taskStatus,
             dueTime)
     {
-        // this._TaskSupervisor =
+        this.TaskSupervisor = 
         // this._TeamMembers = teamMembers;
     }
-
-    // public CollaborativeTask(string title, string? description = null, TaskPriority? priority = TaskPriority.Normal, TaskStatus? status = TaskStatus.Pending, DateTime? dueTime = null) : base(title, description, priority, status, dueTime)
-    // {
-    // }
 
     // public override string ResumeTask()
     // {
@@ -37,7 +34,7 @@ public class CollaborativeTask : Task
     // }
     public override string ResumeTask()
     {
-        throw new NotImplementedException();
+                return $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
     }
 
     public void AddMember(Guid userId)

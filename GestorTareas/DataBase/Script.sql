@@ -7,5 +7,5 @@ BEGIN
 END
 GO
 
-USEL GestorTareas;
+USE GestorTareas;
 GO

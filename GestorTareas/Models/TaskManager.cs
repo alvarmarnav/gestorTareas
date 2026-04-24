@@ -7,9 +7,9 @@ namespace GestorTareas.Models;
 public class TaskManager
 {
 
-    public List<Task> TaskList{get;set;} = new(60);
+    private List<Task> TaskList{get;set;} = new(60);
     
-    public Dictionary<Guid, Task> TaskDictionary{get;set;} = new(60);
+    private Dictionary<Guid, Task> TaskDictionary{get;set;} = new(60);
 
     public TaskRepository Repository {get;set;}
 
@@ -24,11 +24,11 @@ public class TaskManager
     public void LoadRepository()
     {
         var listTasksDto = Repository.Load();
-        TaskList = listTasksDto.TaskList.Select(DTOManager.DtoToTask).ToList();
+        TaskList = listTasksDto.TaskList.Select(DtoManager.DtoToTask).ToList();
         //Evitar Duplicados
         // TaskDictionary = listTasksDto.TaskDictionary.ToDictionary(
         //     keyVal =>keyVal.Key,
-        //     keyVal => DTOManager.DtoToTask(keyVal.Value)
+        //     keyVal => DtoManager.DtoToTask(keyVal.Value)
         // );
         TaskDictionary = TaskList.ToDictionary(t => t.Id);
     }
@@ -38,11 +38,11 @@ public class TaskManager
 
         var listTasksDto = new TaskManagerDto()
         {
-            TaskList = TaskList.Select(DTOManager.TaskToDto).ToList(),
+            TaskList = TaskList.Select(DtoManager.TaskToDto).ToList(),
             //Evitar Duplicados
             // TaskDictionary = TaskDictionary.ToDictionary(
             //     keyval => keyval.Key,
-            //     keyval => DTOManager.TaskToDto(keyval.Value)
+            //     keyval => DtoManager.TaskToDto(keyval.Value)
             // )
         };
         Repository.Save(listTasksDto);
