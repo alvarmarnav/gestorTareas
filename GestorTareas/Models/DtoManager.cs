@@ -85,6 +85,7 @@ public static class DtoManager
             },
             LinkedTaskDTO link => new LinkedTask(
                 link.Title!,
+                ct.CompositeTaskType,
                 link.Description!,
                 (TaskPriority)link.Priority,
                 (Task.TaskStatus)link.Status,
@@ -98,6 +99,7 @@ public static class DtoManager
             CompositeTaskDTO ct =>
                 new CompositeTask(
                     ct.Title!,
+                    ct.CompositeTaskType,
                     ct.Description!,
                     (TaskPriority)ct.Priority,
                     (Task.TaskStatus)ct.Status,

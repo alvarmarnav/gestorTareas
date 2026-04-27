@@ -1,6 +1,8 @@
 using System;
 using System.Text.Json.Serialization;
+using GestorTareas.Enums;
 using GestorTareas.Interfaces;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Models;
 
@@ -12,7 +14,7 @@ public class SubTask : CompositeTask
     public SubTask() : base() { } 
     public SubTask(
         string subTaskTitle,
-        CompositeTaskTypes compositeTaskType,
+        CompositeTaskType compositeTaskType,
         string? subTaskDescription = null,
         TaskPriority? subTaskPriority = TaskPriority.Normal,
         TaskStatus? subTaskStatus = TaskStatus.Pending,

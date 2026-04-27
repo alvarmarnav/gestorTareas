@@ -5,7 +5,9 @@ using System.Net;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using GestorTareas.Enums;
 using GestorTareas.Interfaces;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 
 
@@ -22,22 +24,6 @@ namespace GestorTareas.Models;
 
 public abstract class Task : IIdentificable
 {
-    public enum TaskPriority
-    {
-        Low,
-        Normal,
-        High,
-        Critical
-    }
-
-    public enum TaskStatus
-    {
-        Pending,
-        InProgress,
-        Completed,
-        Cancelled
-    }
-
     public Guid Id { get; set; }
     public string Title
     {
@@ -93,7 +79,7 @@ public abstract class Task : IIdentificable
                 this._status = TaskStatus.Pending;
             }
             //TODO: comprobar está bien aplicada.
-            else if (this._status == TaskStatus.Completed && value == TaskStatus.InProgress || value == TaskStatus.Pending)
+            else if (this._status == TaskStatus.Completed && (value == TaskStatus.InProgress || value == TaskStatus.Pending))
             {
                 throw new ArgumentException("No se puede modificar el estado de una tarea ya completada.");
             }
@@ -110,7 +96,7 @@ public abstract class Task : IIdentificable
     {
         get; set
         {
-            if (UpdatedAt < CreatedAt)
+            if (value < CreatedAt)
                 throw new ArgumentException("La fecha actualización NO puede ser menor a la fecha de creación.");
             field = value;
         }

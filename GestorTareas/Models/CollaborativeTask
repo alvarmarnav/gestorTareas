@@ -4,10 +4,10 @@ namespace GestorTareas.Models;
 
 public class CollaborativeTask : Task
 {
-    private List<User>? _TeamMembers { get; set; } = new List<User>(20);
+    public List<User> TeamMembers { get; set; } = new List<User>(20);
     // private User _taskSupervisor;
 
-    public User? TaskSupervisor{get;set;}
+    public User TaskSupervisor{get;set;}
 
 public CollaborativeTask() : base() { }
     public CollaborativeTask(
@@ -16,7 +16,7 @@ public CollaborativeTask() : base() { }
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
-        User? taskSupervisor = null
+        User taskSupervisor
         // List<User> teamMembers,
         ) : base(
             title,
@@ -25,8 +25,10 @@ public CollaborativeTask() : base() { }
             taskStatus,
             dueTime)
     {
+        TeamMembers = new List<User>(20);
+        
         this.TaskSupervisor = taskSupervisor;
-        this._TeamMembers = _TeamMembers.Add(taskSupervisor);
+        this._TeamMembers = TeamMembers.Add(taskSupervisor);
     }
 
     // public override string ResumeTask()

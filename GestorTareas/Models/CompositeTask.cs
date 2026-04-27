@@ -3,22 +3,18 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using GestorTareas.Enums;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 namespace GestorTareas.Models;
 
 public class CompositeTask : Task
 {
 
-    public enum CompositeTaskTypes
-    {
-        SubTask,
-        LinkedTask
-    }
-
-    public CompositeTaskTypes CompositeTaskType
+    public CompositeTaskType CompositeTaskType
     {
         get; set
         {
-            if (!Enum.IsDefined(typeof(CompositeTaskTypes), value))
+            if (!Enum.IsDefined(typeof(CompositeTaskType), value))
                 throw new ArgumentException("No es un valor válido.");
             field = value;
         }
@@ -26,17 +22,17 @@ public class CompositeTask : Task
 
     // //ReadOnly, asegura que una vez creada la instancia solo se va a crear una vez
     //Lo ccambio de private a protected para poder leer desde la clase hija
-    private List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
+    public List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
 
     private const int _MAX_ITEMS = 30;
-    private List<LinkedTask> LinkedTaskList { get; set; } = new List<LinkedTask>();
+    public List<LinkedTask> LinkedTaskList { get; set; } = new List<LinkedTask>();
 
     [JsonConstructor]
     public CompositeTask() : base() { }
 
     public CompositeTask(
         string title,
-        CompositeTaskTypes compositeTaskType,
+        CompositeTaskType compositeTaskType,
         string? description = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
@@ -52,7 +48,7 @@ public class CompositeTask : Task
 
     public void AddSubTask(
         string subTaskTitle,
-        CompositeTaskTypes compositeTaskType,
+        CompositeTaskType compositeTaskType,
         string subTaskDescription,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
@@ -103,7 +99,7 @@ public class CompositeTask : Task
 
     public SubTask CreateSubTask(
         string subTaskTitle,
-        CompositeTaskTypes compositeTaskType,
+        CompositeTaskType compositeTaskType,
         string subTaskDescription,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
@@ -122,7 +118,7 @@ public class CompositeTask : Task
 
     public void AddLinkedTask(
         string linkedTaskTitle,
-        CompositeTaskTypes compositeTaskType,
+        CompositeTaskType compositeTaskType,
         string linkedTaskDescription,
         TaskPriority linkedTaskPriority,
         TaskStatus linkedTaskStatus,
@@ -172,7 +168,7 @@ public class CompositeTask : Task
     }
     public LinkedTask CreateLinkedTask(
         string linkedTaskTitle,
-        CompositeTaskTypes compositeTaskType,
+        CompositeTaskType compositeTaskType,
         string linkedTaskDescription,
         TaskPriority linkedTaskPriority,
         TaskStatus linkedTaskStatus,
@@ -198,7 +194,7 @@ public class CompositeTask : Task
 
     public int CountTasks()
     {
-        if (this.CompositeTaskType == CompositeTaskTypes.SubTask)
+        if (this.CompositeTaskType == CompositeTaskType.SubTask)
         {
             return SubTaskList.Count;
         }
@@ -210,7 +206,7 @@ public class CompositeTask : Task
         int completedTasks;
         // int numberTasks;
 
-        if (this.CompositeTaskType == CompositeTaskTypes.SubTask)
+        if (this.CompositeTaskType == CompositeTaskType.SubTask)
         {
             completedTasks = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
 

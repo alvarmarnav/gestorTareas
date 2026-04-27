@@ -2,7 +2,9 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
+using GestorTareas.Enums;
 using Microsoft.VisualBasic;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Models;
 
@@ -11,13 +13,13 @@ public class LinkedTask : CompositeTask
     //TODO: pendiente linkedTask logica de dependencias.
 
     public List<LinkedTask> ListOfLinkedTasks { get; set; } = new(60);
-    public int? Order{get;set;} = null;
+    public int? Order { get; set; } = null;
 
     [JsonConstructor]
     public LinkedTask() : base() { }
     public LinkedTask(
         string title,
-        CompositeTaskTypes compositeTaskType,
+        CompositeTaskType compositeTaskType,
         string? description,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
@@ -43,15 +45,14 @@ public class LinkedTask : CompositeTask
 
     public void UpdateLinkedTaskOrder(int newOrder) { }
 
-    public void CanStartLinkedTask(Guid linkedTaskId) { }
+    public void CompleteLinkedTask(Guid linkedTaskId)
+    {
 
-    public void CompleteLinkedTask(Guid linkedTaskId) {
-        
         LinkedTask task = ListOfLinkedTasks.Find(lt => lt.Id == linkedTaskId);
-        if(task is null)
+        if (task is null)
             throw new ArgumentException("El identificador no es válido.");
 
-        else if(task.Status == TaskStatus.Pending || task.Status == TaskStatus.InProgress)
+        else if (task.Status == TaskStatus.Pending || task.Status == TaskStatus.InProgress)
         {
             //TODO: deberia comprobar que todas las anteriores tambien estan
             // COMPLETADAS
@@ -61,20 +62,21 @@ public class LinkedTask : CompositeTask
 
     public bool CanStartLinkedTask(LinkedTask lTask)
     {
-        
+
         if (ListOfLinkedTasks is null || !ListOfLinkedTasks.Any())
             return false;
 
         else
         {
-            foreach (var t in ListOfLinkedTasks.Where(t => t.Id != lTask.Id))
+            foreach (var t in ListOfLinkedTasks
+            .Where(t => t.Id != lTask.Id))
             {
                 if (t.Status == TaskStatus.InProgress || t.Status == TaskStatus.Pending)
                 {
                     return false;
                 }
 
-                lTask.Status = TaskStatus.InProgress;
+                // lTask.Status = TaskStatus.InProgress;
 
             }
             return true;
