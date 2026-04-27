@@ -1,21 +1,19 @@
 using System;
-using System.ComponentModel.Design;
-using GestorTareas.Interfaces;
 
-namespace GestorTareas.Models;
+namespace GestorTareas.Application.Services;
 
 public class TaskManager
 {
 
-    private List<Task> TaskList{get;set;} = new(60);
-    
-    private Dictionary<Guid, Task> TaskDictionary{get;set;} = new(60);
+    private List<Task> TaskList { get; set; } = new(60);
 
-    public TaskRepository Repository {get;set;}
+    private Dictionary<Guid, Task> TaskDictionary { get; set; } = new(60);
+
+    public TaskRepository Repository { get; set; }
 
     public TaskManager(TaskRepository repository)
     {
-        TaskList = new (60);
+        TaskList = new(60);
         TaskDictionary = new Dictionary<Guid, Task>(60);
         Repository = repository;
         LoadRepository();
@@ -53,7 +51,7 @@ public class TaskManager
 
         ArgumentNullException.ThrowIfNull(item);
 
-        if(TaskList.Exists(i=> i.Title.Equals(item.Title, StringComparison.OrdinalIgnoreCase)))
+        if (TaskList.Exists(i => i.Title.Equals(item.Title, StringComparison.OrdinalIgnoreCase)))
             throw new ArgumentException("No se puede añadir. Ya existe una tarea con el mismo título.");
 
         TaskList.Add(item);
@@ -75,12 +73,12 @@ public class TaskManager
 
     public Task? IdSearch(Guid id)
     {
-        
+
         if (!TaskDictionary.TryGetValue(id, out Task? item))
         {
             throw new KeyNotFoundException($"No se encontró una tarea con el id: {id}");
         }
-       return item;
+        return item;
 
     }
 
@@ -111,7 +109,7 @@ public class TaskManager
         }
     }
 
-//TODO: REVISAR ESTE METODO
+    //TODO: REVISAR ESTE METODO
     public IEnumerable<Task> GenericTaskSearch(Func<Task, bool> condition)
     {
         ArgumentNullException.ThrowIfNull(condition);
@@ -125,5 +123,4 @@ public class TaskManager
     // {
     //     TaskSerializer<Task>.SerializateListTaskToJson(TaskList, filePath);
     // }
-
 }

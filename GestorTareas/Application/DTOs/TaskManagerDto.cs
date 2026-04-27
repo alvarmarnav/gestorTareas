@@ -1,12 +1,8 @@
 using System;
 
-namespace GestorTareas.Models;
+namespace GestorTareas.Application.DTOs;
 
-public class TaskManagerDto
+public class TaskManagerDTO
 {
-    public List<TaskDTO> TaskList{get;set;} = new (60);
-
-//Elimino para evitar duplicaciones
-    // public Dictionary<Guid, TaskDTO> TaskDictionary{get;set;} = new(60);
 
 }

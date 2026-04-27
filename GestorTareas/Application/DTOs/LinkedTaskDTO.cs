@@ -1,6 +1,7 @@
 using System;
+using GestorTareas.Models;
 
-namespace GestorTareas.Models;
+namespace GestorTareas.Application.DTOs;
 
 public class LinkedTaskDTO : TaskDTO
 {

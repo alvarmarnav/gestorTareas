@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
+using GestorTareas.Application.Services;
 using GestorTareas.Enums;
 using Microsoft.VisualBasic;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
@@ -85,7 +86,8 @@ public class LinkedTask : CompositeTask
 
     public override string ResumeTask()
     {
-        throw new NotImplementedException();
+        var taskSummary = new TaskSummaryManager();
+        taskSummary.ResumeTask(this);
     }
 
 }

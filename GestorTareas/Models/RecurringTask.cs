@@ -1,6 +1,9 @@
 using System;
 using System.Text.Json.Serialization;
+using GestorTareas.Application.Services;
+using GestorTareas.Enums;
 using GestorTareas.Interfaces;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Models;
 
@@ -67,8 +70,8 @@ public class RecurringTask : Task
 
     public override string ResumeTask()
     {
-        return $"Tarea Recurrente\nTitulo: {this.Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}\nFecha Fin: {DueTime}\nRegla Recurrencia: {RecurrenceRule}";
-
+        var taskSummary = new TaskSummaryManager();
+        taskSummary.ResumeTask(this);
     }
 
 

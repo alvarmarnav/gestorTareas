@@ -1,8 +1,7 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using GestorTareas.Models;
 
-namespace GestorTareas.Models;
-
+namespace GestorTareas.Application.DTOs;
 public class CompositeTaskDTO : TaskDTO
 {
 

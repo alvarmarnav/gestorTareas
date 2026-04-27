@@ -1,6 +1,9 @@
 using System;
 using System.Data.Common;
 using System.Text.Json.Serialization;
+using GestorTareas.Application.Services;
+using GestorTareas.Enums;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Models;
 
@@ -24,7 +27,8 @@ public class SimpleTask : Task
 
     public override string ResumeTask()
     {
-        return $"Tarea Simple\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
-
+        // return $"Tarea Simple\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
+        var taskSummary = new TaskSummaryManager();
+        taskSummary.ResumeTask(this);
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using GestorTareas.Application.Services;
 using GestorTareas.Enums;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 namespace GestorTareas.Models;
@@ -243,6 +244,7 @@ public class CompositeTask : Task
 
     public override string ResumeTask()
     {
-        return $"Tarea con Subtareas\nTitulo: {this.Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}\nFecha Limite: {this.DueTime}\nNumero Subtareas: {this.SubTaskList.Count()}";
+        var taskSummary = new TaskSummaryManager();
+        taskSummary.ResumeTask(this);
     }
 }

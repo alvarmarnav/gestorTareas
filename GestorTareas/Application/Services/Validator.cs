@@ -1,9 +1,6 @@
 using System;
-using System.Text.RegularExpressions;
-using GestorTareas.Models;
-using System.Net.Mail;
 
-namespace GestorTareas;
+namespace GestorTareas.Application.Services;
 
 public class Validator
 {

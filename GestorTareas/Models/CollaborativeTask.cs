@@ -1,8 +1,10 @@
 using System;
+using GestorTareas.Application.Services;
+using GestorTareas.Enums;
+using GestorTareas.Models;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 
-namespace GestorTareas.Models;
-
-public class CollaborativeTask : Task
+public class CollaborativeTask : GestorTareas.Models.Task
 {
     public List<User> TeamMembers { get; set; } = new List<User>(20);
     // private User _taskSupervisor;
@@ -28,7 +30,7 @@ public CollaborativeTask() : base() { }
         TeamMembers = new List<User>(20);
         
         this.TaskSupervisor = taskSupervisor;
-        this._TeamMembers = TeamMembers.Add(taskSupervisor);
+        this.TeamMembers = TeamMembers.Add(taskSupervisor);
     }
 
     // public override string ResumeTask()
@@ -37,7 +39,8 @@ public CollaborativeTask() : base() { }
     // }
     public override string ResumeTask()
     {
-                return $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
+        var taskSummary = new TaskSummaryManager();
+        taskSummary.ResumeTask(this);
     }
 
     public void AddMember(Guid userId)

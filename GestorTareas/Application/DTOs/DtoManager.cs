@@ -1,9 +1,12 @@
 using System;
 using System.Data.Common;
 using System.Linq;
+using GestorTareas.Enums;
+using GestorTareas.Models;
 using static GestorTareas.Models.Task;
+using Task = GestorTareas.Models.Task;
 
-namespace GestorTareas.Models;
+namespace GestorTareas.Application.DTOs;
 
 public static class DtoManager
 {
@@ -77,7 +80,7 @@ public static class DtoManager
                 sub.Title!,
                 sub.Description!,
                 (TaskPriority)sub.Priority,
-                (Task.TaskStatus)sub.Status,
+                (GestorTareas.Enums.TaskStatus)sub.Status,
                 sub.DueTime
             )
             {

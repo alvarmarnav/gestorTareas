@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
+using GestorTareas.Application.Services;
 using GestorTareas.Enums;
 using GestorTareas.Interfaces;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
@@ -9,9 +10,9 @@ namespace GestorTareas.Models;
 public class SubTask : CompositeTask
 {
 
-// ESTO ES LO QUE FALTA:
+    // ESTO ES LO QUE FALTA:
     [JsonConstructor]
-    public SubTask() : base() { } 
+    public SubTask() : base() { }
     public SubTask(
         string subTaskTitle,
         CompositeTaskType compositeTaskType,
@@ -27,7 +28,7 @@ public class SubTask : CompositeTask
             subTaskStatus,
             dueTime)
     {
-       
+
     }
 
     public void UpdateSubTaskOrder(int newOrder)
@@ -39,7 +40,7 @@ public class SubTask : CompositeTask
 
     public override string ResumeTask()
     {
-        return $"SubTarea Id: {this.Id}\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
-
+        var taskSummary = new TaskSummaryManager();
+        taskSummary.ResumeTask(this);
     }
 }

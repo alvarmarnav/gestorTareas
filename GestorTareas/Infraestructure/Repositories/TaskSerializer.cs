@@ -1,10 +1,6 @@
 using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using GestorTareas.Interfaces;
-using Microsoft.VisualBasic;
 
-namespace GestorTareas.Models;
+namespace GestorTareas.Infraestructure.Repositories;
 
 public class TaskSerializer
 {

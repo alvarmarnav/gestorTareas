@@ -1,8 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-namespace GestorTareas.Models;
 
+namespace GestorTareas.Application.DTOs;
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
 [JsonDerivedType(typeof(SimpleTaskDTO), typeDiscriminator: "simple")]
