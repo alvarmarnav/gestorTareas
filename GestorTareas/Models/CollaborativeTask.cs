@@ -14,34 +14,33 @@ public class CollaborativeTask : GestorTareas.Models.Task
 public CollaborativeTask() : base() { }
     public CollaborativeTask(
         string title,
+        User taskSupervisor,
         string? description = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
-        User taskSupervisor
+        string? cancelReason = null
         // List<User> teamMembers,
         ) : base(
             title,
             description,
             taskPriority,
             taskStatus,
-            dueTime)
+            dueTime,
+            cancelReason)
     {
         TeamMembers = new List<User>(20);
         
         this.TaskSupervisor = taskSupervisor;
-        this.TeamMembers = TeamMembers.Add(taskSupervisor);
+        TeamMembers.Add(taskSupervisor);
     }
 
     // public override string ResumeTask()
     // {
     //         return $"Tarea con Subtareas\nTitulo: {this.Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
     // }
-    public override string ResumeTask()
-    {
-        var taskSummary = new TaskSummaryManager();
-        taskSummary.ResumeTask(this);
-    }
+    public override string ResumeTask() => $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}";
+
 
     public void AddMember(Guid userId)
     {

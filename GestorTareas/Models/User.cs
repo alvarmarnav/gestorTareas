@@ -1,4 +1,5 @@
 using System;
+using GestorTareas.Application.Services;
 
 namespace GestorTareas.Models;
 
@@ -40,7 +41,9 @@ public class User
         }
     }
 
-    public Boolean UserActive { get; set; } = true;
+    public Boolean IsActive { get; set; } = true;
+
+    public Boolean IsAdmin{get;set;} = false;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
@@ -50,14 +53,16 @@ public class User
         String userName,
         String userLastName,
         String email,
-        Boolean userActive
+        Boolean isActive,
+        Boolean isAdmin
     )
     {
-        this.Id = new Guid();
+        this.Id = Guid.NewGuid();
         this.UserName = userName;
         this.UserLastName = userLastName;
         this.Email = email;
-        this.UserActive = userActive;
+        this.IsActive = isActive;
+        IsAdmin = IsAdmin;
         this.CreatedAt = DateTime.Now;
         this.UpdatedAt = null;
     }

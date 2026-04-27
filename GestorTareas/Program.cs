@@ -1,6 +1,8 @@
 ﻿using System.Formats.Tar;
 using System.Net;
 using GestorTareas;
+using GestorTareas.Application.Services;
+using GestorTareas.Infraestructure.Repositories;
 using GestorTareas.Models;
 using Microsoft.VisualBasic;
 
@@ -16,49 +18,50 @@ var taskList = new List<GestorTareas.Models.Task>
     new SimpleTask(
         "Revisar pull request",
         "Descripcion",
-        GestorTareas.Models.Task.TaskPriority.Normal,
-        GestorTareas.Models.Task.TaskStatus.Pending,
+        GestorTareas.Enums.TaskPriority.Normal,
+        GestorTareas.Enums.TaskStatus.Pending,
         DateTime.Today.AddDays(1)),
     new RecurringTask(
         "Reunión de equipo",
             "",
-            GestorTareas.Models.Task.TaskPriority.Normal,
-            GestorTareas.Models.Task.TaskStatus.Pending,
+            GestorTareas.Enums.TaskPriority.Normal,
+            GestorTareas.Enums.TaskStatus.Pending,
             DateTime.Today.AddDays(7),
             recurrenceRule:7),
             new CompositeTask(
                "Recurring Task",
                "",
-               GestorTareas.Models.Task.TaskPriority.Critical,
-               GestorTareas.Models.Task.TaskStatus.Completed,
+               GestorTareas.Enums.TaskPriority.Critical,
+               GestorTareas.Enums.TaskStatus.Completed,
                DateTime.Today.AddDays(25)
             ),
             new SubTask(
                 "SubTAsk",
                 "",
-                GestorTareas.Models.Task.TaskPriority.High,
-                GestorTareas.Models.Task.TaskStatus.Pending,
+                GestorTareas.Enums.TaskPriority.High,
+                GestorTareas.Enums.TaskStatus.Pending,
                 DateTime.Today.AddDays(31)
             ),
             // CreateSubTask(
             //     "SubTAsk",
             //     "",
-            //     GestorTareas.Models.Task.TaskPriority.High,
-            //     GestorTareas.Models.Task.TaskStatus.Pending,
+            //     GestorTareas.Enums.TaskPriority.High,
+            //     GestorTareas.Enums.TaskStatus.Pending,
             //     DateTime.Today.AddDays(31),
             //     0),
                  new RecurringTask(
             "Reunión de equipo 2",
-            "",
-            GestorTareas.Models.Task.TaskPriority.Normal,
-            GestorTareas.Models.Task.TaskStatus.Pending,
             DateTime.Today.AddDays(30),
-            recurrenceRule:98),
+            98,
+            "",
+            GestorTareas.Enums.TaskPriority.Normal,
+            GestorTareas.Enums.TaskStatus.Pending
+           ),
             // ),
             // new SubTask( "SubTAsk2",
             //     "",
-            //     GestorTareas.Models.Task.TaskPriority.High,
-            //     GestorTareas.Models.Task.TaskStatus.Pending,
+            //     GestorTareas.Enums.TaskPriority.High,
+            //     GestorTareas.Enums.TaskStatus.Pending,
             //     DateTime.Today.AddDays(31),
             //     0)
 };
@@ -91,8 +94,8 @@ foreach(var t in taskList)
 // SimpleTask simpleTask1 = new SimpleTask(
 //     "Titulo simpleTask1",
 //     "Descripcion simpleTask1",
-//     GestorTareas.Models.Task.TaskPriority.Normal,
-//     GestorTareas.Models.Task.TaskStatus.Pending,
+//     GestorTareas.Enums.TaskPriority.Normal,
+//     GestorTareas.Enums.TaskStatus.Pending,
 //     DateTime.Today.AddDays(10)
 // );
 
@@ -103,8 +106,8 @@ foreach(var t in taskList)
 // var task = new SimpleTask(
 //     title: "Viajar a Turin",
 //     description: "Recorrer Turin",
-//     taskStatus: GestorTareas.Models.Task.TaskStatus.InProgress,
-//     taskPriority: GestorTareas.Models.Task.TaskPriority.High,
+//     taskStatus: GestorTareas.Enums.TaskStatus.InProgress,
+//     taskPriority: GestorTareas.Enums.TaskPriority.High,
 //     dueTime: DateTime.Now.AddHours(65)
 // );
 // manager.AddTask(task);

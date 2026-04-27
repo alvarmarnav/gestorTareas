@@ -24,7 +24,7 @@ public class RecurringTask : Task
     }
 
     private const int _MAX_INSTANCES = 15;
-    private int _recurringTasksCount = 0;
+    public int RecurringTasksCount { get; set; } = 0;
 
     // ESTO ES LO QUE FALTA:
     [JsonConstructor]
@@ -33,28 +33,36 @@ public class RecurringTask : Task
         string title,
         DateTime dueTime,
         int recurrenceRule,
+        int recurringTasksCount = 0,
         string? description = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
-        TaskStatus? taskStatus = TaskStatus.Pending
+        TaskStatus? taskStatus = TaskStatus.Pending,
+        string? cancelReason = null
         ) : base(
             title,
             description,
             taskPriority,
             taskStatus,
-            dueTime
+            dueTime,
+            cancelReason
             )
     {
         RecurrenceRule = recurrenceRule;
+        if(RecurringTasksCount<=0 )
+            RecurringTasksCount = 0;
+        else{
+            RecurringTasksCount = RecurringTasksCount;
+        }
     }
 
     public RecurringTask GenerateNewInstance(
         DateTime dueTime)
     {
 
-        if (_recurringTasksCount >= _MAX_INSTANCES)
+        if (RecurringTasksCount >= _MAX_INSTANCES)
             throw new InvalidOperationException("No se admiten más instancias.");
 
-        _recurringTasksCount++;
+        RecurringTasksCount++;
 
         var newDueTime = dueTime.AddDays(RecurrenceRule);
 
@@ -62,18 +70,14 @@ public class RecurringTask : Task
             Title,
             newDueTime,
             RecurrenceRule,
+            RecurringTasksCount,
             Description,
             Priority,
             Status
             );
     }
 
-    public override string ResumeTask()
-    {
-        var taskSummary = new TaskSummaryManager();
-        taskSummary.ResumeTask(this);
-    }
-
+    public override string ResumeTask() => $"Tarea Recurrente\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Fin: {DueTime}\nRegla Recurrencia: {RecurrenceRule}";
 
 
 }

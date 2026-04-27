@@ -1,20 +1,22 @@
 using System;
+using GestorTareas.Application.DTOs;
+using GestorTareas.Infraestructure.Repositories;
 
 namespace GestorTareas.Application.Services;
 
 public class TaskManager
 {
 
-    private List<Task> TaskList { get; set; } = new(60);
+    private List<GestorTareas.Models.Task> TaskList { get; set; } = new(60);
 
-    private Dictionary<Guid, Task> TaskDictionary { get; set; } = new(60);
+    private Dictionary<Guid, GestorTareas.Models.Task> TaskDictionary { get; set; } = new(60);
 
     public TaskRepository Repository { get; set; }
 
     public TaskManager(TaskRepository repository)
     {
         TaskList = new(60);
-        TaskDictionary = new Dictionary<Guid, Task>(60);
+        TaskDictionary = new Dictionary<Guid, GestorTareas.Models.Task>(60);
         Repository = repository;
         LoadRepository();
     }
@@ -46,7 +48,7 @@ public class TaskManager
         Repository.Save(listTasksDto);
     }
 
-    public void AddTask(Task item)
+    public void AddTask(GestorTareas.Models.Task item)
     {
 
         ArgumentNullException.ThrowIfNull(item);
@@ -65,16 +67,16 @@ public class TaskManager
         // Console.WriteLine($"Tarea '{item.Title}' añadida con éxito.");
     }
 
-    public IReadOnlyList<Task> ShowAllItems()
+    public IReadOnlyList<GestorTareas.Models.Task> ShowAllItems()
     {
-        IReadOnlyList<Task> readOnlyItemList = TaskList;
+        IReadOnlyList<GestorTareas.Models.Task> readOnlyItemList = TaskList;
         return readOnlyItemList;
     }
 
-    public Task? IdSearch(Guid id)
+    public GestorTareas.Models.Task? IdSearch(Guid id)
     {
 
-        if (!TaskDictionary.TryGetValue(id, out Task? item))
+        if (!TaskDictionary.TryGetValue(id, out GestorTareas.Models.Task? item))
         {
             throw new KeyNotFoundException($"No se encontró una tarea con el id: {id}");
         }
@@ -100,7 +102,7 @@ public class TaskManager
 
     }
 
-    public void ShowResumeAllTasks(IEnumerable<Task> taskList)
+    public void ShowResumeAllTasks(IEnumerable<GestorTareas.Models.Task> taskList)
     {
         foreach (var t in taskList)
         {
@@ -110,7 +112,7 @@ public class TaskManager
     }
 
     //TODO: REVISAR ESTE METODO
-    public IEnumerable<Task> GenericTaskSearch(Func<Task, bool> condition)
+    public IEnumerable<GestorTareas.Models.Task> GenericTaskSearch(Func<GestorTareas.Models.Task, bool> condition)
     {
         ArgumentNullException.ThrowIfNull(condition);
 

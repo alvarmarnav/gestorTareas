@@ -20,6 +20,7 @@ public abstract class TaskDTO
     public int Priority { get; set; }
     public int Status { get; set; }
     public DateTime DueTime { get; set; }
+    public string? CancelReason {get;set;}
 
 
 }

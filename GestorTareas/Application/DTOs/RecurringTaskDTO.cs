@@ -5,5 +5,6 @@ namespace GestorTareas.Application.DTOs;
 public class RecurringTaskDTO : TaskDTO
 {
     public int RecurrenceRule { get; set; }
+    public int RecurringTasksCount {get; set;}
 
 }

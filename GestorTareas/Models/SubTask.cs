@@ -4,6 +4,8 @@ using GestorTareas.Application.Services;
 using GestorTareas.Enums;
 using GestorTareas.Interfaces;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
+using TaskPriority = GestorTareas.Enums.TaskPriority;
+
 
 namespace GestorTareas.Models;
 
@@ -19,14 +21,16 @@ public class SubTask : CompositeTask
         string? subTaskDescription = null,
         TaskPriority? subTaskPriority = TaskPriority.Normal,
         TaskStatus? subTaskStatus = TaskStatus.Pending,
-        DateTime? dueTime = null
+        DateTime? dueTime = null,
+        string? cancelReason = null
         ) : base(
             subTaskTitle,
             compositeTaskType,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
-            dueTime)
+            dueTime,
+            cancelReason)
     {
 
     }
@@ -38,9 +42,6 @@ public class SubTask : CompositeTask
         //FUERA DE RANGO
     }
 
-    public override string ResumeTask()
-    {
-        var taskSummary = new TaskSummaryManager();
-        taskSummary.ResumeTask(this);
-    }
+    public override string ResumeTask() =>  $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}";
+   
 }

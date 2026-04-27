@@ -1,4 +1,6 @@
 using System;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace GestorTareas.Application.Services;
 

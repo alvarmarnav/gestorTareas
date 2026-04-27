@@ -4,6 +4,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
 using GestorTareas.Application.Services;
 using GestorTareas.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
@@ -25,14 +26,16 @@ public class LinkedTask : CompositeTask
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
-        int? order = null
+        int? order = null,
+        string? cancelReason = null
         ) : base(
             title,
             compositeTaskType,
             description,
             taskPriority,
             taskStatus,
-            dueTime
+            dueTime,
+            cancelReason
             )
     {
         // null--> ultimo
@@ -49,16 +52,25 @@ public class LinkedTask : CompositeTask
     public void CompleteLinkedTask(Guid linkedTaskId)
     {
 
-        LinkedTask task = ListOfLinkedTasks.Find(lt => lt.Id == linkedTaskId);
-        if (task is null)
+        if (linkedTaskId == Guid.Empty)
             throw new ArgumentException("El identificador no es válido.");
 
-        else if (task.Status == TaskStatus.Pending || task.Status == TaskStatus.InProgress)
-        {
-            //TODO: deberia comprobar que todas las anteriores tambien estan
-            // COMPLETADAS
-            task.Status = TaskStatus.Completed;
-        }
+        if (ListOfLinkedTasks is null || !ListOfLinkedTasks.Any())
+            throw new InvalidOperationException("No existen tareas.");
+
+        var task = ListOfLinkedTasks
+        .FirstOrDefault(lt => lt.Id == linkedTaskId) ?? throw new ArgumentException($"No existe la tarea con el ID: {linkedTaskId}");
+
+        var previousTasks = ListOfLinkedTasks.Where(t => t.Order < task.Order);
+
+        if (previousTasks.Any(t => t.Status != TaskStatus.Completed))
+            throw new InvalidOperationException($"Existen tareas previas SIN Completar.");
+
+        if (task.Status == TaskStatus.Completed)
+            throw new ArgumentException("Tarea YA Completada anteriormente.");
+
+
+        task.Status = TaskStatus.Completed;
     }
 
     public bool CanStartLinkedTask(LinkedTask lTask)
@@ -84,10 +96,6 @@ public class LinkedTask : CompositeTask
         }
     }
 
-    public override string ResumeTask()
-    {
-        var taskSummary = new TaskSummaryManager();
-        taskSummary.ResumeTask(this);
-    }
+    public override string ResumeTask() => $"Tarea Enlazada Id: {Id}\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nOrden: {Order}";
 
 }

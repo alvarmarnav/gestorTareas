@@ -18,17 +18,14 @@ public class SimpleTask : Task
         string? description = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
-        DateTime? dueTime = null) : base(
+        DateTime? dueTime = null,
+        string? cancelReason = null) : base(
             title,
             description,
             taskPriority,
             taskStatus,
-            dueTime){}
+            dueTime,
+            cancelReason){}
 
-    public override string ResumeTask()
-    {
-        // return $"Tarea Simple\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
-        var taskSummary = new TaskSummaryManager();
-        taskSummary.ResumeTask(this);
-    }
+    public override string ResumeTask() => $"Tarea Simple\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
 }

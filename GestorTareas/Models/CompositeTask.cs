@@ -37,19 +37,20 @@ public class CompositeTask : Task
         string? description = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
-        DateTime? dueTime = null
+        DateTime? dueTime = null,
+        string? cancelReason = null
         ) : base(
             title,
             description,
             taskPriority,
             taskStatus,
-            dueTime)
+            dueTime,
+            cancelReason)
     {
     }
 
     public void AddSubTask(
         string subTaskTitle,
-        CompositeTaskType compositeTaskType,
         string subTaskDescription,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
@@ -57,12 +58,12 @@ public class CompositeTask : Task
     {
 
         //Validar no exceder n MAX SubTask permitidas
-        if (SubTaskList.Count() == _MAX_ITEMS)
+        if (SubTaskList.Count >= _MAX_ITEMS)
             throw new ArgumentOutOfRangeException("Se ha intentado añadir un número de tareas superior al admitido.");
 
-        SubTask subTask = CreateSubTask(
+        SubTask subTask = new SubTask(
             subTaskTitle,
-            compositeTaskType,
+            Enums.CompositeTaskType.SubTask,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
@@ -98,35 +99,36 @@ public class CompositeTask : Task
 
     // }
 
-    public SubTask CreateSubTask(
-        string subTaskTitle,
-        CompositeTaskType compositeTaskType,
-        string subTaskDescription,
-        TaskPriority subTaskPriority,
-        TaskStatus subTaskStatus,
-        DateTime dueTime
-        )
-    {
-        return new SubTask(
-            subTaskTitle,
-            compositeTaskType,
-            subTaskDescription,
-            subTaskPriority,
-            subTaskStatus,
-            dueTime
-            );
-    }
+    // public void CreateSubTask(
+    //     string subTaskTitle,
+    //     CompositeTask compositeTaskType,
+    //     string subTaskDescription,
+    //     TaskPriority subTaskPriority,
+    //     TaskStatus subTaskStatus,
+    //     DateTime dueTime
+    //     )
+    // {
+    //     new SubTask(
+    //         subTaskTitle,
+    //         (CompositeTaskType)compositeTaskType,
+    //         subTaskDescription,
+    //         subTaskPriority,
+    //         subTaskStatus,
+    //         dueTime
+    //         );
+
+
+    // }
 
     public void AddLinkedTask(
         string linkedTaskTitle,
-        CompositeTaskType compositeTaskType,
         string linkedTaskDescription,
         TaskPriority linkedTaskPriority,
         TaskStatus linkedTaskStatus,
         DateTime dueTime,
         int? order)
     {
-        if (this.LinkedTaskList.Count == _MAX_ITEMS)
+        if (LinkedTaskList.Count >= _MAX_ITEMS)
             throw new ArgumentOutOfRangeException("Se ha intentado añadir un número de tareas superior al admitido.");
 
         if (order < 0)
@@ -136,9 +138,9 @@ public class CompositeTask : Task
         {
             order = 0;
         }
-        else if (order is null || order > LinkedTaskList.Count())
+        else if (order is null || order > LinkedTaskList.Count)
         {
-            order = LinkedTaskList.Count();
+            order = LinkedTaskList.Count;
         }
         else
         {
@@ -150,9 +152,10 @@ public class CompositeTask : Task
             }
 
         }
-        LinkedTask linkedTask = CreateLinkedTask(
+        
+        LinkedTask linkedTask = new LinkedTask(
             linkedTaskTitle,
-            compositeTaskType,
+            Enums.CompositeTaskType.LinkedTask,
             linkedTaskDescription,
             linkedTaskPriority,
             linkedTaskStatus,
@@ -167,26 +170,24 @@ public class CompositeTask : Task
         }
 
     }
-    public LinkedTask CreateLinkedTask(
-        string linkedTaskTitle,
-        CompositeTaskType compositeTaskType,
-        string linkedTaskDescription,
-        TaskPriority linkedTaskPriority,
-        TaskStatus linkedTaskStatus,
-        DateTime dueTime,
-        int order
-        )
-    {
-        return new LinkedTask(
-            linkedTaskTitle,
-            compositeTaskType,
-            linkedTaskDescription,
-            linkedTaskPriority,
-            linkedTaskStatus,
-            dueTime,
-            order
-          );
-    }
+    // public LinkedTask CreateLinkedTask(
+    //     string linkedTaskTitle,
+    //     string linkedTaskDescription,
+    //     TaskPriority linkedTaskPriority,
+    //     TaskStatus linkedTaskStatus,
+    //     DateTime dueTime,
+    //     int order
+    //     )
+    // {
+    //     return new LinkedTask(
+    //         linkedTaskTitle,
+    //         linkedTaskDescription,
+    //         linkedTaskPriority,
+    //         linkedTaskStatus,
+    //         dueTime,
+    //         order
+    //       );
+    // }
 
     // public bool CanStartLinkedTask(List<LinkedTask> linkedTasks, LinkedTask lTask)
 
@@ -242,9 +243,6 @@ public class CompositeTask : Task
         this.Status = newStatus;
     }
 
-    public override string ResumeTask()
-    {
-        var taskSummary = new TaskSummaryManager();
-        taskSummary.ResumeTask(this);
-    }
+    public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
+
 }
