@@ -17,6 +17,7 @@ public class LinkedTask : CompositeTask
     public LinkedTask() : base() { }
     public LinkedTask(
         string title,
+        CompositeTaskTypes compositeTaskType,
         string? description,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
@@ -24,6 +25,7 @@ public class LinkedTask : CompositeTask
         int? order = null
         ) : base(
             title,
+            compositeTaskType,
             description,
             taskPriority,
             taskStatus,
@@ -51,6 +53,8 @@ public class LinkedTask : CompositeTask
 
         else if(task.Status == TaskStatus.Pending || task.Status == TaskStatus.InProgress)
         {
+            //TODO: deberia comprobar que todas las anteriores tambien estan
+            // COMPLETADAS
             task.Status = TaskStatus.Completed;
         }
     }

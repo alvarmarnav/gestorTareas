@@ -6,73 +6,71 @@ namespace GestorTareas.Models;
 
 public class RecurringTask : Task
 {
-    public int RecurrenceRule { get; set; }
 
-// ESTO ES LO QUE FALTA:
+    // protected List<RecurringTask> RecurringTaskList { get; set; } = new(60);
+    public int RecurrenceRule
+    {
+        get;
+        set
+        {
+            if (value <= 0 || value > 365)
+                throw new ArgumentException("Valor no válido para la recurrencia.");
+
+            field = value;
+        }
+    }
+
+    private const int _MAX_INSTANCES = 15;
+    private int _recurringTasksCount = 0;
+
+    // ESTO ES LO QUE FALTA:
     [JsonConstructor]
-    public RecurringTask() : base() { } 
+    public RecurringTask() : base() { }
     public RecurringTask(
         string title,
-        string? description,
-        TaskPriority priority,
-        TaskStatus status,
-        DateTime? dueTime,
-        int recurrenceRule) : base(
+        DateTime dueTime,
+        int recurrenceRule,
+        string? description = null,
+        TaskPriority? taskPriority = TaskPriority.Normal,
+        TaskStatus? taskStatus = TaskStatus.Pending
+        ) : base(
             title,
             description,
-            priority,
-            status,
-            dueTime)
+            taskPriority,
+            taskStatus,
+            dueTime
+            )
     {
-        // this.DueTime = dueTime ?? throw new ArgumentNullException(nameof(dueTime),"Una tarea recurrente debe contener fecha de fin.");
-
-        if(recurrenceRule<=0)
-            throw new ArgumentException("Valor no válido para la recurrencia.");
-
-        this.RecurrenceRule = recurrenceRule;
-
-
+        RecurrenceRule = recurrenceRule;
     }
 
-    public void GenerateNewInstance()
+    public RecurringTask GenerateNewInstance(
+        DateTime dueTime)
     {
 
-        new RecurringTask(
-            this.Title,
-            this.Description,
-            (TaskPriority)this.Priority,
-            (TaskStatus)this.Status,
-            ValidateDueTime().AddDays(this.RecurrenceRule),
-            this.RecurrenceRule);
-    }
+        if (_recurringTasksCount >= _MAX_INSTANCES)
+            throw new InvalidOperationException("No se admiten más instancias.");
 
-    public bool IsRecurrenceActive() => true;
+        _recurringTasksCount++;
+
+        var newDueTime = dueTime.AddDays(RecurrenceRule);
+
+        return new RecurringTask(
+            Title,
+            newDueTime,
+            RecurrenceRule,
+            Description,
+            Priority,
+            Status
+            );
+    }
 
     public override string ResumeTask()
     {
-        return $"Tarea Recurrente\nTitulo: {this.Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
+        return $"Tarea Recurrente\nTitulo: {this.Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}\nFecha Fin: {DueTime}\nRegla Recurrencia: {RecurrenceRule}";
 
     }
 
-    public DateTime ValidateDueTime()
-    {
-        // return this.DueTime = dueTime ?? throw new ArgumentNullException(nameof(dueTime),"Una tarea recurrente debe contener fecha de fin.");
-        DateTime validDueTime;
-        return validDueTime = this.DueTime is not null ? (DateTime)this.DueTime : throw new ArgumentNullException(nameof(this.DueTime), "No se puede admitir nulos.");
 
-    }
-
-    public int ValidateRecurrenceRule(int recurrenceRule)
-    {
-        if (recurrenceRule <= 0)
-            throw new ArgumentException("Valor no válido para la recurrencia.");
-
-        return recurrenceRule;
-    }
-
-    public void UpdateRecurrenceRule(int newRecurrenceRule)
-    {
-        this.RecurrenceRule = ValidateRecurrenceRule(newRecurrenceRule);
-    }
 
 }

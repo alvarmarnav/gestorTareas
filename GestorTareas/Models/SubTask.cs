@@ -12,12 +12,14 @@ public class SubTask : CompositeTask
     public SubTask() : base() { } 
     public SubTask(
         string subTaskTitle,
+        CompositeTaskTypes compositeTaskType,
         string? subTaskDescription = null,
         TaskPriority? subTaskPriority = TaskPriority.Normal,
         TaskStatus? subTaskStatus = TaskStatus.Pending,
         DateTime? dueTime = null
         ) : base(
             subTaskTitle,
+            compositeTaskType,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,

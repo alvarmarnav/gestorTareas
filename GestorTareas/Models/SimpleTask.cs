@@ -12,7 +12,7 @@ public class SimpleTask : Task
     public SimpleTask() : base() { } 
     public SimpleTask(
         string title,
-        string? description,
+        string? description = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null) : base(

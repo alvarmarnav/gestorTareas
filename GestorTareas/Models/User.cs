@@ -4,19 +4,47 @@ namespace GestorTareas.Models;
 
 public class User
 {
-    public Guid Id{get;set;}
+    public Guid Id { get; set; }
 
-    public String UserName {get;set;}
+    public String UserName
+    {
+        get; set
+        {
+            Validator.ValidateString(value, "Nombre Usuario");
 
-    public String UserLastName {get;set;}
+            if (value.Length > 20 || value.Length<3)
+                throw new ArgumentOutOfRangeException("La longitud del nombre de usuario no es válida.");
 
-    public String Email {get;set;}
+            field = value.Trim();
+        }
+    }
 
-    public Boolean UserActive {get;set;} = true;
+    public String UserLastName
+    {
+        get; set
+        {
+            Validator.ValidateString(value, "Apellidos del usuario");
 
-    public DateTime CreatedAt{get;set;} = DateTime.Now;
+            if (value.Length > 30 || value.Length<3)
+                throw new ArgumentOutOfRangeException("La longitud de los apellidos no es válida.");
 
-    public DateTime? UpdatedAt {get; set;} = null;
+            field = value.Trim();
+        }
+    }
+
+    public String Email
+    {
+        get; set
+        {
+            field = Validator.ValidateEmail(value);
+        }
+    }
+
+    public Boolean UserActive { get; set; } = true;
+
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    public DateTime? UpdatedAt { get; set; } = null;
 
     public User(
         String userName,

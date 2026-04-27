@@ -7,39 +7,65 @@ namespace GestorTareas.Models;
 
 public class CompositeTask : Task
 {
+
+    public enum CompositeTaskTypes
+    {
+        SubTask,
+        LinkedTask
+    }
+
+    public CompositeTaskTypes CompositeTaskType
+    {
+        get; set
+        {
+            if (!Enum.IsDefined(typeof(CompositeTaskTypes), value))
+                throw new ArgumentException("No es un valor válido.");
+            field = value;
+        }
+    }
+
     // //ReadOnly, asegura que una vez creada la instancia solo se va a crear una vez
     //Lo ccambio de private a protected para poder leer desde la clase hija
-    private List<SubTask> SubTaskList {get;set;} = new List<SubTask>();
+    private List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
 
-    private List<LinkedTask> LinkedTaskList {get;set;} = new List<LinkedTask>();
+    private const int _MAX_ITEMS = 30;
+    private List<LinkedTask> LinkedTaskList { get; set; } = new List<LinkedTask>();
 
     [JsonConstructor]
     public CompositeTask() : base() { }
 
     public CompositeTask(
         string title,
+        CompositeTaskTypes compositeTaskType,
         string? description = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
-        DateTime? dueTime = null) : base(
+        DateTime? dueTime = null
+        ) : base(
             title,
             description,
             taskPriority,
             taskStatus,
             dueTime)
     {
-
     }
 
     public void AddSubTask(
         string subTaskTitle,
+        CompositeTaskTypes compositeTaskType,
         string subTaskDescription,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
         DateTime dueTime)
     {
+
+        //Validar no exceder n MAX SubTask permitidas
+        if (SubTaskList.Count() == _MAX_ITEMS)
+            throw new ArgumentOutOfRangeException("Se ha intentado añadir un número de tareas superior al admitido.");
+
         SubTask subTask = CreateSubTask(
             subTaskTitle,
+            compositeTaskType,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
@@ -75,10 +101,9 @@ public class CompositeTask : Task
 
     // }
 
-
-
     public SubTask CreateSubTask(
         string subTaskTitle,
+        CompositeTaskTypes compositeTaskType,
         string subTaskDescription,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
@@ -87,6 +112,7 @@ public class CompositeTask : Task
     {
         return new SubTask(
             subTaskTitle,
+            compositeTaskType,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
@@ -94,15 +120,17 @@ public class CompositeTask : Task
             );
     }
 
-
     public void AddLinkedTask(
         string linkedTaskTitle,
+        CompositeTaskTypes compositeTaskType,
         string linkedTaskDescription,
         TaskPriority linkedTaskPriority,
         TaskStatus linkedTaskStatus,
         DateTime dueTime,
         int? order)
     {
+        if (this.LinkedTaskList.Count == _MAX_ITEMS)
+            throw new ArgumentOutOfRangeException("Se ha intentado añadir un número de tareas superior al admitido.");
 
         if (order < 0)
             throw new ArgumentException("La posición no es válida.");
@@ -127,6 +155,7 @@ public class CompositeTask : Task
         }
         LinkedTask linkedTask = CreateLinkedTask(
             linkedTaskTitle,
+            compositeTaskType,
             linkedTaskDescription,
             linkedTaskPriority,
             linkedTaskStatus,
@@ -143,6 +172,7 @@ public class CompositeTask : Task
     }
     public LinkedTask CreateLinkedTask(
         string linkedTaskTitle,
+        CompositeTaskTypes compositeTaskType,
         string linkedTaskDescription,
         TaskPriority linkedTaskPriority,
         TaskStatus linkedTaskStatus,
@@ -151,25 +181,68 @@ public class CompositeTask : Task
         )
     {
         return new LinkedTask(
-         linkedTaskTitle,
-         linkedTaskDescription,
-         linkedTaskPriority,
-         linkedTaskStatus,
-         dueTime,
-         order
+            linkedTaskTitle,
+            compositeTaskType,
+            linkedTaskDescription,
+            linkedTaskPriority,
+            linkedTaskStatus,
+            dueTime,
+            order
           );
     }
 
     // public bool CanStartLinkedTask(List<LinkedTask> linkedTasks, LinkedTask lTask)
 
 
-    public int CountSubTasks() => SubTaskList.Count;
+    // public int CountSubTasks() => SubTaskList.Count;
+
+    public int CountTasks()
+    {
+        if (this.CompositeTaskType == CompositeTaskTypes.SubTask)
+        {
+            return SubTaskList.Count;
+        }
+        return LinkedTaskList.Count;
+    }
 
     public decimal CalculateProgress()
     {
-        int completedSubTask = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
+        int completedTasks;
+        // int numberTasks;
 
-        return (completedSubTask / CountSubTasks()) * 100;
+        if (this.CompositeTaskType == CompositeTaskTypes.SubTask)
+        {
+            completedTasks = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
+
+        }
+        else
+        {
+            completedTasks = LinkedTaskList.Count(t => t.Status == TaskStatus.Completed);
+        }
+
+        return (decimal)completedTasks / CountTasks() * 100;
+    }
+
+
+    //TODO: debo añadir funcionalidad según CompositeTaskTYPE
+    // public decimal CalculateProgress()
+    // {
+    //     int completedSubTask = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
+
+    //     return (completedSubTask / CountSubTasks()) * 100;
+    // }
+
+    public void ChangeStatus(TaskStatus newStatus)
+    {
+        if (!Enum.IsDefined(typeof(TaskStatus), newStatus))
+            throw new ArgumentException("El estado no es válido");
+
+        if (newStatus == TaskStatus.Completed)
+        {
+            if (this.CalculateProgress() != 100)
+                throw new ArgumentException("No se puede completar la Tarea padre sin tener todas las subtareas completadas.");
+        }
+        this.Status = newStatus;
     }
 
     public override string ResumeTask()

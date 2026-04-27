@@ -53,7 +53,8 @@ public class TaskManager
 
         ArgumentNullException.ThrowIfNull(item);
 
-        
+        if(TaskList.Exists(i=> i.Title.Equals(item.Title, StringComparison.OrdinalIgnoreCase)))
+            throw new ArgumentException("No se puede añadir. Ya existe una tarea con el mismo título.");
 
         TaskList.Add(item);
 
