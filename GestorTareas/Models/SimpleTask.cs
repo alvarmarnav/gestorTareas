@@ -15,17 +15,17 @@ public class SimpleTask : Task
     public SimpleTask() : base() { } 
     public SimpleTask(
         string title,
-        string? description = null,
+        string? taskDescription = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null) : base(
             title,
-            description,
+            taskDescription,
             taskPriority,
             taskStatus,
             dueTime,
             cancelReason){}
 
-    public override string ResumeTask() => $"Tarea Simple\nTitulo: {Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
+    public override string ResumeTask() => $"Tarea Simple\nTitulo: {Title}\nDescripción: {this.TaskDescription}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
 }

@@ -32,7 +32,7 @@ public class SubTask : CompositeTask
             dueTime,
             cancelReason)
     {
-
+        CompositeTaskType=CompositeTaskType.SubTask;
     }
 
     public void UpdateSubTaskOrder(int newOrder)
@@ -42,6 +42,6 @@ public class SubTask : CompositeTask
         //FUERA DE RANGO
     }
 
-    public override string ResumeTask() =>  $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}";
+    public override string ResumeTask() =>  $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
    
 }

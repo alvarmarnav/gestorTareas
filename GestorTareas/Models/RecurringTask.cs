@@ -34,13 +34,13 @@ public class RecurringTask : Task
         string title,
         DateTime dueTime,
         int recurrenceRule,
-        string? description = null,
+        string? taskDescription = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         string? cancelReason = null
         ) : base(
             title,
-            description,
+            taskDescription,
             taskPriority,
             taskStatus,
             dueTime,
@@ -70,14 +70,14 @@ public class RecurringTask : Task
             title:this.Title,
             dueTime:newDueTime,
             recurrenceRule:this.RecurrenceRule,
-            description:this.Description,
+            taskDescription:this.TaskDescription,
             taskPriority:this.Priority,
             taskStatus:this.Status,
             cancelReason:CancelReason
             );
     }
 
-    public override string ResumeTask() => $"Tarea Recurrente\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Fin: {DueTime}\nRegla Recurrencia: {RecurrenceRule}";
+    public override string ResumeTask() => $"Tarea Recurrente\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Fin: {DueTime}\nRegla Recurrencia: {RecurrenceRule}";
 
 
 }

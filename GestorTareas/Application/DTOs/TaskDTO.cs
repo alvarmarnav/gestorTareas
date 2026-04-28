@@ -16,7 +16,7 @@ public abstract class TaskDTO
     [Required]
     public string Title { get; set; } = default!;
     [Required]
-    public string Description { get; set; } = default!;
+    public string TaskDescription { get; set; } = default!;
     public int Priority { get; set; }
     public int Status { get; set; }
     public DateTime DueTime { get; set; }

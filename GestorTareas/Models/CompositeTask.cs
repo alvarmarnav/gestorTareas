@@ -34,24 +34,25 @@ public class CompositeTask : Task
     public CompositeTask(
         string title,
         CompositeTaskType compositeTaskType,
-        string? description = null,
+        string? taskDescription = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null
         ) : base(
             title,
-            description,
-            
+            taskDescription,
             taskPriority,
             taskStatus,
             dueTime,
             cancelReason)
     {
+        CompositeTaskType = compositeTaskType;
     }
 
     public void AddSubTask(
         string subTaskTitle,
+        CompositeTaskType compositeTaskType,
         string subTaskDescription,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
@@ -64,7 +65,7 @@ public class CompositeTask : Task
 
         SubTask subTask = new SubTask(
             subTaskTitle,
-            Enums.CompositeTaskType.SubTask,
+            compositeTaskType,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
@@ -123,6 +124,7 @@ public class CompositeTask : Task
 
     public void AddLinkedTask(
         string linkedTaskTitle,
+        CompositeTaskType compositeTaskType,
         string linkedTaskDescription,
         TaskPriority linkedTaskPriority,
         TaskStatus linkedTaskStatus,
@@ -146,7 +148,7 @@ public class CompositeTask : Task
         else
         {
             foreach (var i in LinkedTaskList
-            .Where(i => i.Order > order))
+            .Where(i => i.LinkedTaskOrder > order))
             {
                 if (i.Status == TaskStatus.Completed)
                     throw new ArgumentException("No se puede insertar una tarea pendiente nueva previa a tareas ya completadas.");
@@ -156,7 +158,7 @@ public class CompositeTask : Task
         
         LinkedTask linkedTask = new LinkedTask(
             linkedTaskTitle,
-            Enums.CompositeTaskType.LinkedTask,
+            compositeTaskType,
             linkedTaskDescription,
             linkedTaskPriority,
             linkedTaskStatus,
@@ -165,9 +167,9 @@ public class CompositeTask : Task
 
         LinkedTaskList.Insert(order.Value, linkedTask);
 
-        foreach (var item in LinkedTaskList.Where(item => item.Order >= order))
+        foreach (var item in LinkedTaskList.Where(item => item.LinkedTaskOrder >= order))
         {
-            ++item.Order;
+            ++item.LinkedTaskOrder;
         }
 
     }
@@ -244,6 +246,6 @@ public class CompositeTask : Task
         this.Status = newStatus;
     }
 
-    public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
+    public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
 
 }

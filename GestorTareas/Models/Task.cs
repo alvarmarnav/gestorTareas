@@ -37,7 +37,7 @@ public abstract class Task : IIdentificable
         }
     }
 
-    public string? Description
+    public string? TaskDescription
     {
         get; set
         {
@@ -119,7 +119,7 @@ public abstract class Task : IIdentificable
     protected Task() : base() { }
     protected Task(
         string title,
-        string? description = null,
+        string? taskDescription = null,
         TaskPriority? priority = TaskPriority.Normal,
         TaskStatus? status = TaskStatus.Pending,
         DateTime? dueTime = null,
@@ -127,7 +127,7 @@ public abstract class Task : IIdentificable
     {
         Id = Guid.NewGuid();
         Title = title.Trim();
-        Description = description?.Trim() ?? "Sin descripción.";
+        TaskDescription = taskDescription?.Trim() ?? "Sin descripción.";
         Priority = priority;
         Status = status;
         CreatedAt = DateTime.Now;
@@ -155,9 +155,9 @@ public abstract class Task : IIdentificable
         Title = newTitle.Trim();
     }
 
-    public void UpdateDescription(string newDescription)
+    public void UpdateTaskDescription(string newTaskDescription)
     {
-        this.Description = newDescription;
+        this.TaskDescription = newTaskDescription;
     }
 
     public void ChangePriority(TaskPriority newTaskPriority)

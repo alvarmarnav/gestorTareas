@@ -20,7 +20,7 @@ public static class DtoManager
                 Id = sub.Id,
                 Title = sub.Title,
                 CompositeTaskType = (int)sub.CompositeTaskType,
-                Description = sub.Description,
+                TaskDescription = sub.TaskDescription,
                 Priority = (int)sub.Priority,
                 Status = (int)sub.Status,
                 DueTime = (DateTime)sub.DueTime,
@@ -31,11 +31,11 @@ public static class DtoManager
                 Id = link.Id,
                 Title = link.Title,
                 CompositeTaskType = (int)link.CompositeTaskType,
-                Description = link.Description,
+                TaskDescription = link.TaskDescription,
                 Priority = (int)link.Priority,
                 Status = (int)link.Status,
                 DueTime = (DateTime)link.DueTime,
-                LinkedTaskOrder = (int)link.Order,
+                LinkedTaskOrder = (int)link.LinkedTaskOrder,
                 CancelReason = link.CancelReason
             },
 
@@ -44,7 +44,7 @@ public static class DtoManager
                 Id = ct.Id,
                 Title = ct.Title,
                 CompositeTaskType = (int)ct.CompositeTaskType,
-                Description = ct.Description,
+                TaskDescription = ct.TaskDescription,
                 Priority = (int)ct.Priority,
                 Status = (int)ct.Status,
                 DueTime = (DateTime)ct.DueTime,
@@ -59,17 +59,17 @@ public static class DtoManager
                 DueTime = (DateTime)rt.DueTime,
                 RecurrenceRule = rt.RecurrenceRule,
                 RecurringTasksCount = rt.RecurringTasksCount,
-                Description = rt.Description,
+                TaskDescription = rt.TaskDescription,
                 Priority = (int)rt.Priority,
                 Status = (int)rt.Status,
-                CancelReason = rt.CancelReason                
+                CancelReason = rt.CancelReason
             },
 
             SimpleTask st => new SimpleTaskDTO
             {
                 Id = st.Id,
                 Title = st.Title,
-                Description = st.Description,
+                TaskDescription = st.TaskDescription,
                 Priority = (int)st.Priority,
                 Status = (int)st.Status,
                 DueTime = (DateTime)st.DueTime,
@@ -82,24 +82,24 @@ public static class DtoManager
 
     public static Task DtoToTask(TaskDTO taskDto)
     {
-       return taskDto switch
+        return taskDto switch
         {
             SubTaskDTO sub => new SubTask(
                 sub.Title!,
                 (Enums.CompositeTaskType)sub.CompositeTaskType,
-                sub.Description!,
+                sub.TaskDescription!,
                 (TaskPriority)sub.Priority,
                 (Enums.TaskStatus)sub.Status,
                 sub.DueTime,
                 sub.CancelReason
             )
             {
-                Id = sub.Id
+                Id = sub.Id,
             },
             LinkedTaskDTO link => new LinkedTask(
                 link.Title!,
                 (Enums.CompositeTaskType)link.CompositeTaskType,
-                link.Description!,
+                link.TaskDescription!,
                 (TaskPriority)link.Priority,
                 (Enums.TaskStatus)link.Status,
                 link.DueTime,
@@ -107,18 +107,18 @@ public static class DtoManager
                 link.CancelReason
             )
             {
-                Id = link.Id
+                Id = link.Id,
             },
 
             CompositeTaskDTO ct =>
                 new CompositeTask(
                     ct.Title!,
                     (Enums.CompositeTaskType)ct.CompositeTaskType,
-                    ct.Description!,
+                    ct.TaskDescription!,
                     (TaskPriority)ct.Priority,
                     (Enums.TaskStatus)ct.Status,
                     ct.DueTime,
-                    ct.CancelReason                    
+                    ct.CancelReason
                 )
                 {
                     Id = ct.Id,
@@ -130,8 +130,8 @@ public static class DtoManager
                 rt.Title!,
                 rt.DueTime,
                 rt.RecurrenceRule,
-                
-                rt.Description!,
+
+                rt.TaskDescription!,
                 (TaskPriority)rt.Priority,
                 (Enums.TaskStatus)rt.Status,
                 rt.CancelReason
@@ -143,7 +143,7 @@ public static class DtoManager
 
             SimpleTaskDTO st => new SimpleTask(
                 st.Title!,
-                st.Description!,
+                st.TaskDescription!,
                 (TaskPriority)st.Priority,
                 (Enums.TaskStatus)st.Status,
                 st.DueTime,

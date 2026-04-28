@@ -15,34 +15,35 @@ public class LinkedTask : CompositeTask
     //TODO: pendiente linkedTask logica de dependencias.
 
     public List<LinkedTask> ListOfLinkedTasks { get; set; } = new(60);
-    public int? Order { get; set; } = null;
+    public int? LinkedTaskOrder { get; set; } = null;
 
     [JsonConstructor]
     public LinkedTask() : base() { }
     public LinkedTask(
         string title,
         CompositeTaskType compositeTaskType,
-        string? description,
+        string? taskDescription,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
-        int? order = null,
+        int? linkedTaskOrder = null,
         string? cancelReason = null
         ) : base(
             title,
             compositeTaskType,
-            description,
+            taskDescription,
             taskPriority,
             taskStatus,
             dueTime,
             cancelReason
             )
     {
+        CompositeTaskType=CompositeTaskType.LinkedTask;
         // null--> ultimo
         // menor 0 --> error 
         // igual 0 --> primero 
         // mayor del tamaño del List--> ultimo
-        Order = order;
+        LinkedTaskOrder = linkedTaskOrder;
         ListOfLinkedTasks ??= new(60);
 
     }
@@ -61,7 +62,7 @@ public class LinkedTask : CompositeTask
         var task = ListOfLinkedTasks
         .FirstOrDefault(lt => lt.Id == linkedTaskId) ?? throw new ArgumentException($"No existe la tarea con el ID: {linkedTaskId}");
 
-        var previousTasks = ListOfLinkedTasks.Where(t => t.Order < task.Order);
+        var previousTasks = ListOfLinkedTasks.Where(t => t.LinkedTaskOrder < task.LinkedTaskOrder);
 
         if (previousTasks.Any(t => t.Status != TaskStatus.Completed))
             throw new InvalidOperationException($"Existen tareas previas SIN Completar.");
@@ -96,6 +97,6 @@ public class LinkedTask : CompositeTask
         }
     }
 
-    public override string ResumeTask() => $"Tarea Enlazada Id: {Id}\nTitulo: {Title}\nDescripción: {Description}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nOrden: {Order}";
+    public override string ResumeTask() => $"Tarea Enlazada Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nOrden: {LinkedTaskOrder}";
 
 }

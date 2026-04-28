@@ -33,7 +33,7 @@ public class User
         }
     }
 
-    public String Email
+    public String UserEmail
     {
         get; set
         {
@@ -52,7 +52,7 @@ public class User
     public User(
         String userName,
         String userLastName,
-        String email,
+        String userEmail,
         Boolean isActive,
         Boolean isAdmin
     )
@@ -60,7 +60,7 @@ public class User
         this.Id = Guid.NewGuid();
         this.UserName = userName;
         this.UserLastName = userLastName;
-        this.Email = email;
+        this.UserEmail = userEmail;
         this.IsActive = isActive;
         IsAdmin = IsAdmin;
         this.CreatedAt = DateTime.Now;
