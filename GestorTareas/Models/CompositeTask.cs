@@ -42,6 +42,7 @@ public class CompositeTask : Task
         ) : base(
             title,
             description,
+            
             taskPriority,
             taskStatus,
             dueTime,

@@ -35,7 +35,7 @@ public class LinkedTaskContainer
 
         foreach (var t in LinkedTaskList)
         {
-            if(t.Status == Task.TaskStatus.Completed)
+            if(t.Status == Enums.TaskStatus.Completed)
                 completedTask++;
             // if(t.Status == Task.TaskStatus.Cancelled)
             //     completedTask++;

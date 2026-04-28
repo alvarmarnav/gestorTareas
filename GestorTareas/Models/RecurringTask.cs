@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using GestorTareas.Application.Services;
 using GestorTareas.Enums;
 using GestorTareas.Interfaces;
+using TaskPriority = GestorTareas.Enums.TaskPriority;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Models;
@@ -33,7 +34,6 @@ public class RecurringTask : Task
         string title,
         DateTime dueTime,
         int recurrenceRule,
-        int recurringTasksCount = 0,
         string? description = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
@@ -64,16 +64,16 @@ public class RecurringTask : Task
 
         RecurringTasksCount++;
 
-        var newDueTime = dueTime.AddDays(RecurrenceRule);
+        DateTime newDueTime = dueTime.AddDays(RecurrenceRule);
 
         return new RecurringTask(
-            Title,
-            newDueTime,
-            RecurrenceRule,
-            RecurringTasksCount,
-            Description,
-            Priority,
-            Status
+            title:this.Title,
+            dueTime:newDueTime,
+            recurrenceRule:this.RecurrenceRule,
+            description:this.Description,
+            taskPriority:this.Priority,
+            taskStatus:this.Status,
+            cancelReason:CancelReason
             );
     }
 

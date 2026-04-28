@@ -74,7 +74,7 @@ public abstract class Task : IIdentificable
             }
             else if (value is null)
             {
-                _status = TaskStatus.Pending;
+                value = TaskStatus.Pending;
             }
             //TODO: comprobar está bien aplicada.
 

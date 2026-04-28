@@ -1,7 +1,11 @@
-using GestorTareas.Models;
 using NUnit.Framework;
 
 namespace GestorTareas.Tests;
+
+using GestorTareas.Enums;
+using GestorTareas.Models;
+using NUnit.Framework;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 [TestFixture]
 public class SimpleTaskTests
@@ -11,7 +15,7 @@ public class SimpleTaskTests
         yield return new TestCaseData("Titulo 1", null, null, null, null)
         .SetName("Constructor HappyWay sólo título");
 
-        yield return new TestCaseData("Titulo 2", "Description", TaskPriority.High, Models.Task.TaskStatus.InProgress, DateTime.Now.AddDays(10))
+        yield return new TestCaseData("Titulo 2", "Description", TaskPriority.High, TaskStatus.InProgress, DateTime.Now.AddDays(10))
         .SetName("Constructor HappyWay todos params.");
     }
 
@@ -34,8 +38,8 @@ public class SimpleTaskTests
     public void Constructor_ValidParameters_MustCreateNewTask(
         string title,
         string? description = null,
-        GestorTareas.Models.Task.TaskPriority? priority = TaskPriority.Normal,
-        Models.Task.TaskStatus? status = Models.Task.TaskStatus.Pending,
+        TaskPriority? priority = TaskPriority.Normal,
+        TaskStatus? status = TaskStatus.Pending,
         DateTime? dueTime = null)
     {
         //ACT

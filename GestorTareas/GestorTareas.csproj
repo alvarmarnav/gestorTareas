@@ -32,7 +32,7 @@
     <Folder Include="Infraestructure\Data\" />
     <Folder Include="Infraestructure\Data\Migrations\" />
     <Folder Include="Presentation\" />
-    <Folder Include="Tests\" />
+    <Folder Include="GestorTareas.Tests\" />
   </ItemGroup>
 
 </Project>

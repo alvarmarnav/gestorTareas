@@ -130,14 +130,15 @@ public static class DtoManager
                 rt.Title!,
                 rt.DueTime,
                 rt.RecurrenceRule,
-                rt.RecurringTasksCount,
+                
                 rt.Description!,
                 (TaskPriority)rt.Priority,
                 (Enums.TaskStatus)rt.Status,
                 rt.CancelReason
             )
             {
-                Id = rt.Id
+                Id = rt.Id,
+                RecurringTasksCount = rt.RecurringTasksCount
             },
 
             SimpleTaskDTO st => new SimpleTask(
