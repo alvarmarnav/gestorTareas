@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GestorTareas.Infraestructure.Data.Configurations;
 
-public class RecurrringTaskConfiguration
+public class RecurrringTaskConfiguration : IEntityTypeConfiguration<GestorTareas.Models.RecurringTask>
 {
 public void Configure(EntityTypeBuilder<Models.RecurringTask> builder)
     {
+        builder.ToTable("RecurringTasks");
+
         builder.Property(rt=>rt.RecurrenceRule)
         .IsRequired();
 
