@@ -49,6 +49,7 @@ public class User
 
     public DateTime? UpdatedAt { get; set; } = null;
 
+public List<Task> tasksList{get;set;} = new(10);
     public User(
         String userName,
         String userLastName,

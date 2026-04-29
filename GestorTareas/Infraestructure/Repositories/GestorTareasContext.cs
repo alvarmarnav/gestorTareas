@@ -30,10 +30,10 @@ public class GestorTareasContext : DbContext
 
         // Indicar a EF Core qué proveedor usar y cómo conectarse
         optionsBuilder.UseSqlServer(
-        @"Server=localhost\SQLEXPRESS;" +
+        @"Server=localhost\;" +
         "Database=GestorTareas;" +
         "Trusted_Connection=True;" +
-        "TrustServerCertificate=True;}"
+        "TrustServerCertificate=True;"
         );
     }
 

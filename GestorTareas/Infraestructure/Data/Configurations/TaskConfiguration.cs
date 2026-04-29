@@ -25,10 +25,10 @@ public class TaskConfiguration
         builder.Property(t=>t.UpdatedAt)
         .HasDefaultValue(null);
         builder.Property(t=>t.DueTime)
-        .HasDefaultValue(null);;
+        .HasDefaultValue(null);
         builder.Property(t=>t.CancelReason)
         .HasMaxLength(400)
-        .HasDefaultValue(null);;
-
+        .HasDefaultValue(null);
+    
     }
 }

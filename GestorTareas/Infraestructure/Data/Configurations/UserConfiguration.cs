@@ -37,5 +37,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u=>u.UpdatedAt)
         .HasDefaultValue(null);
 
+        builder.HasMany(u => u.tasksList)
+       .WithMany(t => t.usersList)
+       .UsingEntity(j => j.ToTable("UserTasks")); // Nombre de la tabla intermedia
+
     }
 }
