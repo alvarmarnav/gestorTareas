@@ -62,7 +62,7 @@ public class User
         this.UserLastName = userLastName;
         this.UserEmail = userEmail;
         this.IsActive = isActive;
-        IsAdmin = IsAdmin;
+        IsAdmin = isAdmin;
         this.CreatedAt = DateTime.Now;
         this.UpdatedAt = null;
     }

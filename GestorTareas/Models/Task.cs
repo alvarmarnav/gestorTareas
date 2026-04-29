@@ -113,6 +113,9 @@ public abstract class Task : IIdentificable
     }
     public string? CancelReason { get; set; } = null;
 
+    public int UserId{get;set;}
+    public User user{get;set;}=null;
+
     // Constructor vacio para trabajar la serialización
     // con polimorfismo
     [JsonConstructor]
