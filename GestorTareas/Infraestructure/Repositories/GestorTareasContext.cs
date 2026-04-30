@@ -29,12 +29,12 @@ public class GestorTareasContext : DbContext
         // base.OnConfiguring(optionsBuilder);
 
         // Indicar a EF Core qué proveedor usar y cómo conectarse
-        optionsBuilder.UseSqlServer(
-        @"Server=localhost\;" +
-        "Database=GestorTareas;" +
-        "Trusted_Connection=True;" +
-        "TrustServerCertificate=True;"
-        );
+        // optionsBuilder.UseSqlServer(
+        // @"Server=localhost\;" +
+        // "Database=GestorTareas;" +
+        // "Trusted_Connection=True;" +
+        // "TrustServerCertificate=True;"
+        // );
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
