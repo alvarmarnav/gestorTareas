@@ -120,7 +120,7 @@ namespace GestorTareas.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("TaskUser", b =>
+            modelBuilder.Entity("UserTasks", b =>
                 {
                     b.Property<Guid>("UsersListId")
                         .HasColumnType("uniqueidentifier");
@@ -132,7 +132,7 @@ namespace GestorTareas.Migrations
 
                     b.HasIndex("tasksListId");
 
-                    b.ToTable("UserTasks", (string)null);
+                    b.ToTable("UserTasks");
                 });
 
             modelBuilder.Entity("GestorTareas.Models.CompositeTask", b =>
@@ -210,18 +210,18 @@ namespace GestorTareas.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TaskUser", b =>
+            modelBuilder.Entity("UserTasks", b =>
                 {
                     b.HasOne("GestorTareas.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UsersListId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("GestorTareas.Models.Task", null)
                         .WithMany()
                         .HasForeignKey("tasksListId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

@@ -5,91 +5,57 @@ using GestorTareas.Application.Services;
 using GestorTareas.Infraestructure.Repositories;
 using CompositeTaskType = GestorTareas.Enums.CompositeTaskType;
 using GestorTareas.Models;
+using GestorTareas.Infraestructure.Data;
 using Microsoft.VisualBasic;
 using Task = GestorTareas.Models.Task;
+using User = GestorTareas.Models.User;
+using Microsoft.EntityFrameworkCore;
+using var context = new GestorTareasContext();
 
 
-var repo = new TaskRepository();
-var manager = new TaskManager(repo);
+var usuario = new User(userName:"Juanito",userLastName:"Mueller",userEmail:"juanin@hotmail.com",isActive:true,isAdmin:false)
+{};
 
-// ******************************
-// ******CREACION DE TAREAS******
-// ******************************
-var taskList = new List<Task>
+var tarea = new SimpleTask(title:"Tarea Simple 1", "Descripcion")
 {
-    new SimpleTask(
-        "Revisar pull request",
-        "Descripcion",
-        GestorTareas.Enums.TaskPriority.Normal,
-        GestorTareas.Enums.TaskStatus.Pending,
-        DateTime.Today.AddDays(1),
-        ""),
-    // new RecurringTask(
-    //     "Reunión de equipo",
-    //     DateTime.Today.AddDays(25),
-    //     7,
-    //     "",
-    //     GestorTareas.Enums.TaskPriority.Normal,
-    //     GestorTareas.Enums.TaskStatus.Pending),
-    // new LinkedTask(
-    //            "Linked Task",
-    //            GestorTareas.Enums.CompositeTaskType.LinkedTask,
-    //            "",
-    //           GestorTareas.Enums.TaskPriority.Critical,
-    //         GestorTareas.Enums.TaskStatus.Completed,
-    //             DateTime.Today.AddDays(25)),
-    //         new SubTask(
-    //             "SubTAsk",
-    //             GestorTareas.Enums.CompositeTaskType.SubTask,
-    //             "",
-    //             GestorTareas.Enums.TaskPriority.High,
-    //             GestorTareas.Enums.TaskStatus.Pending,
-    //             DateTime.Today.AddDays(31)
-    //         ),
-    //         new RecurringTask(
-    //         "Reunión de equipo",
-    //         DateTime.Today.AddDays(25),
-    //         7,
-    //         "",
-    //         GestorTareas.Enums.TaskPriority.Normal,
-    //         GestorTareas.Enums.TaskStatus.Pending)
-            };
+    UserId = usuario.Id,
+};
 
-//*************************
-// Añadiendo las creadas
-//*************************
-foreach (var t in taskList)
+User? userToFind = context.Users.Find(usuario.Id);
+
+List<Task> tareasPendientes = context.Tasks
+.Where(t => t.Status != GestorTareas.Enums.TaskStatus.Completed)
+.OrderBy(t => t.CreatedAt)
+.ToList();
+
+List<User> conTareas = context.Users
+.Include(u => u.tasksList)
+.ToList();
+
+context.SaveChanges();
+
+Console.WriteLine($"Usuario creado con Id: {usuario.Id}");
+
+Console.WriteLine($"Tareas creada con exito: {tarea.Title}");
+
+if(tareasPendientes.Any())
+    Console.WriteLine($"exito: {tareasPendientes}");
+else
+    Console.WriteLine("nada de nada");
+// Console.WriteLine(tareasPendientes.FirstOrDefault());
+// Console.WriteLine(conTareas.First());
+
+foreach (var i in tareasPendientes)
 {
-    manager.AddTask(t);
-
+    Console.Write(3);
+    // i.ResumeTask();
 }
 
-manager.SaveRepository();
 
-var lista = manager.ShowAllItems();
-
-int cont = 0;
-foreach (var item in lista)
+foreach (var item in conTareas)
 {
-    Console.WriteLine($"Tarea: {++cont}\n{item.ResumeTask()}");
-    // item.ResumeTask();
+    item.ToString();
 }
 
-cont = 0;
-Guid selectedId = manager.ShowAllItems().First().Id;
-Console.WriteLine($"El GUID: {selectedId}");
-
-
-
-
-
-manager.RemoveTask(selectedId);
-
-
-
-manager.SaveRepository();
-
-Console.WriteLine($"Numero Tasks: {manager.ShowAllItems().Count()}");
-
-
+// Console.WriteLine(tarea.ResumeTask());
 

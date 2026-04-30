@@ -123,14 +123,12 @@ namespace GestorTareas.Migrations
                         name: "FK_UserTasks_Tasks_tasksListId",
                         column: x => x.tasksListId,
                         principalTable: "Tasks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserTasks_Users_UsersListId",
                         column: x => x.UsersListId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
