@@ -17,8 +17,8 @@ public class TaskSerializer
     };
     public static void SerializateListTaskToJson(TaskManagerDto taskManagerDto, string filePath)
     {
-        
-        if(string.IsNullOrWhiteSpace(filePath) || Path.IsPathFullyQualified(filePath) || Path.GetInvalidPathChars().Any(c=>filePath.Contains(c)))
+
+        if (string.IsNullOrWhiteSpace(filePath) || Path.IsPathFullyQualified(filePath) || Path.GetInvalidPathChars().Any(c => filePath.Contains(c)))
             throw new ArgumentException("Ruta no válida.");
 
         var json = JsonSerializer.Serialize(taskManagerDto, _jsonOptions);
@@ -31,11 +31,9 @@ public class TaskSerializer
         if (File.Exists(filePath))
         {
 
-            var loaded = JsonSerializer.Deserialize<TaskManagerDto>(File.ReadAllText(filePath),_jsonOptions);
-
-            // Console.WriteLine("Serializando lista de tareas a JSON...");
+            var loaded = JsonSerializer.Deserialize<TaskManagerDto>(File.ReadAllText(filePath), _jsonOptions);
             if (loaded is not null)
-            {                
+            {
                 return loaded ?? throw new NullReferenceException("Lista null");
             }
             else

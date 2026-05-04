@@ -22,7 +22,6 @@ public class GestorTareasContext : DbContext
 
     public DbSet<RecurringTask> RecurringTasks { get; set; }
 
-    //public DbSet<Task> Tasks{get;set;}
     public GestorTareasContext(DbContextOptions<GestorTareasContext> options) : base(options)
     {
 
@@ -30,31 +29,13 @@ public class GestorTareasContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // base.OnConfiguring(optionsBuilder);
-
-        // Indicar a EF Core qué proveedor usar y cómo conectarse
-        // optionsBuilder.UseSqlServer(
-        // @"Server=localhost\;" +
-        // "Database=GestorTareas;" +
-        // "Trusted_Connection=True;" +
-        // "TrustServerCertificate=True;"
-        // );
+        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //Permitir Patron TPT
-        // modelBuilder.Entity<User>().ToTable("Users");
-        // modelBuilder.Entity<Task>().ToTable("Tasks");
-        // modelBuilder.Entity<SimpleTask>().ToTable("SimpleTasks");
-        // modelBuilder.Entity<CompositeTask>().ToTable("CompositeTasks");
-        // modelBuilder.Entity<SubTask>().ToTable("SubTasks");
-        // modelBuilder.Entity<LinkedTask>().ToTable("LinkedTasks");
-        // modelBuilder.Entity<RecurringTask>().ToTable("RecurringTasks");
-
         // Esto aplica todas las configuraciones que encuentre en el proyecto automáticamente
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(GestorTareasContext).Assembly);
-
     }
 
 

@@ -34,11 +34,6 @@ public class TaskManager
         var listTasksDto = new TaskManagerDto()
         {
             TaskList = TaskList.Select(DtoManager.TaskToDto).ToList(),
-            //Evitar Duplicados
-            // TaskDictionary = TaskDictionary.ToDictionary(
-            //     keyval => keyval.Key,
-            //     keyval => DtoManager.TaskToDto(keyval.Value)
-            // )
         };
         Repository.Save(listTasksDto);
     }

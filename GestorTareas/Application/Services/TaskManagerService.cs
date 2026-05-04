@@ -16,18 +16,6 @@ public class TaskManagerService
 
     public List<ResponseTaskDto> GetAllTasksDto()
     {
-        // return _repository.GetAllTasks()
-        // .Select(t => new ResponseTaskDto
-        // {
-        //     Id = t.Id,
-        //     Title = t.Title,
-        //     TaskDescription = t.TaskDescription,
-        //     TaskPriority = (TaskPriority)t.Priority,
-        //     TaskStatus = (TaskStatus)t.Status,
-        //     DueTime = (DateTime)t.DueTime,
-        //     CancelReason = t.CancelReason
-        // }).ToList();
-
         return _repository.GetAllTasks()
         .Select(t => new ResponseTaskDto
         {
@@ -42,19 +30,14 @@ public class TaskManagerService
     }
     public Task? GetTaskById(Guid id) => _repository.GetTaskById(id);
 
-
     public void AddTask(Task task)
     {
         _repository.AddTask(task);
     }
-
     public void DeleteTask(Task task)
     {
         _repository.DeleteTask(task);
     }
-
-
-
     public void UpdateTask(Task task)
     {
         _repository.UpdateTask(task);

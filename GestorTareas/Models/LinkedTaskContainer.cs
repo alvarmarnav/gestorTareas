@@ -17,7 +17,7 @@ public class LinkedTaskContainer
 
 
     public LinkedTaskContainer(
-       string containerDescription
+        string containerDescription
     )
     {
         Id = Guid.NewGuid();
@@ -37,12 +37,8 @@ public class LinkedTaskContainer
         {
             if(t.Status == Enums.TaskStatus.Completed)
                 completedTask++;
-            // if(t.Status == Task.TaskStatus.Cancelled)
-            //     completedTask++;
         }
 
         return (completedTask*100)/LinkedTaskList.Count();
     }
-
-
 }

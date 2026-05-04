@@ -10,8 +10,6 @@ namespace GestorTareas.Models;
 
 public class RecurringTask : Task
 {
-
-    // protected List<RecurringTask> RecurringTaskList { get; set; } = new(60);
     public int RecurrenceRule
     {
         get;
@@ -19,7 +17,6 @@ public class RecurringTask : Task
         {
             if (value <= 0 || value > 365)
                 throw new ArgumentException("Valor no válido para la recurrencia.");
-
             field = value;
         }
     }
@@ -58,7 +55,6 @@ public class RecurringTask : Task
     public RecurringTask GenerateNewInstance(
         DateTime dueTime)
     {
-
         if (RecurringTasksCount >= _MAX_INSTANCES)
             throw new InvalidOperationException("No se admiten más instancias.");
 
@@ -78,6 +74,5 @@ public class RecurringTask : Task
     }
 
     public override string ResumeTask() => $"Tarea Recurrente\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Fin: {DueTime}\nRegla Recurrencia: {RecurrenceRule}";
-
 
 }

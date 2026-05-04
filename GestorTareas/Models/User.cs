@@ -13,7 +13,7 @@ public class User
         {
             Validator.ValidateString(value, "Nombre Usuario");
 
-            if (value.Length > 20 || value.Length<3)
+            if (value.Length > 20 || value.Length < 3)
                 throw new ArgumentOutOfRangeException("La longitud del nombre de usuario no es válida.");
 
             field = value.Trim();
@@ -26,7 +26,7 @@ public class User
         {
             Validator.ValidateString(value, "Apellidos del usuario");
 
-            if (value.Length > 30 || value.Length<3)
+            if (value.Length > 30 || value.Length < 3)
                 throw new ArgumentOutOfRangeException("La longitud de los apellidos no es válida.");
 
             field = value.Trim();
@@ -43,13 +43,12 @@ public class User
 
     public Boolean IsActive { get; set; } = true;
 
-    public Boolean IsAdmin{get;set;} = false;
+    public Boolean IsAdmin { get; set; } = false;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public DateTime? UpdatedAt { get; set; } = null;
-
-public List<Task> tasksList{get;set;} = new(10);
+    public List<Task> tasksList { get; set; } = new(10);
     public User(
         String userName,
         String userLastName,

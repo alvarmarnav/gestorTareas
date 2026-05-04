@@ -9,11 +9,7 @@ using GestorTareas.Enums;
 using GestorTareas.Interfaces;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
-
-
 namespace GestorTareas.Models;
-
-//Para trabajar con polimorfismo y JSON
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
 [JsonDerivedType(typeof(SimpleTask), "SimpleTask")]
@@ -36,7 +32,6 @@ public abstract class Task : IIdentificable
             field = value.Trim();
         }
     }
-
     public string? TaskDescription
     {
         get; set
@@ -49,7 +44,6 @@ public abstract class Task : IIdentificable
                 field = value.Trim();
         }
     }
-
     public TaskPriority? Priority
     {
         get; set
@@ -62,7 +56,6 @@ public abstract class Task : IIdentificable
                 field = value;
         }
     }
-
     private TaskStatus _status;
     public TaskStatus? Status
     {
@@ -76,8 +69,6 @@ public abstract class Task : IIdentificable
             {
                 value = TaskStatus.Pending;
             }
-            //TODO: comprobar está bien aplicada.
-
             else if (_status == TaskStatus.Completed && (value == TaskStatus.InProgress || value == TaskStatus.Pending))
             {
                 throw new ArgumentException("No se puede modificar el estado de una tarea ya completada.");
@@ -85,7 +76,6 @@ public abstract class Task : IIdentificable
             _status = (TaskStatus)value;
         }
     }
-
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt
@@ -112,7 +102,6 @@ public abstract class Task : IIdentificable
         }
     }
     public string? CancelReason { get; set; } = null;
-
     public Guid UserId { get; set; }
     public User User { get; set; }
 
@@ -138,18 +127,11 @@ public abstract class Task : IIdentificable
         UpdatedAt = DateTime.Now;
         DueTime = dueTime;
 
-        // if (CancelReason is not null && string.IsNullOrWhiteSpace(CancelReason))
-        //     throw new ArgumentException("EL motivo de cancilacion no puede estar vacio.");
-        //TODO: Aquí debería considerar añadir logica para según el estado de la tarea, si no se aporta motivo de cancelación, es null, se asigna un motivo por defecto
-        //  
-        // CancelReason = value?.Trim() ?? "Sin motivo de cancelación.";
-
         CancelReason ??= $"Tarea no cancelada. Estado: {Status.ToString()}";
     }
 
     public void RenameTask(string newTitle)
     {
-
         if (string.IsNullOrWhiteSpace(newTitle))
             throw new ArgumentException("Título vacío");
 
@@ -163,7 +145,6 @@ public abstract class Task : IIdentificable
     {
         this.TaskDescription = newTaskDescription;
     }
-
     public void ChangePriority(TaskPriority newTaskPriority)
     {
         this.Priority = newTaskPriority;
@@ -176,7 +157,6 @@ public abstract class Task : IIdentificable
         else if (newDueTime > DateTime.Now.AddYears(2))
             throw new ArgumentException("La fecha de fin de tarea es mayor a 2 años, No es una fecha válida.");
         DueTime = newDueTime;
-
     }
     public bool CompleteTask()
     {
@@ -186,11 +166,8 @@ public abstract class Task : IIdentificable
             UpdatedAt = DateTime.Now;
             return true;
         }
-
         return false;
-
     }
-
     public bool ReopenTask()
     {
         if (this.Status != TaskStatus.InProgress)
@@ -201,7 +178,6 @@ public abstract class Task : IIdentificable
         }
         return false;
     }
-
     public void CancelTask(string cancelReason)
     {
         if (this.Status != TaskStatus.Completed && this.Status != TaskStatus.Cancelled)
@@ -215,7 +191,6 @@ public abstract class Task : IIdentificable
             throw new Exception($"La tarea no se pudo Cancelar porque la tarea estaba {this.Status}");
         }
     }
-
     public void StartTask()
     {
         if (this.Status == TaskStatus.Pending)
@@ -238,7 +213,6 @@ public abstract class Task : IIdentificable
 
         return DateTime.Now > this.DueTime;
     }
-
     public int CalculateDays()
     {
         if (this.DueTime is null)
@@ -246,7 +220,6 @@ public abstract class Task : IIdentificable
 
         TimeSpan daysDiference = (TimeSpan)(DateTime.Now - this.DueTime);
         return (int)daysDiference.Days;
-
     }
 
     public abstract string ResumeTask();

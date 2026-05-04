@@ -20,10 +20,7 @@ public class CompositeTask : Task
             field = value;
         }
     }
-
-    // //ReadOnly, asegura que una vez creada la instancia solo se va a crear una vez
-    //Lo ccambio de private a protected para poder leer desde la clase hija
-    public List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
+   public List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
 
     private const int _MAX_ITEMS = 30;
     public List<LinkedTask> LinkedTaskList { get; set; } = new List<LinkedTask>();
@@ -73,55 +70,6 @@ public class CompositeTask : Task
 
         SubTaskList.Add(subTask);
     }
-
-    // public void ReorderSubTask(Guid subTaskId, int newOrder)
-    // {
-    //     //TODO: Implementar metodo para reorganizar subtareas.
-    //     //Metodos Remove e Insert
-
-    //     try
-    //     {
-    //         SubTask subTaskSelected = this.subTaskList.First(sub => sub.Id == subTaskId);
-
-    //         if (newOrder > CountSubTasks() || newOrder <= 0)
-    //             throw new ArgumentException("Posición nó válida");
-
-
-    //         SubTask tempSubTask = subTaskSelected;
-
-    //         subTaskList.Remove(subTaskSelected);
-
-    //         subTaskList.Insert(--newOrder, tempSubTask);
-
-    //     }
-    //     catch (Exception)
-    //     {
-
-    //     }
-
-    // }
-
-    // public void CreateSubTask(
-    //     string subTaskTitle,
-    //     CompositeTask compositeTaskType,
-    //     string subTaskDescription,
-    //     TaskPriority subTaskPriority,
-    //     TaskStatus subTaskStatus,
-    //     DateTime dueTime
-    //     )
-    // {
-    //     new SubTask(
-    //         subTaskTitle,
-    //         (CompositeTaskType)compositeTaskType,
-    //         subTaskDescription,
-    //         subTaskPriority,
-    //         subTaskStatus,
-    //         dueTime
-    //         );
-
-
-    // }
-
     public void AddLinkedTask(
         string linkedTaskTitle,
         CompositeTaskType compositeTaskType,
@@ -155,7 +103,7 @@ public class CompositeTask : Task
             }
 
         }
-        
+
         LinkedTask linkedTask = new LinkedTask(
             linkedTaskTitle,
             compositeTaskType,
@@ -173,30 +121,6 @@ public class CompositeTask : Task
         }
 
     }
-    // public LinkedTask CreateLinkedTask(
-    //     string linkedTaskTitle,
-    //     string linkedTaskDescription,
-    //     TaskPriority linkedTaskPriority,
-    //     TaskStatus linkedTaskStatus,
-    //     DateTime dueTime,
-    //     int order
-    //     )
-    // {
-    //     return new LinkedTask(
-    //         linkedTaskTitle,
-    //         linkedTaskDescription,
-    //         linkedTaskPriority,
-    //         linkedTaskStatus,
-    //         dueTime,
-    //         order
-    //       );
-    // }
-
-    // public bool CanStartLinkedTask(List<LinkedTask> linkedTasks, LinkedTask lTask)
-
-
-    // public int CountSubTasks() => SubTaskList.Count;
-
     public int CountTasks()
     {
         if (this.CompositeTaskType == CompositeTaskType.SubTask)
@@ -209,7 +133,6 @@ public class CompositeTask : Task
     public decimal CalculateProgress()
     {
         int completedTasks;
-        // int numberTasks;
 
         if (this.CompositeTaskType == CompositeTaskType.SubTask)
         {
@@ -223,16 +146,6 @@ public class CompositeTask : Task
 
         return (decimal)completedTasks / CountTasks() * 100;
     }
-
-
-    //TODO: debo añadir funcionalidad según CompositeTaskTYPE
-    // public decimal CalculateProgress()
-    // {
-    //     int completedSubTask = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
-
-    //     return (completedSubTask / CountSubTasks()) * 100;
-    // }
-
     public void ChangeStatus(TaskStatus newStatus)
     {
         if (!Enum.IsDefined(typeof(TaskStatus), newStatus))

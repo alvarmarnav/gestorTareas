@@ -5,14 +5,10 @@ using GestorTareas.Enums;
 using GestorTareas.Interfaces;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 using TaskPriority = GestorTareas.Enums.TaskPriority;
-
-
 namespace GestorTareas.Models;
 
 public class SubTask : CompositeTask
 {
-
-    // ESTO ES LO QUE FALTA:
     [JsonConstructor]
     public SubTask() : base() { }
     public SubTask(
@@ -32,16 +28,12 @@ public class SubTask : CompositeTask
             dueTime,
             cancelReason)
     {
-        CompositeTaskType=CompositeTaskType.SubTask;
+        CompositeTaskType = CompositeTaskType.SubTask;
     }
 
     public void UpdateSubTaskOrder(int newOrder)
     {
-        //DEBO ACCEDER A LA LIST SUBTASK DEL ELEMENTO SUPERIOR
-        //PARA RESTRINGIR QUE NO PUEDA AÑADIR UN PUESTO
-        //FUERA DE RANGO
     }
+    public override string ResumeTask() => $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
 
-    public override string ResumeTask() =>  $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
-   
 }

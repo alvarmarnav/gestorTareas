@@ -56,7 +56,7 @@ public class SimpleTaskTests
             {
                 Assert.That(testTask.Title, Is.EqualTo(title));
                 Assert.That(testTask.DueTime, Is.EqualTo(dueTime));
-                Assert.That(testTask.Description, Is.EqualTo(description));
+                Assert.That(testTask.TaskDescription, Is.EqualTo(description));
                 Assert.That(testTask.Priority, Is.EqualTo(priority));
                 Assert.That(testTask.Status, Is.EqualTo(status));
 

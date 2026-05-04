@@ -39,13 +39,8 @@ public class LinkedTask : CompositeTask
             )
     {
         CompositeTaskType=CompositeTaskType.LinkedTask;
-        // null--> ultimo
-        // menor 0 --> error 
-        // igual 0 --> primero 
-        // mayor del tamaño del List--> ultimo
         LinkedTaskOrder = linkedTaskOrder;
         ListOfLinkedTasks ??= new(60);
-
     }
 
     public void UpdateLinkedTaskOrder(int newOrder) { }
@@ -70,16 +65,13 @@ public class LinkedTask : CompositeTask
         if (task.Status == TaskStatus.Completed)
             throw new ArgumentException("Tarea YA Completada anteriormente.");
 
-
         task.Status = TaskStatus.Completed;
     }
 
     public bool CanStartLinkedTask(LinkedTask lTask)
     {
-
         if (ListOfLinkedTasks is null || !ListOfLinkedTasks.Any())
             return false;
-
         else
         {
             foreach (var t in ListOfLinkedTasks
@@ -89,9 +81,6 @@ public class LinkedTask : CompositeTask
                 {
                     return false;
                 }
-
-                // lTask.Status = TaskStatus.InProgress;
-
             }
             return true;
         }

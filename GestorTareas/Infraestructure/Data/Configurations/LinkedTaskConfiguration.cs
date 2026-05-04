@@ -11,7 +11,5 @@ public void Configure(EntityTypeBuilder<Models.LinkedTask> builder)
         builder.ToTable("LinkedTasks");
         builder.Property(lt=>lt.LinkedTaskOrder)
         .IsRequired();
-        // builder.Property(lt=>lt.ListOfLinkedTasks)
-        // .IsRequired();
     }
 }

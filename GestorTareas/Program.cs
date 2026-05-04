@@ -5,8 +5,7 @@ using GestorTareas.Infraestructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using GestorTareas.Interfaces;
-
-
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,24 +29,6 @@ builder.Services.AddSwaggerGen(options =>
     
 });
 
-// builder.Services.AddGrpc().AddJsonTranscoding();
-// builder.Services.AddGrpcSwagger();
-// builder.Services.AddSwaggerGen(c =>
-// {
-//     c.SwaggerDoc("v1",
-//         new OpenApiInfo { Title = "gRPC transcoding", Version = "v1" });
-// });
-
-// builder.Services.AddSwagger();
-
-// // builder.Services.AddSwaggerGen(options =>
-// // {
-// // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-// // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-// // options.IncludeXmlComments(xmlPath);
-// // });
-// try
-// {
 var app = builder.Build();
 
 // PARTE 2: configurar el pipeline de peticiones
@@ -68,11 +49,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run(); // arranca el servidor y se queda
-// }
-// catch (ReflectionTypeLoadException ex)
-// {
-//      foreach (var e in ex.LoaderExceptions)
-//     {
-//         Console.WriteLine("ERROR REAL: " + e.Message);
-//     }
-// }
