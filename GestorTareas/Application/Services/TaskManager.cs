@@ -25,11 +25,6 @@ public class TaskManager
     {
         var listTasksDto = Repository.Load();
         TaskList = listTasksDto.TaskList.Select(DtoManager.DtoToTask).ToList();
-        //Evitar Duplicados
-        // TaskDictionary = listTasksDto.TaskDictionary.ToDictionary(
-        //     keyVal =>keyVal.Key,
-        //     keyVal => DtoManager.DtoToTask(keyVal.Value)
-        // );
         TaskDictionary = TaskList.ToDictionary(t => t.Id);
     }
 
@@ -62,9 +57,6 @@ public class TaskManager
         {
             throw new ArgumentException("$La tarea con el id: {item.Id} ya existe en el diccionario.");
         }
-
-        //TODO: ELIMINAR ESTE CONSOLE.WRITE
-        // Console.WriteLine($"Tarea '{item.Title}' añadida con éxito.");
     }
 
     public IReadOnlyList<Models.Task> ShowAllItems()
@@ -97,9 +89,6 @@ public class TaskManager
         }
 
         TaskList.RemoveAll(t => t.Id == id);
-        //TODO: ELIMINAR ESTE CONSOLE.WRITE
-        Console.WriteLine($"Tarea con id: {id} eliminada con éxito.");
-
     }
 
     public void ShowResumeAllTasks(IEnumerable<Models.Task> taskList)
@@ -120,9 +109,4 @@ public class TaskManager
 
         return TaskList.Where(condition);
     }
-
-    // public void SaveTasksToJson(string filePath)
-    // {
-    //     TaskSerializer<Task>.SerializateListTaskToJson(TaskList, filePath);
-    // }
 }

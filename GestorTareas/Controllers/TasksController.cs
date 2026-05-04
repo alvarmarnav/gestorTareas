@@ -12,7 +12,7 @@ using Task = GestorTareas.Models.Task;
 namespace GestorTareas.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/[Controller]")]
 public class TasksController : ControllerBase
 {
 
