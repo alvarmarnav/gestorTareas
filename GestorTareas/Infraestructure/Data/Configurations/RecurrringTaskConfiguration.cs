@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GestorTareas.Infraestructure.Data.Configurations;
 
-public class RecurrringTaskConfiguration : IEntityTypeConfiguration<GestorTareas.Models.RecurringTask>
+public class RecurrringTaskConfiguration : IEntityTypeConfiguration<Models.RecurringTask>
 {
 public void Configure(EntityTypeBuilder<Models.RecurringTask> builder)
     {

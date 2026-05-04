@@ -23,6 +23,10 @@ public class GestorTareasContext : DbContext
     public DbSet<RecurringTask> RecurringTasks { get; set; }
 
     //public DbSet<Task> Tasks{get;set;}
+    public GestorTareasContext(DbContextOptions<GestorTareasContext> options) : base(options)
+    {
+
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -47,14 +51,12 @@ public class GestorTareasContext : DbContext
         // modelBuilder.Entity<SubTask>().ToTable("SubTasks");
         // modelBuilder.Entity<LinkedTask>().ToTable("LinkedTasks");
         // modelBuilder.Entity<RecurringTask>().ToTable("RecurringTasks");
-        
+
         // Esto aplica todas las configuraciones que encuentre en el proyecto automáticamente
-    modelBuilder.ApplyConfigurationsFromAssembly(typeof(GestorTareasContext).Assembly);
-
-       
-
-        
-
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(GestorTareasContext).Assembly);
 
     }
+
+
+
 }

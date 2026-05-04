@@ -1,12 +1,12 @@
 using System;
-
+using Task = GestorTareas.Models.Task;
 namespace GestorTareas.Interfaces;
 
 public interface ITaskRepository
 {
     List<Task> GetAllTasks();
 
-    Task? GetTaskById(int id);
+    Task? GetTaskById(Guid id);
 
     void AddTask(Task task);
 

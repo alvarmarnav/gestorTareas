@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GestorTareas.Infraestructure.Data.Configurations;
 
-public class LinkedTaskConfiguration : IEntityTypeConfiguration<GestorTareas.Models.LinkedTask>
+public class LinkedTaskConfiguration : IEntityTypeConfiguration<Models.LinkedTask>
 {
-public void Configure(EntityTypeBuilder<GestorTareas.Models.LinkedTask> builder)
+public void Configure(EntityTypeBuilder<Models.LinkedTask> builder)
     {
         builder.ToTable("LinkedTasks");
         builder.Property(lt=>lt.LinkedTaskOrder)

@@ -3,7 +3,7 @@ using System.Data.Common;
 using System.Linq;
 using GestorTareas.Enums;
 using GestorTareas.Models;
-using static GestorTareas.Models.Task;
+//using static GestorTareas.Models.Task;
 using Task = GestorTareas.Models.Task;
 
 namespace GestorTareas.Application.DTOs;
@@ -86,7 +86,7 @@ public static class DtoManager
         {
             SubTaskDTO sub => new SubTask(
                 sub.Title!,
-                (Enums.CompositeTaskType)sub.CompositeTaskType,
+                (CompositeTaskType)sub.CompositeTaskType,
                 sub.TaskDescription!,
                 (TaskPriority)sub.Priority,
                 (Enums.TaskStatus)sub.Status,
@@ -98,7 +98,7 @@ public static class DtoManager
             },
             LinkedTaskDTO link => new LinkedTask(
                 link.Title!,
-                (Enums.CompositeTaskType)link.CompositeTaskType,
+                (CompositeTaskType)link.CompositeTaskType,
                 link.TaskDescription!,
                 (TaskPriority)link.Priority,
                 (Enums.TaskStatus)link.Status,
@@ -113,7 +113,7 @@ public static class DtoManager
             CompositeTaskDTO ct =>
                 new CompositeTask(
                     ct.Title!,
-                    (Enums.CompositeTaskType)ct.CompositeTaskType,
+                    (CompositeTaskType)ct.CompositeTaskType,
                     ct.TaskDescription!,
                     (TaskPriority)ct.Priority,
                     (Enums.TaskStatus)ct.Status,

@@ -7,10 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 
 
-
-using var context = new GestorTareasContext();
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // PARTE 1: registrar servicios

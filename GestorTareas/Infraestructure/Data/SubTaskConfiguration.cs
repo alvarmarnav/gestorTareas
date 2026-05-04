@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GestorTareas.Infraestructure.Data;
 
-public class SubTaskConfiguration : IEntityTypeConfiguration<GestorTareas.Models.SubTask>
+public class SubTaskConfiguration : IEntityTypeConfiguration<SubTask>
 {
     public void Configure(EntityTypeBuilder<SubTask> builder)
     {

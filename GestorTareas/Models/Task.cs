@@ -15,12 +15,12 @@ namespace GestorTareas.Models;
 
 //Para trabajar con polimorfismo y JSON
 
-[System.Text.Json.Serialization.JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
-[System.Text.Json.Serialization.JsonDerivedType(typeof(SimpleTask), "SimpleTask")]
-[System.Text.Json.Serialization.JsonDerivedType(typeof(RecurringTask), "RecurringTask")]
-[System.Text.Json.Serialization.JsonDerivedType(typeof(CompositeTask), "CompositeTask")]
-[System.Text.Json.Serialization.JsonDerivedType(typeof(SubTask), "SubTask")]
-[System.Text.Json.Serialization.JsonDerivedType(typeof(LinkedTask), "LinkedTask")]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(SimpleTask), "SimpleTask")]
+[JsonDerivedType(typeof(RecurringTask), "RecurringTask")]
+[JsonDerivedType(typeof(CompositeTask), "CompositeTask")]
+[JsonDerivedType(typeof(SubTask), "SubTask")]
+[JsonDerivedType(typeof(LinkedTask), "LinkedTask")]
 
 public abstract class Task : IIdentificable
 {
