@@ -9,14 +9,14 @@ public class TaskManager
 
     private List<Models.Task> TaskList { get; set; } = new(60);
 
-    private Dictionary<Guid, Models.Task> TaskDictionary { get; set; } = new(60);
+    private Dictionary<int, Models.Task> TaskDictionary { get; set; } = new(60);
 
     public TaskRepository Repository { get; set; }
 
     public TaskManager(TaskRepository repository)
     {
         TaskList = new(60);
-        TaskDictionary = new Dictionary<Guid, Models.Task>(60);
+        TaskDictionary = new Dictionary<int, Models.Task>(60);
         Repository = repository;
         LoadRepository();
     }
@@ -60,7 +60,7 @@ public class TaskManager
         return readOnlyItemList;
     }
 
-    public Models.Task? IdSearch(Guid id)
+    public Models.Task? IdSearch(int id)
     {
 
         if (!TaskDictionary.TryGetValue(id, out Models.Task? item))
@@ -71,7 +71,7 @@ public class TaskManager
 
     }
 
-    public void RemoveTask(Guid id)
+    public void RemoveTask(int id)
     {
 
         if (!TaskDictionary.Remove(id))

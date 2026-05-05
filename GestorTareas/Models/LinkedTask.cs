@@ -45,10 +45,10 @@ public class LinkedTask : CompositeTask
 
     public void UpdateLinkedTaskOrder(int newOrder) { }
 
-    public void CompleteLinkedTask(Guid linkedTaskId)
+    public void CompleteLinkedTask(int linkedTaskId)
     {
 
-        if (linkedTaskId == Guid.Empty)
+        if (linkedTaskId<=0)
             throw new ArgumentException("El identificador no es válido.");
 
         if (ListOfLinkedTasks is null || !ListOfLinkedTasks.Any())

@@ -5,7 +5,7 @@ namespace GestorTareas.Models;
 
 public class User
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public string UserName
     {
@@ -52,9 +52,9 @@ public class User
     public DateTime? UpdatedAt { get; set; } = null;
     public List<Task> tasksList { get; set; } = new(10);
     
-    protected User() : base() { }
+    public User() : base() { }
 
-    protected User(
+    public User(
         string userName,
         string userLastName,
         string userEmail,
@@ -62,7 +62,6 @@ public class User
         bool isAdmin = false
     )
     {
-        this.Id = Guid.NewGuid();
         this.UserName = userName.Trim();
         this.UserLastName = userLastName.Trim();
         this.UserEmail = userEmail;

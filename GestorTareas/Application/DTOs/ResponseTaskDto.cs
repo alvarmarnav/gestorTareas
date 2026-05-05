@@ -6,7 +6,7 @@ namespace GestorTareas;
 
 public class ResponseTaskDto
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string TaskDescription { get; set; } = string.Empty;
     public TaskPriority TaskPriority { get; set; }
@@ -16,7 +16,7 @@ public class ResponseTaskDto
 
     public ResponseTaskDto() { }
     public ResponseTaskDto(
-        Guid id,
+        int id,
         string title,
         string taskDescription,
         TaskPriority taskPriority,

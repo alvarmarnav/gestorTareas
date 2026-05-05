@@ -29,7 +29,7 @@ public class TaskManagerService
             CancelReason = t.CancelReason
         }).ToList();
     }
-    public Task? GetTaskById(Guid id) => _repository.GetTaskById(id);
+    public Task? GetTaskById(int id) => _repository.GetTaskById(id);
 
     public Task AddTask(
         string Title,

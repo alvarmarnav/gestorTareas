@@ -22,9 +22,9 @@ public class UsersController : ControllerBase
    }
 
    [HttpGet("{id}")]
-   public IActionResult GetById(Guid id)
+   public IActionResult GetById(int id)
    {
-      throw new NotImplementedException();
+      return Ok(_userManagerService.GetUserById(id));
    }
    [HttpPost]
    public IActionResult Create([FromBody] CreateUserDto userDto)
@@ -37,16 +37,16 @@ public class UsersController : ControllerBase
           userDto.IsAdmin
       );
 
-              return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
+      return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
 
    }
    [HttpPut("{id}")]
-   public IActionResult Update(Guid id)
+   public IActionResult Update(int id)
    {
       throw new NotImplementedException();
    }
    [HttpDelete("{id}")]
-   public IActionResult Delete(Guid id)
+   public IActionResult Delete(int id)
    {
       throw new NotImplementedException();
    }

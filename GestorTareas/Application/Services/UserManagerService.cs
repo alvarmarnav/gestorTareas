@@ -30,4 +30,9 @@ public class UserManagerService
         _userRepository.AddUser(newUser);
         return newUser;
     }
+
+    public User? GetUserById(int id)
+    {
+        return _userRepository.GetUserById(id);
+    }
 }

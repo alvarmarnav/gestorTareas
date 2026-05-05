@@ -4,6 +4,6 @@ namespace GestorTareas.Interfaces;
 
 public interface IIdentificable
 {
-    public Guid Id{get;}
+    public int Id{get;}
     public string Title {get;}
 }

@@ -11,7 +11,7 @@ namespace GestorTareas.Application.DTOs;
 [JsonDerivedType(typeof(RecurringTaskDTO), typeDiscriminator: "recurring")]
 public abstract class TaskDTO
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     [Required]
     public string Title { get; set; } = default!;

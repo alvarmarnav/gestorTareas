@@ -5,7 +5,7 @@ namespace GestorTareas.Models;
 public class LinkedTaskContainer
 {
 
-    public Guid Id{get;set;}
+    public int Id{get;set;}
     public string? ContainerDescription
     {
         get; set
@@ -20,7 +20,6 @@ public class LinkedTaskContainer
         string containerDescription
     )
     {
-        Id = Guid.NewGuid();
         ContainerDescription = containerDescription;
         LinkedTaskList = new(10);
     }

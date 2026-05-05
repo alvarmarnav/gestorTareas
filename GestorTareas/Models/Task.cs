@@ -21,7 +21,7 @@ namespace GestorTareas.Models;
 
 public abstract class Task : IIdentificable
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string Title
     {
         get; set
@@ -113,7 +113,7 @@ public abstract class Task : IIdentificable
             field = value;
         }
     } = "Tarea NO cancelada.";
-    public Guid UserId { get; set; }
+    public int UserId { get; set; }
     public User? User { get; set; }
 
     public List<User> UsersList { get; set; } = new(10);
@@ -129,7 +129,6 @@ public abstract class Task : IIdentificable
         DateTime? dueTime = null,
         string? cancelReason = null)
     {
-        Id = Guid.NewGuid();
         Title = title.Trim();
         TaskDescription = taskDescription?.Trim() ?? "Sin descripción.";
         Priority = priority;

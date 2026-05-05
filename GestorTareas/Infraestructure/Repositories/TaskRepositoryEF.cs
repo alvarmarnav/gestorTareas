@@ -29,7 +29,7 @@ public class TaskRepositoryEF : ITaskRepository
         return _context.Tasks.Include(t => t.User).ToList();
     }
 
-    public Task? GetTaskById(Guid id) => _context.Tasks.Include(t => t.Id.Equals(id)).FirstOrDefault();
+    public Task? GetTaskById(int id) => _context.Tasks.FirstOrDefault(t => t.Id.Equals(id));
 
     public void UpdateTask(Task task)
     {

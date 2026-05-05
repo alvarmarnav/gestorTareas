@@ -14,9 +14,9 @@ public class UserRepository : IUserRepository
     {
         return _gestorTareasContext.Users.ToList();
     }
-    User? IUserRepository.GetUserById(Guid id)
+    User? IUserRepository.GetUserById(int id)
     {
-        return _gestorTareasContext.Users.Include(u => u.Id.Equals(id)).FirstOrDefault();
+        return _gestorTareasContext.Users.FirstOrDefault(u => u.Id == id);
     }
     void IUserRepository.AddUser(User user)
     {

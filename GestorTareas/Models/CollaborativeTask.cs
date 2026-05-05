@@ -42,12 +42,12 @@ public CollaborativeTask() : base() { }
     public override string ResumeTask() => $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
 
 
-    public void AddMember(Guid userId)
+    public void AddMember(int userId)
     {
 
     }
 
-    public void RemoveMember(Guid userId) { }
+    public void RemoveMember(int userId) { }
 
     public List<User> GetMembers()
     {

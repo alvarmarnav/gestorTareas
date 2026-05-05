@@ -28,7 +28,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpGet("{id}")] // GET /api/tareas/1
-    public IActionResult GetById(Guid id)
+    public IActionResult GetById(int id)
     {
         var task = _taskManagerService.GetTaskById(id);
         if (task == null) return NotFound();
@@ -52,8 +52,8 @@ public class TasksController : ControllerBase
     }
 
     [HttpPut("{id}")] // PUT /api/tareas/1
-    public IActionResult Update(Guid id) { throw new NotImplementedException(); }
+    public IActionResult Update(int id) { throw new NotImplementedException(); }
 
     [HttpDelete("{id}")] // DELETE /api/tareas/1
-    public IActionResult Delete(Guid id) { throw new NotImplementedException(); }
+    public IActionResult Delete(int id) { throw new NotImplementedException(); }
 }

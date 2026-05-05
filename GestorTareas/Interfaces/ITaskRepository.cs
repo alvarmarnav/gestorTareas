@@ -6,7 +6,7 @@ public interface ITaskRepository
 {
     List<Task> GetAllTasks();
 
-    Task? GetTaskById(Guid id);
+    Task? GetTaskById(int id);
 
     void AddTask(Task task);
 
