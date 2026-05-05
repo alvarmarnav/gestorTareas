@@ -3,6 +3,7 @@ using Task = GestorTareas.Models.Task;
 using GestorTareas.Infraestructure.Repositories;
 using GestorTareas.Enums;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
+using GestorTareas.Models;
 
 namespace GestorTareas.Application.Services;
 
@@ -30,10 +31,41 @@ public class TaskManagerService
     }
     public Task? GetTaskById(Guid id) => _repository.GetTaskById(id);
 
-    public void AddTask(Task task)
+    public Task AddTask(
+        string Title,
+        string? TaskDescription,
+        TaskPriority? taskPriority,
+        TaskStatus? taskStatus,
+        DateTime? dueTime)
     {
-        _repository.AddTask(task);
+        var newTask = new SimpleTask
+        {
+            Title = Title,
+            TaskDescription = TaskDescription,
+            Priority = taskPriority,
+            Status = taskStatus,
+            DueTime = dueTime,
+            // UserId = task.UserId
+        };
+        _repository.AddTask(newTask);
+
+        return newTask;
     }
+    // public Task AddTask(Task task)
+    // {
+    //     var newTask = new SimpleTask
+    //     {
+    //         Title = task.Title,
+    //         TaskDescription = task.TaskDescription,
+    //         Priority = task.Priority,
+    //         Status = task.Status,
+    //         DueTime = task.DueTime,
+    //         // UserId = task.UserId
+    //     };
+    //     _repository.AddTask(newTask);
+
+    //     return newTask;
+    // }
     public void DeleteTask(Task task)
     {
         _repository.DeleteTask(task);

@@ -14,7 +14,8 @@ public class TaskRepositoryEF : ITaskRepository
 
     public void AddTask(Task task)
     {
-        throw new NotImplementedException();
+        _context.Add(task);
+        _context.SaveChanges();
     }
 
     public void DeleteTask(Task task)

@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using GestorTareas.Enums;
 using GestorTareas.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Models;
@@ -101,9 +102,19 @@ public abstract class Task : IIdentificable
             field = value;
         }
     }
-    public string? CancelReason { get; set; } = null;
+    public string? CancelReason
+    {
+        get; set
+        {
+            if (string.IsNullOrEmpty(value))
+                value = "Motivo Cancelación Sin Determinar";//TODO: comprobar esta asignacion
+            if (value.Length > 250)
+                throw new ArgumentException("La longitud del valor no puede ser mayor de 250 caracteres.");
+            field = value;
+        }
+    } = "Tarea NO cancelada.";
     public Guid UserId { get; set; }
-    public User User { get; set; }
+    public User? User { get; set; }
 
     public List<User> UsersList { get; set; } = new(10);
     // Constructor vacio para trabajar la serialización
@@ -126,23 +137,24 @@ public abstract class Task : IIdentificable
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
         DueTime = dueTime;
-
-        CancelReason ??= $"Tarea no cancelada. Estado: {Status.ToString()}";
+        CancelReason = cancelReason ?? $"Tarea no cancelada. Estado: {this.Status.ToString()}";
     }
 
     public void RenameTask(string newTitle)
     {
         if (string.IsNullOrWhiteSpace(newTitle))
             throw new ArgumentException("Título vacío");
-
         if (newTitle.Length > 20)
             throw new ArgumentException("Máx 20 caracteres");
-
         Title = newTitle.Trim();
     }
 
     public void UpdateTaskDescription(string newTaskDescription)
     {
+        if (string.IsNullOrWhiteSpace(newTaskDescription))
+            newTaskDescription = "Sin descripcion.";
+        if (newTaskDescription.Length > 250)
+            throw new ArgumentException("LA descripción no puede ser superior a 250 caracteres.");
         this.TaskDescription = newTaskDescription;
     }
     public void ChangePriority(TaskPriority newTaskPriority)
@@ -151,12 +163,12 @@ public abstract class Task : IIdentificable
     }
     public void UpdateDueTime(DateTime newDueTime)
     {
-
         if (newDueTime <= DateTime.Now)
             throw new ArgumentException("La fecha introducida para su vencimiento no puede ser anterior a la actual.");
         else if (newDueTime > DateTime.Now.AddYears(2))
             throw new ArgumentException("La fecha de fin de tarea es mayor a 2 años, No es una fecha válida.");
         DueTime = newDueTime;
+        UpdatedAt = DateTime.Now;
     }
     public bool CompleteTask()
     {

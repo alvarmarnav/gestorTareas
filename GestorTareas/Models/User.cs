@@ -7,12 +7,14 @@ public class User
 {
     public Guid Id { get; set; }
 
-    public String UserName
+    public string UserName
     {
         get; set
         {
             Validator.ValidateString(value, "Nombre Usuario");
 
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("El valor está vacío o sólo contiene espacios en blanco.");
             if (value.Length > 20 || value.Length < 3)
                 throw new ArgumentOutOfRangeException("La longitud del nombre de usuario no es válida.");
 
@@ -20,7 +22,7 @@ public class User
         }
     }
 
-    public String UserLastName
+    public string UserLastName
     {
         get; set
         {
@@ -33,7 +35,7 @@ public class User
         }
     }
 
-    public String UserEmail
+    public string UserEmail
     {
         get; set
         {
@@ -41,25 +43,28 @@ public class User
         }
     }
 
-    public Boolean IsActive { get; set; } = true;
+    public bool? IsActive { get; set; } = true;
 
-    public Boolean IsAdmin { get; set; } = false;
+    public bool? IsAdmin { get; set; } = false;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public DateTime? UpdatedAt { get; set; } = null;
     public List<Task> tasksList { get; set; } = new(10);
-    public User(
-        String userName,
-        String userLastName,
-        String userEmail,
-        Boolean isActive,
-        Boolean isAdmin
+    
+    protected User() : base() { }
+
+    protected User(
+        string userName,
+        string userLastName,
+        string userEmail,
+        bool isActive = true,
+        bool isAdmin = false
     )
     {
         this.Id = Guid.NewGuid();
-        this.UserName = userName;
-        this.UserLastName = userLastName;
+        this.UserName = userName.Trim();
+        this.UserLastName = userLastName.Trim();
         this.UserEmail = userEmail;
         this.IsActive = isActive;
         IsAdmin = isAdmin;

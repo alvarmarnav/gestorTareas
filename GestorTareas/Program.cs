@@ -21,6 +21,8 @@ options.UseSqlServer(builder.Configuration
 );
 
 builder.Services.AddScoped<ITaskRepository, TaskRepositoryEF>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<UserManagerService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
