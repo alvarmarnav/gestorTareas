@@ -26,6 +26,7 @@ public class UserRepository : IUserRepository
     void IUserRepository.UpdateUser(User user)
     {
         _gestorTareasContext.Users.Update(user);
+        _gestorTareasContext.SaveChanges();
     }
     void IUserRepository.DeleteUser(User user)
     {

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestorTareas.Migrations
 {
     [DbContext(typeof(GestorTareasContext))]
-    [Migration("20260430092533_CreacionInicial")]
+    [Migration("20260506083007_CreacionInicial")]
     partial class CreacionInicial
     {
         /// <inheritdoc />
@@ -20,16 +20,18 @@ namespace GestorTareas.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "9.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("GestorTareas.Models.Task", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CancelReason")
                         .HasMaxLength(400)
@@ -65,8 +67,8 @@ namespace GestorTareas.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -79,9 +81,11 @@ namespace GestorTareas.Migrations
 
             modelBuilder.Entity("GestorTareas.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -125,11 +129,11 @@ namespace GestorTareas.Migrations
 
             modelBuilder.Entity("UserTasks", b =>
                 {
-                    b.Property<Guid>("UsersListId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UsersListId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("tasksListId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("tasksListId")
+                        .HasColumnType("int");
 
                     b.HasKey("UsersListId", "tasksListId");
 
@@ -174,11 +178,11 @@ namespace GestorTareas.Migrations
                 {
                     b.HasBaseType("GestorTareas.Models.CompositeTask");
 
-                    b.Property<Guid?>("FKCompositeTaskId_Linked")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("FKCompositeTaskId_Linked")
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("LinkedTaskId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("LinkedTaskId")
+                        .HasColumnType("int");
 
                     b.Property<int>("LinkedTaskOrder")
                         .HasColumnType("int");
@@ -194,8 +198,8 @@ namespace GestorTareas.Migrations
                 {
                     b.HasBaseType("GestorTareas.Models.CompositeTask");
 
-                    b.Property<Guid?>("FKCompositeTaskId_Sub")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("FKCompositeTaskId_Sub")
+                        .HasColumnType("int");
 
                     b.HasIndex("FKCompositeTaskId_Sub");
 

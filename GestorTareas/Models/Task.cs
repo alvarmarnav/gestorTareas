@@ -113,6 +113,8 @@ public abstract class Task : IIdentificable
             field = value;
         }
     } = "Tarea NO cancelada.";
+
+    // public TaskType taskType {get;set;}
     public int UserId { get; set; }
     public User? User { get; set; }
 

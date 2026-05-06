@@ -15,7 +15,8 @@ namespace GestorTareas.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     UserLastName = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     UserEmail = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -33,7 +34,8 @@ namespace GestorTareas.Migrations
                 name: "Tasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     TaskDescription = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     Priority = table.Column<int>(type: "int", nullable: true, defaultValue: 1),
@@ -42,7 +44,7 @@ namespace GestorTareas.Migrations
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DueTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CancelReason = table.Column<string>(type: "nvarchar(400)", maxLength: 400, nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,7 +61,7 @@ namespace GestorTareas.Migrations
                 name: "CompositeTasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     CompositeTaskType = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -77,7 +79,7 @@ namespace GestorTareas.Migrations
                 name: "RecurringTasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     RecurrenceRule = table.Column<int>(type: "int", nullable: false),
                     RecurringTasksCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
@@ -96,7 +98,7 @@ namespace GestorTareas.Migrations
                 name: "SimpleTasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -113,8 +115,8 @@ namespace GestorTareas.Migrations
                 name: "UserTasks",
                 columns: table => new
                 {
-                    UsersListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    tasksListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UsersListId = table.Column<int>(type: "int", nullable: false),
+                    tasksListId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,10 +137,10 @@ namespace GestorTareas.Migrations
                 name: "LinkedTasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     LinkedTaskOrder = table.Column<int>(type: "int", nullable: false),
-                    FKCompositeTaskId_Linked = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    LinkedTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    FKCompositeTaskId_Linked = table.Column<int>(type: "int", nullable: true),
+                    LinkedTaskId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -165,8 +167,8 @@ namespace GestorTareas.Migrations
                 name: "SubTasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FKCompositeTaskId_Sub = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    FKCompositeTaskId_Sub = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

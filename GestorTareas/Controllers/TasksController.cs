@@ -43,8 +43,11 @@ public class TasksController : ControllerBase
         dto.TaskDescription,
         dto.Priority,
         dto.Status,
-        dto.DueTime
-        // dto.UserId
+        dto.DueTime,
+        dto.CompositeTaskType,
+        dto.LinkedTaskOrder,
+        dto.RecurrenceRule,
+        dto.TaskSupervisor
         );
 
         return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);

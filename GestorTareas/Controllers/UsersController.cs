@@ -41,9 +41,19 @@ public class UsersController : ControllerBase
 
    }
    [HttpPut("{id}")]
-   public IActionResult Update(int id)
+   public IActionResult Update(int id, [FromBody] UpdateUserDto userDto )
    {
-      throw new NotImplementedException();
+      if(_userManagerService.GetUserById(id) is null)
+         return NotFound();
+
+      _userManagerService.UpdateUser(
+         id,
+         userDto.UserName,
+         userDto.UserLastName,
+         userDto.UserEmail
+      );
+
+      return NoContent();
    }
    [HttpDelete("{id}")]
    public IActionResult Delete(int id)

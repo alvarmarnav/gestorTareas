@@ -3,15 +3,17 @@ using Task = GestorTareas.Models.Task;
 using GestorTareas.Infraestructure.Repositories;
 using GestorTareas.Enums;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
+using CompositeTaskType = GestorTareas.Enums.CompositeTaskType;
 using GestorTareas.Models;
+using GestorTareas.Interfaces;
 
 namespace GestorTareas.Application.Services;
 
 public class TaskManagerService
 {
-    private readonly TaskRepositoryEF _repository;
+    private readonly ITaskRepository _repository;
 
-    public TaskManagerService(TaskRepositoryEF repository) => _repository = repository;
+    public TaskManagerService(ITaskRepository repository) => _repository = repository;
 
     public List<Task> GetAllTasks() => _repository.GetAllTasks();
 
@@ -32,21 +34,59 @@ public class TaskManagerService
     public Task? GetTaskById(int id) => _repository.GetTaskById(id);
 
     public Task AddTask(
-        string Title,
-        string? TaskDescription,
+        string title,
+        string? taskDescription,
         TaskPriority? taskPriority,
         TaskStatus? taskStatus,
-        DateTime? dueTime)
+        DateTime? dueTime,
+        CompositeTaskType? compositeTaskType,
+        int? linkedTaskOrder,
+        int? recurrenceRule,
+        User? taskSupervisor)
     {
-        var newTask = new SimpleTask
+
+
+        Task newTask = compositeTaskType switch
         {
-            Title = Title,
-            TaskDescription = TaskDescription,
-            Priority = taskPriority,
-            Status = taskStatus,
-            DueTime = dueTime,
-            // UserId = task.UserId
+            // Casos con compositeTaskType != null
+            not null when linkedTaskOrder is not null
+                => new LinkedTask
+                {
+                    CompositeTaskType = compositeTaskType.Value,
+                    LinkedTaskOrder = linkedTaskOrder
+                },
+
+            not null
+                => new SubTask
+                {
+                    CompositeTaskType = compositeTaskType.Value
+                },
+
+            // Casos con compositeTaskType == null
+            null when recurrenceRule is not null
+                => new RecurringTask
+                {
+                    RecurrenceRule = recurrenceRule.Value
+                },
+
+            null when taskSupervisor is not null
+                => new CollaborativeTask
+                {
+                    TaskSupervisor = taskSupervisor
+                },
+
+            null
+                => new SimpleTask(),
+
+            // _ => throw new ArgumentException("Error al introducir los parámetros")
         };
+
+        newTask.Title = title;
+        newTask.TaskDescription = taskDescription;
+        newTask.Priority = taskPriority;
+        newTask.Status = taskStatus;
+        newTask.DueTime = dueTime;
+
         _repository.AddTask(newTask);
 
         return newTask;
