@@ -37,6 +37,7 @@ public class SimpleTaskTests
     [Test, TestCaseSource(nameof(TestCaseDatas))]
     public void Constructor_ValidParameters_MustCreateNewTask(
         string title,
+        int userId,
         string? description = null,
         TaskPriority? priority = TaskPriority.Normal,
         TaskStatus? status = TaskStatus.Pending,
@@ -45,6 +46,7 @@ public class SimpleTaskTests
         //ACT
         var testTask = new SimpleTask(
             title,
+            userId,
             description,
             priority,
             status,
@@ -55,6 +57,7 @@ public class SimpleTaskTests
             () =>
             {
                 Assert.That(testTask.Title, Is.EqualTo(title));
+                Assert.That(testTask.UserId, Is.EqualTo(userId));
                 Assert.That(testTask.DueTime, Is.EqualTo(dueTime));
                 Assert.That(testTask.TaskDescription, Is.EqualTo(description));
                 Assert.That(testTask.Priority, Is.EqualTo(priority));

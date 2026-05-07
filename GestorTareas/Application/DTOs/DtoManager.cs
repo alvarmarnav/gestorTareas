@@ -19,6 +19,7 @@ public static class DtoManager
             {
                 Id = sub.Id,
                 Title = sub.Title,
+                UserId = sub.UserId,
                 CompositeTaskType = (int)sub.CompositeTaskType,
                 TaskDescription = sub.TaskDescription,
                 Priority = (int)sub.Priority,
@@ -30,6 +31,7 @@ public static class DtoManager
             {
                 Id = link.Id,
                 Title = link.Title,
+                UserId = link.UserId,
                 CompositeTaskType = (int)link.CompositeTaskType,
                 TaskDescription = link.TaskDescription,
                 Priority = (int)link.Priority,
@@ -43,6 +45,7 @@ public static class DtoManager
             {
                 Id = ct.Id,
                 Title = ct.Title,
+                UserId = ct.UserId,
                 CompositeTaskType = (int)ct.CompositeTaskType,
                 TaskDescription = ct.TaskDescription,
                 Priority = (int)ct.Priority,
@@ -56,6 +59,7 @@ public static class DtoManager
             {
                 Id = rt.Id,
                 Title = rt.Title,
+                UserId = rt.UserId,
                 DueTime = (DateTime)rt.DueTime,
                 RecurrenceRule = rt.RecurrenceRule,
                 RecurringTasksCount = rt.RecurringTasksCount,
@@ -69,6 +73,7 @@ public static class DtoManager
             {
                 Id = st.Id,
                 Title = st.Title,
+                UserId = st.UserId,
                 TaskDescription = st.TaskDescription,
                 Priority = (int)st.Priority,
                 Status = (int)st.Status,
@@ -86,6 +91,7 @@ public static class DtoManager
         {
             SubTaskDTO sub => new SubTask(
                 sub.Title!,
+                sub.UserId,
                 (CompositeTaskType)sub.CompositeTaskType,
                 sub.TaskDescription!,
                 (TaskPriority)sub.Priority,
@@ -98,6 +104,7 @@ public static class DtoManager
             },
             LinkedTaskDTO link => new LinkedTask(
                 link.Title!,
+                link.UserId,
                 (CompositeTaskType)link.CompositeTaskType,
                 link.TaskDescription!,
                 (TaskPriority)link.Priority,
@@ -113,6 +120,7 @@ public static class DtoManager
             CompositeTaskDTO ct =>
                 new CompositeTask(
                     ct.Title!,
+                    ct.UserId,
                     (CompositeTaskType)ct.CompositeTaskType,
                     ct.TaskDescription!,
                     (TaskPriority)ct.Priority,
@@ -128,6 +136,7 @@ public static class DtoManager
 
             RecurringTaskDTO rt => new RecurringTask(
                 rt.Title!,
+                rt.UserId,
                 rt.DueTime,
                 rt.RecurrenceRule,
 
@@ -143,6 +152,7 @@ public static class DtoManager
 
             SimpleTaskDTO st => new SimpleTask(
                 st.Title!,
+                st.UserId,
                 st.TaskDescription!,
                 (TaskPriority)st.Priority,
                 (Enums.TaskStatus)st.Status,

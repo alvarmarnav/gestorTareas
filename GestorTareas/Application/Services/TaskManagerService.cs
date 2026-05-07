@@ -8,6 +8,8 @@ using GestorTareas.Models;
 using GestorTareas.Interfaces;
 using GestorTareas.Application.DTOs;
 using Microsoft.AspNetCore.Http.HttpResults;
+using LinkedTask = GestorTareas.Models.LinkedTask;
+using Microsoft.JSInterop;
 
 namespace GestorTareas.Application.Services;
 
@@ -37,10 +39,12 @@ public class TaskManagerService
 
     public Task AddTask(
         string title,
+        int userId,
         string? taskDescription,
         TaskPriority? taskPriority,
         TaskStatus? taskStatus,
         DateTime? dueTime,
+        string? cancelReason,
         CompositeTaskType? compositeTaskType,
         int? linkedTaskOrder,
         int? recurrenceRule,
@@ -77,52 +81,59 @@ public class TaskManagerService
                     TaskSupervisor = taskSupervisor
                 },
 
-            null
-                => new SimpleTask(),
+
+            _ => new SimpleTask(),
 
             // _ => throw new ArgumentException("Error al introducir los parámetros")
         };
 
         newTask.Title = title;
+        newTask.UserId = userId;
         newTask.TaskDescription = taskDescription;
         newTask.Priority = taskPriority;
         newTask.Status = taskStatus;
         newTask.DueTime = dueTime;
+        newTask.CancelReason = cancelReason;
 
         _repository.AddTask(newTask);
 
         return newTask;
     }
-    // public Task AddTask(Task task)
-    // {
-    //     var newTask = new SimpleTask
-    //     {
-    //         Title = task.Title,
-    //         TaskDescription = task.TaskDescription,
-    //         Priority = task.Priority,
-    //         Status = task.Status,
-    //         DueTime = task.DueTime,
-    //         // UserId = task.UserId
-    //     };
-    //     _repository.AddTask(newTask);
-
-    //     return newTask;
-    // }
-    public void DeleteTask(Task task)
+   
+    public void DeleteTask(int id)
     {
-        _repository.DeleteTask(task);
+        var task = _repository.GetTaskById(id) ??throw new Exception($"No existe la tarea con ID: {id}");
+         _repository.DeleteTask(task);
     }
     public void UpdateTask(int id, UpdateTaskDto taskDto)
     {//TODO: observar esta exception
-        var selectedTask = _repository.GetTaskById(id) ?? throw new Exception($"No existe la tarea con ID: {id}");
-        selectedTask.Title = taskDto.Title ?? selectedTask.Title;
-        selectedTask.TaskDescription = taskDto.TaskDescription ?? selectedTask.TaskDescription;
-        selectedTask.Priority = taskDto.Priority ?? selectedTask.Priority;
-        selectedTask.Status = taskDto.Status ?? selectedTask.Status;
-        selectedTask.DueTime = taskDto.DueTime ?? selectedTask.DueTime;
-        // selectedTask.LinkedTaskOrder = taskDto.LinkedTaskOrder ?? selectedTask.;
-        // selectedTask.RecurrenceRule = taskDto.RecurrenceRule ?? selectedTask.RecurrenceRule;
-        // selectedTask.TaskSupervisor = taskDto.TaskSupervisor ?? selectedTask.TaskSupervisor;
-        _repository.UpdateTask(selectedTask);
+        var updateTask = _repository.GetTaskById(id) ?? throw new Exception();
+
+        switch (updateTask)
+        {
+
+            case LinkedTask linked:
+                linked.LinkedTaskOrder = taskDto.LinkedTaskOrder ?? linked.LinkedTaskOrder;
+                break;
+            case RecurringTask recurring:
+               
+                recurring.RecurrenceRule = taskDto.RecurrenceRule ?? recurring.RecurrenceRule;
+                break;
+
+            case CollaborativeTask collab:
+                collab.TaskSupervisor = taskDto.TaskSupervisor ?? collab.TaskSupervisor;
+                break;
+
+            default:
+                break;
+        }
+
+        updateTask.Title = taskDto.Title ?? updateTask.Title;
+        updateTask.TaskDescription = taskDto.TaskDescription ?? updateTask.TaskDescription;
+        updateTask.Priority = taskDto.Priority ?? updateTask.Priority;
+        updateTask.Status = taskDto.Status ?? updateTask.Status;
+        updateTask.DueTime = taskDto.DueTime ?? updateTask.DueTime;
+        
+        _repository.UpdateTask(updateTask);
     }
 }

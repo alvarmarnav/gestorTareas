@@ -13,6 +13,7 @@ public class SubTask : CompositeTask
     public SubTask() : base() { }
     public SubTask(
         string subTaskTitle,
+        int userId,
         CompositeTaskType compositeTaskType,
         string? subTaskDescription = null,
         TaskPriority? subTaskPriority = TaskPriority.Normal,
@@ -21,6 +22,7 @@ public class SubTask : CompositeTask
         string? cancelReason = null
         ) : base(
             subTaskTitle,
+            userId,
             compositeTaskType,
             subTaskDescription,
             subTaskPriority,

@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using GestorTareas.Enums;
+using GestorTareas.Models;
 
 namespace GestorTareas.Application.DTOs;
 
@@ -15,12 +17,15 @@ public abstract class TaskDTO
 
     [Required]
     public string Title { get; set; } = default!;
-    
-    public string TaskDescription { get; set; } = default!;
-    public int Priority { get; set; }
-    public int Status { get; set; }
-    public DateTime DueTime { get; set; }
+    public int UserId{get;set;}
+    public string? TaskDescription { get; set; } = default!;
+    public int? Priority { get; set; }
+    public int? Status { get; set; }
+    public DateTime? DueTime { get; set; }
     public string? CancelReason {get;set;}
-
+    public CompositeTaskType? CompositeTaskType{get;set;}
+    public int? LinkedTaskOrder{get;set;}
+    public int? RecurrenceRule{get;set;}
+    public User? TaskSupervisor{get;set;}
 
 }

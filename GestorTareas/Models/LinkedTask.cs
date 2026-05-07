@@ -21,6 +21,7 @@ public class LinkedTask : CompositeTask
     public LinkedTask() : base() { }
     public LinkedTask(
         string title,
+        int userId,
         CompositeTaskType compositeTaskType,
         string? taskDescription,
         TaskPriority? taskPriority = TaskPriority.Normal,
@@ -30,6 +31,7 @@ public class LinkedTask : CompositeTask
         string? cancelReason = null
         ) : base(
             title,
+            userId,
             compositeTaskType,
             taskDescription,
             taskPriority,

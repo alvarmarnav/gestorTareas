@@ -28,7 +28,7 @@ public abstract class Task : IIdentificable
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("El título no puede estar vacío");
-            if (value.Length > 20)
+            if (value.Length > 30)
                 throw new ArgumentException("El título no puede contener más de 20 caracteres");
             field = value.Trim();
         }
@@ -125,6 +125,7 @@ public abstract class Task : IIdentificable
     protected Task() : base() { }
     protected Task(
         string title,
+        int userId,
         string? taskDescription = null,
         TaskPriority? priority = TaskPriority.Normal,
         TaskStatus? status = TaskStatus.Pending,
@@ -132,6 +133,7 @@ public abstract class Task : IIdentificable
         string? cancelReason = null)
     {
         Title = title.Trim();
+        UserId = userId;
         TaskDescription = taskDescription?.Trim() ?? "Sin descripción.";
         Priority = priority;
         Status = status;

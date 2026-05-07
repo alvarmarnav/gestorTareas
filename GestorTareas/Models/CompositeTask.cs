@@ -30,6 +30,7 @@ public class CompositeTask : Task
 
     public CompositeTask(
         string title,
+        int userId,
         CompositeTaskType compositeTaskType,
         string? taskDescription = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
@@ -38,6 +39,7 @@ public class CompositeTask : Task
         string? cancelReason = null
         ) : base(
             title,
+            userId,
             taskDescription,
             taskPriority,
             taskStatus,
@@ -49,6 +51,7 @@ public class CompositeTask : Task
 
     public void AddSubTask(
         string subTaskTitle,
+        int userId,
         CompositeTaskType compositeTaskType,
         string subTaskDescription,
         TaskPriority subTaskPriority,
@@ -62,6 +65,7 @@ public class CompositeTask : Task
 
         SubTask subTask = new SubTask(
             subTaskTitle,
+            userId,
             compositeTaskType,
             subTaskDescription,
             subTaskPriority,
@@ -72,6 +76,7 @@ public class CompositeTask : Task
     }
     public void AddLinkedTask(
         string linkedTaskTitle,
+        int userId,
         CompositeTaskType compositeTaskType,
         string linkedTaskDescription,
         TaskPriority linkedTaskPriority,
@@ -106,6 +111,7 @@ public class CompositeTask : Task
 
         LinkedTask linkedTask = new LinkedTask(
             linkedTaskTitle,
+            userId,
             compositeTaskType,
             linkedTaskDescription,
             linkedTaskPriority,

@@ -40,13 +40,15 @@ public class TasksController : ControllerBase
     {
         var task = _taskManagerService.AddTask(
         dto.Title,
+        dto.UserId,
         dto.TaskDescription,
         dto.Priority,
         dto.Status,
         dto.DueTime,
+        dto.CancelReason,
         dto.CompositeTaskType,
-        dto.LinkedTaskOrder,
         dto.RecurrenceRule,
+        dto.LinkedTaskOrder,
         dto.TaskSupervisor
         );
 
@@ -63,5 +65,9 @@ public class TasksController : ControllerBase
     }
 
     [HttpDelete("{id}")] // DELETE /api/tareas/1
-    public IActionResult Delete(int id) { throw new NotImplementedException(); }
+    public IActionResult Delete(int id)
+    {
+        _taskManagerService.DeleteTask(id);
+        return NoContent();
+    }
 }

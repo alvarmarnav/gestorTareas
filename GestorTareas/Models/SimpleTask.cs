@@ -15,12 +15,14 @@ public class SimpleTask : Task
     public SimpleTask() : base() { } 
     public SimpleTask(
         string title,
+        int userId,
         string? taskDescription = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null) : base(
             title,
+            userId,
             taskDescription,
             taskPriority,
             taskStatus,

@@ -8,6 +8,7 @@ public class ResponseTaskDto
 {
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
+    public int UserId{get;set;}
     public string TaskDescription { get; set; } = string.Empty;
     public TaskPriority TaskPriority { get; set; }
     public TaskStatus TaskStatus { get; set; }

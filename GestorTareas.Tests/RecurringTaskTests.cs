@@ -15,6 +15,7 @@ namespace GestorTareas.Tests
             int diasRecurrencia = 7;
             var tareaOriginal = new RecurringTask(
                 title: "Reunión Semanal",
+                userId: 1,
                 dueTime: fechaInicial.AddDays(5),
                 recurrenceRule: diasRecurrencia
             );
@@ -32,7 +33,7 @@ namespace GestorTareas.Tests
         public void GenerateNewInstance_DebeIncrementarContadorInstancias()
         {
             // Arrange
-            var tarea = new RecurringTask("Test", DateTime.Now, 1);
+            var tarea = new RecurringTask("Test",1, DateTime.Now, 1);
 
             // Act
             var instancia1 = tarea.GenerateNewInstance(DateTime.Now);
@@ -50,6 +51,7 @@ namespace GestorTareas.Tests
             // Creamos una tarea que ya está en el límite (15)
             var tareaLimite = new RecurringTask(
                 title: "Limite",
+                userId: 1,
                 dueTime: DateTime.Now,
                 recurrenceRule: 1
                 // recurringTasksCount: 15

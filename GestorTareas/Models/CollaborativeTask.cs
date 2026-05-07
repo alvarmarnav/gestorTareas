@@ -14,6 +14,7 @@ public class CollaborativeTask : GestorTareas.Models.Task
 public CollaborativeTask() : base() { }
     public CollaborativeTask(
         string title,
+        int userId,
         User taskSupervisor,
         string? taskDescription = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
@@ -23,6 +24,7 @@ public CollaborativeTask() : base() { }
         // List<User> teamMembers,
         ) : base(
             title,
+            userId,
             taskDescription,
             taskPriority,
             taskStatus,

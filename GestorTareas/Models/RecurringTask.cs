@@ -29,7 +29,8 @@ public class RecurringTask : Task
     public RecurringTask() : base() { }
     public RecurringTask(
         string title,
-        DateTime dueTime,
+        int userId,
+        DateTime? dueTime,
         int recurrenceRule,
         string? taskDescription = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
@@ -37,6 +38,7 @@ public class RecurringTask : Task
         string? cancelReason = null
         ) : base(
             title,
+            userId,
             taskDescription,
             taskPriority,
             taskStatus,
@@ -64,6 +66,7 @@ public class RecurringTask : Task
 
         return new RecurringTask(
             title:this.Title,
+            userId:this.UserId,
             dueTime:newDueTime,
             recurrenceRule:this.RecurrenceRule,
             taskDescription:this.TaskDescription,
