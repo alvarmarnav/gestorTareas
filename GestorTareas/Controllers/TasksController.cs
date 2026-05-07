@@ -55,7 +55,12 @@ public class TasksController : ControllerBase
     }
 
     [HttpPut("{id}")] // PUT /api/tareas/1
-    public IActionResult Update(int id) { throw new NotImplementedException(); }
+    public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
+    {
+        _taskManagerService.UpdateTask(id,taskDto);
+
+        return NoContent();
+    }
 
     [HttpDelete("{id}")] // DELETE /api/tareas/1
     public IActionResult Delete(int id) { throw new NotImplementedException(); }

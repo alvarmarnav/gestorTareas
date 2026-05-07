@@ -58,6 +58,12 @@ public class UsersController : ControllerBase
    [HttpDelete("{id}")]
    public IActionResult Delete(int id)
    {
-      throw new NotImplementedException();
+      try{
+      _userManagerService.DeleteUser(id);
+      return NoContent();
+      }catch(Exception ex)
+      {
+         return Problem($"Error: {ex.Message}");
+      }
    }
 }

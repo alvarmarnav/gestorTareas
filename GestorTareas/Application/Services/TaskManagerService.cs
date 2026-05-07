@@ -6,6 +6,8 @@ using TaskStatus = GestorTareas.Enums.TaskStatus;
 using CompositeTaskType = GestorTareas.Enums.CompositeTaskType;
 using GestorTareas.Models;
 using GestorTareas.Interfaces;
+using GestorTareas.Application.DTOs;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace GestorTareas.Application.Services;
 
@@ -110,8 +112,17 @@ public class TaskManagerService
     {
         _repository.DeleteTask(task);
     }
-    public void UpdateTask(Task task)
-    {
-        _repository.UpdateTask(task);
+    public void UpdateTask(int id, UpdateTaskDto taskDto)
+    {//TODO: observar esta exception
+        var selectedTask = _repository.GetTaskById(id) ?? throw new Exception($"No existe la tarea con ID: {id}");
+        selectedTask.Title = taskDto.Title ?? selectedTask.Title;
+        selectedTask.TaskDescription = taskDto.TaskDescription ?? selectedTask.TaskDescription;
+        selectedTask.Priority = taskDto.Priority ?? selectedTask.Priority;
+        selectedTask.Status = taskDto.Status ?? selectedTask.Status;
+        selectedTask.DueTime = taskDto.DueTime ?? selectedTask.DueTime;
+        // selectedTask.LinkedTaskOrder = taskDto.LinkedTaskOrder ?? selectedTask.;
+        // selectedTask.RecurrenceRule = taskDto.RecurrenceRule ?? selectedTask.RecurrenceRule;
+        // selectedTask.TaskSupervisor = taskDto.TaskSupervisor ?? selectedTask.TaskSupervisor;
+        _repository.UpdateTask(selectedTask);
     }
 }

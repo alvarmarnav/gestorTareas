@@ -2,6 +2,7 @@ using System;
 using GestorTareas.Infraestructure.Repositories;
 using GestorTareas.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using User = GestorTareas.Models.User;
 
 namespace GestorTareas.Application.Services;
@@ -45,5 +46,12 @@ public class UserManagerService
         selectedUser.UserEmail = userEmail;
 
         _userRepository.UpdateUser(selectedUser);
+    }
+    public void DeleteUser(int id)
+    {
+        var selectedUser = _userRepository.GetUserById(id);
+            if(selectedUser is null)
+                throw new Exception($"No existe el usuario con ID: {id}");
+        _userRepository.DeleteUser(selectedUser);
     }
 }
