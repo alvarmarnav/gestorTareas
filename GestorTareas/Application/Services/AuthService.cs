@@ -52,7 +52,7 @@ public class AuthService
 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 new Claim(ClaimTypes.Name, user.UserName),
 new Claim(ClaimTypes.Email, user.UserEmail),
-new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
+new Claim(ClaimTypes.Role, (bool)user.IsAdmin ? "Admin" : "User")
 };
         var clave = new SymmetricSecurityKey(
         Encoding.UTF8.GetBytes(_config["Jwt:ClaveSecreta"]!));
