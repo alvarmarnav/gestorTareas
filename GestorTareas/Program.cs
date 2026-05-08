@@ -14,19 +14,50 @@ var builder = WebApplication.CreateBuilder(args);
 
 // PARTE 1: registrar servicios
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        In = ParameterLocation.Header,
+        Description = "Introduce el token JWT: Bearer {token}"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+{
+{
+new OpenApiSecurityScheme
+{
+Reference = new OpenApiReference
+{
+Type = ReferenceType.SecurityScheme,
+Id = "Bearer"
+}
+},
+Array.Empty<string>()
+}
+});
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+});
 
-// Antes de builder.Build()
+// Antes de builder.Build() EF CORE
 builder.Services.AddDbContext<GestorTareasContext>
 (options =>
 options.UseSqlServer(builder.Configuration
 .GetConnectionString("GestorTareas")
 )
 );
-
+//REPOSITORIOS CON SUS INTERFACES
 builder.Services.AddScoped<ITaskRepository, TaskRepositoryEF>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<UserManagerService>();
 
+//SERVICES
+builder.Services.AddScoped<UserManagerService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<TaskManagerService>();
+//JWT Autenticación
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
@@ -43,11 +74,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-});
+
 
 var app = builder.Build();
 

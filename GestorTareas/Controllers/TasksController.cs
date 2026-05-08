@@ -1,9 +1,12 @@
 using System;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Claims;
 using GestorTareas.Application.DTOs;
 using GestorTareas.Application.Services;
 using GestorTareas.Enums;
 using GestorTareas.Infraestructure.Repositories;
 using GestorTareas.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +17,7 @@ namespace GestorTareas.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
+[Authorize]//Aplica a todos endpoints clase, luego override especificamente
 public class TasksController : ControllerBase
 {
 
@@ -38,9 +42,15 @@ public class TasksController : ControllerBase
     [HttpPost] // POST /api/tareas
     public IActionResult Create([FromBody] CreateTaskDto dto)
     {
+        //Obtener ID del usuario
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdStr is null) return Unauthorized();
+
+        int userId = int.Parse(userIdStr);
+
         var task = _taskManagerService.AddTask(
         dto.Title,
-        dto.UserId,
+        userId,
         dto.TaskDescription,
         dto.Priority,
         dto.Status,
@@ -59,12 +69,13 @@ public class TasksController : ControllerBase
     [HttpPut("{id}")] // PUT /api/tareas/1
     public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
     {
-        _taskManagerService.UpdateTask(id,taskDto);
+        _taskManagerService.UpdateTask(id, taskDto);
 
         return NoContent();
     }
 
     [HttpDelete("{id}")] // DELETE /api/tareas/1
+    [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
         _taskManagerService.DeleteTask(id);
