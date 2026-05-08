@@ -50,6 +50,7 @@ public class User
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public DateTime? UpdatedAt { get; set; } = null;
+    public string PasswordHash{get;set;} = string.Empty;
     public List<Task> tasksList { get; set; } = new(10);
     
     public User() : base() { }

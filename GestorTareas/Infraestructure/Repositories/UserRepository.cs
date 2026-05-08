@@ -18,6 +18,10 @@ public class UserRepository : IUserRepository
     {
         return _gestorTareasContext.Users.FirstOrDefault(u => u.Id == id);
     }
+    User? IUserRepository.GetUserByEmail(string userEmail)
+    {
+        return _gestorTareasContext.Users.FirstOrDefault(u => u.UserEmail == userEmail);
+    }
     void IUserRepository.AddUser(User user)
     {
         _gestorTareasContext.Add(user);
