@@ -13,23 +13,23 @@ public class AuthController : ControllerBase
     private readonly AuthService _authService;
     public AuthController(AuthService authService)
     => _authService = authService;
-    [HttpPost("registro")]
+    [HttpPost("register")]
     [AllowAnonymous]
-    public IActionResult Registro([FromBody] RegistrationDto dto)
+    public IActionResult Register([FromBody] RegistrationDto dto)
     {
-        var resultado = _authService.Registrar(dto);
-        if (resultado == null)
+        var result = _authService.Register(dto);
+        if (result == null)
             return Conflict("El email ya está registrado");
-        return Ok(resultado);
+        return Ok(result);
     }
     // POST /api/auth/login
     [HttpPost("login")]
     [AllowAnonymous]
     public IActionResult Login([FromBody] LoginDto dto)
     {
-        var resultado = _authService.Login(dto);
-        if (resultado == null)
+        var result = _authService.Login(dto);
+        if (result == null)
             return Unauthorized("Credenciales incorrectas");
-        return Ok(resultado);
+        return Ok(result);
     }
 }

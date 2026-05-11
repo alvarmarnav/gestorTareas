@@ -28,7 +28,13 @@ public class TasksController : ControllerBase
     [HttpGet] // GET /api/tareas
     public IActionResult GetAll()
     {
-        return Ok(_taskManagerService.GetAllTasks());
+        // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(userIdStr is null) return NotFound();
+
+        int userId = int.Parse(userIdStr);
+
+        return Ok(_taskManagerService.GetAllTasks(userId));
     }
 
     [HttpGet("{id}")] // GET /api/tareas/1

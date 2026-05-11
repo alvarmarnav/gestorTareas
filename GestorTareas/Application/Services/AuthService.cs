@@ -19,7 +19,7 @@ public class AuthService
         _userRepository = userRepository;
         _config = config;
     }
-    public async Task<TokenResponseDto?> Registrar(RegistrationDto dto)
+    public async Task<TokenResponseDto?> Register(RegistrationDto dto)
     {
         // Verificar que el email no está en uso
         if (_userRepository.GetUserByEmail(dto.UserEmail) != null)
@@ -28,7 +28,9 @@ public class AuthService
         var user = new User
         {
             UserName = dto.UserName,
+            UserLastName = dto.UserLastName,
             UserEmail = dto.UserEmail,
+            IsActive = true,
             IsAdmin = false,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.UserPassword)
         };
@@ -49,11 +51,11 @@ public class AuthService
         int.Parse(_config["Jwt:ExpiracionMinutos"]!));
         var claims = new[]
         {
-new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-new Claim(ClaimTypes.Name, user.UserName),
-new Claim(ClaimTypes.Email, user.UserEmail),
-new Claim(ClaimTypes.Role, (bool)user.IsAdmin ? "Admin" : "User")
-};
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.UserEmail),
+            new Claim(ClaimTypes.Role, (bool)user.IsAdmin ? "Admin" : "User")
+            };
         var clave = new SymmetricSecurityKey(
         Encoding.UTF8.GetBytes(_config["Jwt:ClaveSecreta"]!));
         var credenciales = new SigningCredentials(clave, SecurityAlgorithms.HmacSha256);

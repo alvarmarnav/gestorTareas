@@ -10,6 +10,8 @@ using GestorTareas.Application.DTOs;
 using Microsoft.AspNetCore.Http.HttpResults;
 using LinkedTask = GestorTareas.Models.LinkedTask;
 using Microsoft.JSInterop;
+using System.Security.Claims;
+using claimUser = System.Security.Claims.ClaimsPrincipal;
 
 namespace GestorTareas.Application.Services;
 
@@ -19,8 +21,14 @@ public class TaskManagerService
 
     public TaskManagerService(ITaskRepository repository) => _repository = repository;
 
-    public List<Task> GetAllTasks() => _repository.GetAllTasks();
-
+    public List<Task> GetAllTasks()
+    {
+        return _repository.GetAllTasks();
+    }
+    public List<Task> GetAllTasks(int userId)
+    {
+        return _repository.GetAllTasks(userId);
+    }
     public List<ResponseTaskDto> GetAllTasksDto()
     {
         return _repository.GetAllTasks()
@@ -99,11 +107,11 @@ public class TaskManagerService
 
         return newTask;
     }
-   
+
     public void DeleteTask(int id)
     {
-        var task = _repository.GetTaskById(id) ??throw new Exception($"No existe la tarea con ID: {id}");
-         _repository.DeleteTask(task);
+        var task = _repository.GetTaskById(id) ?? throw new Exception($"No existe la tarea con ID: {id}");
+        _repository.DeleteTask(task);
     }
     public void UpdateTask(int id, UpdateTaskDto taskDto)
     {//TODO: observar esta exception
@@ -116,7 +124,7 @@ public class TaskManagerService
                 linked.LinkedTaskOrder = taskDto.LinkedTaskOrder ?? linked.LinkedTaskOrder;
                 break;
             case RecurringTask recurring:
-               
+
                 recurring.RecurrenceRule = taskDto.RecurrenceRule ?? recurring.RecurrenceRule;
                 break;
 
@@ -133,7 +141,7 @@ public class TaskManagerService
         updateTask.Priority = taskDto.Priority ?? updateTask.Priority;
         updateTask.Status = taskDto.Status ?? updateTask.Status;
         updateTask.DueTime = taskDto.DueTime ?? updateTask.DueTime;
-        
+
         _repository.UpdateTask(updateTask);
     }
 }
