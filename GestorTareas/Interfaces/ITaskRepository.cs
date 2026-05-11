@@ -5,7 +5,7 @@ namespace GestorTareas.Interfaces;
 public interface ITaskRepository
 {
     List<Task> GetAllTasks();
-    List<Task> GetAllTasks(int userId);
+    List<Task> GetAllTasksByUser(int userId);
     Task? GetTaskById(int id);
     void AddTask(Task task);
     void DeleteTask(Task task);

@@ -32,17 +32,25 @@ public class TasksController : ControllerBase
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(userIdStr is null) return NotFound();
 
+        return Ok(_taskManagerService.GetAllTasks());
+    }
+    [HttpGet("user/{userId:int}")] // GET /api/tareas
+    public IActionResult GetAllTaskByUser()
+    {
+        // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(userIdStr is null) return NotFound();
+
         int userId = int.Parse(userIdStr);
 
-        return Ok(_taskManagerService.GetAllTasks(userId));
+        return Ok(_taskManagerService.GetAllTasksByUser(userId));
     }
-
-    [HttpGet("{id}")] // GET /api/tareas/1
+    [HttpGet("{taskId:int}")] // GET /api/tareas/1
     public IActionResult GetById(int id)
     {
         var task = _taskManagerService.GetTaskById(id);
         if (task == null) return NotFound();
-        return Ok(task);
+        return Ok(_taskManagerService.GetTaskById(id));
     }
 
     [HttpPost] // POST /api/tareas
@@ -63,8 +71,8 @@ public class TasksController : ControllerBase
         dto.DueTime,
         dto.CancelReason,
         dto.CompositeTaskType,
-        dto.RecurrenceRule,
         dto.LinkedTaskOrder,
+        dto.RecurrenceRule,
         dto.TaskSupervisor
         );
 

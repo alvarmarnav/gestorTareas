@@ -25,9 +25,9 @@ public class TaskManagerService
     {
         return _repository.GetAllTasks();
     }
-    public List<Task> GetAllTasks(int userId)
+    public List<Task> GetAllTasksByUser(int userId)
     {
-        return _repository.GetAllTasks(userId);
+        return _repository.GetAllTasksByUser(userId);
     }
     public List<ResponseTaskDto> GetAllTasksDto()
     {

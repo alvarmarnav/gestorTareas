@@ -32,7 +32,14 @@ public class TaskRepositoryEF : ITaskRepository
         return _context.Tasks.Include(t => t.User)
         .Where(t => t.User.Id == userId).ToList();
     }
-    public Task? GetTaskById(int id) => _context.Tasks.Include(t => t.User).FirstOrDefault(t => t.Id.Equals(id));
+
+    public List<Task> GetAllTasksByUser(int userId)
+    {
+      return _context.Tasks.Include(t => t.User)
+      .Where(t => t.User.Id == userId).ToList();
+    }
+
+    public Task? GetTaskById(int id) => _context.Tasks.Include(t => t.User).FirstOrDefault(t => t.Id == id);
 
     public void UpdateTask(Task task)
     {
