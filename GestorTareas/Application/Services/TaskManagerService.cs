@@ -12,6 +12,7 @@ using LinkedTask = GestorTareas.Models.LinkedTask;
 using Microsoft.JSInterop;
 using System.Security.Claims;
 using claimUser = System.Security.Claims.ClaimsPrincipal;
+using System.Collections.Immutable;
 
 namespace GestorTareas.Application.Services;
 
@@ -144,4 +145,32 @@ public class TaskManagerService
 
         _repository.UpdateTask(updateTask);
     }
+
+    public PaginationResponseDto<ResponseTaskDto> GetPagination(int pageNumber, int itemsPerPage)
+    {
+
+        var (tasks, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage);
+
+        return new PaginationResponseDto<ResponseTaskDto>
+        {
+            Data = tasks
+        .Select(t => new ResponseTaskDto
+        {
+            Id = t.Id,
+            Title = t.Title,
+            TaskDescription = t.TaskDescription,
+            TaskPriority = (TaskPriority)t.Priority,
+            TaskStatus = (TaskStatus)t.Status,
+            DueTime = (DateTime)t.DueTime,
+            CancelReason = t.CancelReason
+        })
+        .ToList(),
+            ActualPage = pageNumber,
+            TotalItems = total,
+            ItemsPerPage = itemsPerPage,
+            TotalPages = (int)Math.Ceiling(
+        total / (double)itemsPerPage)
+        };
+    }
+
 }

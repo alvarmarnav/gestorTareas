@@ -20,7 +20,6 @@ namespace GestorTareas.Controllers;
 [Authorize]//Aplica a todos endpoints clase, luego override especificamente
 public class TasksController : ControllerBase
 {
-
     private readonly TaskManagerService _taskManagerService;
 
     public TasksController(TaskManagerService taskManagerService) => _taskManagerService = taskManagerService;
@@ -30,7 +29,7 @@ public class TasksController : ControllerBase
     {
         // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if(userIdStr is null) return NotFound();
+        if (userIdStr is null) return NotFound();
 
         return Ok(_taskManagerService.GetAllTasks());
     }
@@ -39,7 +38,7 @@ public class TasksController : ControllerBase
     {
         // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if(userIdStr is null) return NotFound();
+        if (userIdStr is null) return NotFound();
 
         int userId = int.Parse(userIdStr);
 
@@ -51,6 +50,15 @@ public class TasksController : ControllerBase
         var task = _taskManagerService.GetTaskById(id);
         if (task == null) return NotFound();
         return Ok(_taskManagerService.GetTaskById(id));
+    }
+    [HttpGet]
+    [ProducesResponseType(typeof(PaginationResponseDto<ResponseTaskDto>), 200)]
+    public IActionResult GetAll(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int itemsPerPage = 10)
+    {
+        var resultado = _taskManagerService.GetPagination(pageNumber, itemsPerPage);
+        return Ok(resultado);
     }
 
     [HttpPost] // POST /api/tareas

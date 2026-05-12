@@ -10,5 +10,6 @@ public interface ITaskRepository
     void AddTask(Task task);
     void DeleteTask(Task task);
     void UpdateTask(Task task);
-    (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage);
+    (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage, bool? onlyCompletedTask = null,
+string? search = null);
 };
