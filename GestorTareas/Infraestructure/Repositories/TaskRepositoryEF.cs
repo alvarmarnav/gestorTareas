@@ -41,6 +41,20 @@ public class TaskRepositoryEF : ITaskRepository
 
     public Task? GetTaskById(int id) => _context.Tasks.Include(t => t.User).FirstOrDefault(t => t.Id == id);
 
+    public (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage)
+    {
+        var total = _context.Tasks.Count();
+
+        var tasks = _context.Tasks
+        .Include(t => t.User)
+        .OrderBy(t=> t.CreatedAt)
+        .Skip((page-1)*ItemsPerPage)
+        .Take(ItemsPerPage)
+        .ToList();
+
+        return (tasks,total);
+    }
+
     public void UpdateTask(Task task)
     {
         _context.Tasks.Update(task);
