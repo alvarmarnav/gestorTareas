@@ -36,7 +36,7 @@ public class TaskRepositoryEF : ITaskRepository
     public List<Task> GetAllTasksByUser(int userId)
     {
         return _context.Tasks.Include(t => t.User)
-        .Where(t => t.User.Id == userId).ToList();
+        .Where(t => t.UserId == userId).ToList();
     }
 
     public Task? GetTaskById(int id) => _context.Tasks.Include(t => t.User).FirstOrDefault(t => t.Id == id);
