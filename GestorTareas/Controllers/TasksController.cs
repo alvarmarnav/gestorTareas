@@ -24,15 +24,15 @@ public class TasksController : ControllerBase
 
     public TasksController(TaskManagerService taskManagerService) => _taskManagerService = taskManagerService;
 
-    [HttpGet] // GET /api/tareas
-    public IActionResult GetAll()
-    {
-        // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr is null) return NotFound();
+    // [HttpGet] // GET /api/tareas
+    // public IActionResult GetAll()
+    // {
+    //     // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
+    //     var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    //     if (userIdStr is null) return NotFound();
 
-        return Ok(_taskManagerService.GetAllTasks());
-    }
+    //     return Ok(_taskManagerService.GetAllTasks());
+    // }
     [HttpGet("user/{userId:int}")] // GET /api/tareas
     public IActionResult GetAllTaskByUser()
     {
@@ -44,7 +44,7 @@ public class TasksController : ControllerBase
 
         return Ok(_taskManagerService.GetAllTasksByUser(userId));
     }
-    [HttpGet("{taskId:int}")] // GET /api/tareas/1
+    [HttpGet("taskId/{taskId:int}")] // GET /api/tareas/1
     public IActionResult GetById(int id)
     {
         var task = _taskManagerService.GetTaskById(id);

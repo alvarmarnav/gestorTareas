@@ -111,7 +111,7 @@ public class TaskManagerService
 
     public void DeleteTask(int id)
     {
-        var task = _repository.GetTaskById(id) ?? throw new Exception($"No existe la tarea con ID: {id}");
+        var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}");
         _repository.DeleteTask(task);
     }
     public void UpdateTask(int id, UpdateTaskDto taskDto)
