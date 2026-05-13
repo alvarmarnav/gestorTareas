@@ -28,12 +28,13 @@ namespace GestorTareas.Tests
             Assert.That(nuevaInstancia.DueTime, Is.EqualTo(new DateTime(2026, 5, 12)));
             Assert.That(nuevaInstancia.Title, Is.EqualTo(tareaOriginal.Title));
         }
-
+        //TODO:Camino Triste: Constructor_InvalidArgument_ThrowsArgumentException: Probar recurringtask validar que un valor de recurrencia ≤0 lanza  error 
+        //Cancel_NonPendingTask_ThrowsInvalidOperationException: Probar la regla de negocio que impide cancelar tareas que ya están completadas o en curso
         [Test]
         public void GenerateNewInstance_DebeIncrementarContadorInstancias()
         {
             // Arrange
-            var tarea = new RecurringTask("Test",1, DateTime.Now, 1);
+            var tarea = new RecurringTask("Test", 1, DateTime.Now, 1);
 
             // Act
             var instancia1 = tarea.GenerateNewInstance(DateTime.Now);
@@ -54,7 +55,7 @@ namespace GestorTareas.Tests
                 userId: 1,
                 dueTime: DateTime.Now,
                 recurrenceRule: 1
-                // recurringTasksCount: 15
+            // recurringTasksCount: 15
             );
 
             // Act & Assert
