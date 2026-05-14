@@ -29,7 +29,7 @@ public abstract class Task : IIdentificable
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("El título no puede estar vacío");
             if (value.Length > 30)
-                throw new ArgumentException("El título no puede contener más de 20 caracteres");
+                throw new ArgumentException("El título no puede contener más de 30 caracteres");
             field = value.Trim();
         }
     }

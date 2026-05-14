@@ -60,7 +60,7 @@ string? search = null)
             query = query.Where(t => t.Title.Contains(search));
 
         var total = query.Count();
-        var tareas = query
+        var tasks = query
         .OrderBy(t => t.CreatedAt)
         .Skip((page - 1) * ItemsPerPage)
         .Take(ItemsPerPage)
@@ -68,12 +68,12 @@ string? search = null)
 
         // var total = _context.Tasks.Count();
 
-        var tasks = _context.Tasks
-        .Include(t => t.User)
-        .OrderBy(t => t.CreatedAt)
-        .Skip((page - 1) * ItemsPerPage)
-        .Take(ItemsPerPage)
-        .ToList();
+        // var tasks = _context.Tasks
+        // .Include(t => t.User)
+        // .OrderBy(t => t.CreatedAt)
+        // .Skip((page - 1) * ItemsPerPage)
+        // .Take(ItemsPerPage)
+        // .ToList();
 
         return (tasks, total);
     }

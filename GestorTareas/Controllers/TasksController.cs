@@ -69,8 +69,8 @@ public class TasksController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int itemsPerPage = 10)
     {
-        var resultado = _taskManagerService.GetPagination(pageNumber, itemsPerPage);
-        return Ok(resultado);
+        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage);
+        return Ok(result);
     }
     /// <summary>
     /// Crea una nueva tarea

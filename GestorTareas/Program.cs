@@ -58,6 +58,8 @@ options.UseSqlServer(builder.Configuration
 )
 );
 builder.Services.AddTransient<UsersSeeder>();
+builder.Services.AddTransient<TaskSeeder>();
+
 //REPOSITORIOS CON SUS INTERFACES
 builder.Services.AddScoped<ITaskRepository, TaskRepositoryEF>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -114,6 +116,8 @@ using (var scope = app.Services.CreateScope())
 
     var seeder = services.GetRequiredService<UsersSeeder>();
     await seeder.AsyncSeeder();
+    var seeder2 = services.GetRequiredService<TaskSeeder>();
+    await seeder2.AsyncSeeder();
 }
 
 app.Run(); // arranca el servidor y se queda
