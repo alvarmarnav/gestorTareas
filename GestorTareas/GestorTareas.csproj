@@ -40,6 +40,7 @@
     <Folder Include="DataBase\" />
     <Folder Include="Enums\" />
     <Folder Include="Infraestructure\Data\Migrations\" />
+    <Folder Include="Infraestructure\Data\Seeders\" />
     <Folder Include="Migrations\" />
     <Folder Include="Modules\" />
     <Folder Include="Modules\Swagger\" />

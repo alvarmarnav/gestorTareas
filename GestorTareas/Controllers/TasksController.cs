@@ -33,6 +33,10 @@ public class TasksController : ControllerBase
 
     //     return Ok(_taskManagerService.GetAllTasks());
     // }
+    /// <summary>
+    /// Obtiene todas las tareas que pertenecen a un usuario mediante ID.
+    /// </summary>
+    /// <returns>Lista de tareas con el nombre del usuario asignado.</returns>
     [HttpGet("user/{userId:int}")] // GET /api/tareas
     public IActionResult GetAllTaskByUser()
     {
@@ -44,6 +48,10 @@ public class TasksController : ControllerBase
 
         return Ok(_taskManagerService.GetAllTasksByUser(userId));
     }
+    /// <summary>
+    /// Obtiene la tarea seleccioinada por ID.
+    /// </summary>
+    /// <returns>Tarea seleccionada con ID.</returns>
     [HttpGet("taskId/{taskId:int}")] // GET /api/tareas/1
     public IActionResult GetById(int id)
     {
@@ -51,6 +59,10 @@ public class TasksController : ControllerBase
         if (task == null) return NotFound();
         return Ok(_taskManagerService.GetTaskById(id));
     }
+    /// <summary>
+    /// Obtiene DTO todas las tareas.
+    /// </summary>
+    /// <returns>Obtiene el DTO de todas las tarea..</returns>
     [HttpGet]
     [ProducesResponseType(typeof(PaginationResponseDto<ResponseTaskDto>), 200)]
     public IActionResult GetAll(
@@ -60,8 +72,14 @@ public class TasksController : ControllerBase
         var resultado = _taskManagerService.GetPagination(pageNumber, itemsPerPage);
         return Ok(resultado);
     }
-
+    /// <summary>
+    /// Crea una nueva tarea
+    /// </summary>
     [HttpPost] // POST /api/tareas
+    [ProducesResponseType(typeof(TaskDTO),
+    StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult Create([FromBody] CreateTaskDto dto)
     {
         //Obtener ID del usuario
@@ -87,7 +105,12 @@ public class TasksController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
         // return CreatedAtAction(nameof(GetById), new { id = task.Id }, tarea);
     }
-
+    /// <summary>
+    /// Actualiza la Tarea seleccionada por Id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="taskDto"></param>
+    /// <returns></returns>
     [HttpPut("{id}")] // PUT /api/tareas/1
     public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
     {
@@ -95,7 +118,11 @@ public class TasksController : ControllerBase
 
         return NoContent();
     }
-
+    /// <summary>
+    /// Elimina una tarea seleccionada por ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete("{id}")] // DELETE /api/tareas/1
     [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)

@@ -1,7 +1,9 @@
 using System;
 using GestorTareas.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using Task = GestorTareas.Models.Task;
+using User = GestorTareas.Models.User;
 
 namespace GestorTareas.Infraestructure.Repositories;
 
@@ -29,7 +31,18 @@ public class GestorTareasContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        
+        // => optionsBuilder
+        // .UseAsyncSeeding(async(context, _, CancellationToken)=>
+        // {
+        //     var existsUserAdmin = await context.Set<User>().AnyAsync(u => u.UserName =="admin");
+
+        //     if (!existsUserAdmin)
+        //     {
+        //         context.Set<User>().Add(new User());
+        //         await context.SaveChangesAsync();
+        //     }
+        // }
+        // );
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

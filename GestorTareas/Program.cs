@@ -9,6 +9,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using System.Reflection;
+using GestorTareas.Infraestructure.Data.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    var xmlFile = $"{Assembly
+    .GetExecutingAssembly()
+    .GetName().Name}.xml";
+    var xmlPath = Path.Combine(
+    AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -49,6 +57,7 @@ options.UseSqlServer(builder.Configuration
 .GetConnectionString("GestorTareas")
 )
 );
+builder.Services.AddTransient<UsersSeeder>();
 //REPOSITORIOS CON SUS INTERFACES
 builder.Services.AddScoped<ITaskRepository, TaskRepositoryEF>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -93,5 +102,18 @@ app.UseAuthentication(); // primero identifica al usuario
 app.UseAuthorization(); // luego comprueba sus permisos
 
 app.MapControllers();
+
+// MIGRATIONS + SEEDERS
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    // var context = services.GetRequiredService<GestorTareasContext>();
+    // // Crear BD y ejecutar migrations pendientes
+    // await context.Database.MigrateAsync();
+
+    var seeder = services.GetRequiredService<UsersSeeder>();
+    await seeder.AsyncSeeder();
+}
 
 app.Run(); // arranca el servidor y se queda
