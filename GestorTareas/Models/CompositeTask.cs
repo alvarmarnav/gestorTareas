@@ -20,7 +20,7 @@ public class CompositeTask : Task
             field = value;
         }
     }
-   public List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
+    public List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
 
     private const int _MAX_ITEMS = 30;
     public List<LinkedTask> LinkedTaskList { get; set; } = new List<LinkedTask>();

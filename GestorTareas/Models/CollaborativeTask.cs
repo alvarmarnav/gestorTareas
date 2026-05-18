@@ -4,6 +4,7 @@ using GestorTareas.Enums;
 using GestorTareas.Models;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
+namespace GestorTareas.Models;
 public class CollaborativeTask : GestorTareas.Models.Task
 {
     public List<User> TeamMembers { get; set; } = new List<User>(20);
@@ -44,16 +45,26 @@ public CollaborativeTask() : base() { }
     public override string ResumeTask() => $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
 
 
-    public void AddMember(int userId)
+    public void AddMember(User user)
     {
-
+        this.TeamMembers.Add(user);
     }
 
-    public void RemoveMember(int userId) { }
-
-    public List<User> GetMembers()
+    public void RemoveMember(int userId)
     {
-        // return _TeamMembers;
-        throw new NotImplementedException();
+        if(userId>0){
+            var userSelected = this.GetTeamMemberUserById(userId);
+            TeamMembers.Remove(userSelected);
+        }
+    }
+
+    public List<User> GetTeamMembers()
+    {
+       return TeamMembers;
+    }
+    public User GetTeamMemberUserById(int userId)
+    {
+        var userSelected = TeamMembers.FirstOrDefault(i => i.Id ==userId) ??throw new KeyNotFoundException("No hay usuario con este ID en el Equipo");
+        return userSelected;
     }
 }

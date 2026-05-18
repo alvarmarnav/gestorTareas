@@ -23,7 +23,7 @@ public class GestorTareasContext : DbContext
     public DbSet<LinkedTask> LinkedTasks { get; set; }
 
     public DbSet<RecurringTask> RecurringTasks { get; set; }
-
+    public DbSet<CollaborativeTask> CollaborativeTasks{get;set;}
     public GestorTareasContext(DbContextOptions<GestorTareasContext> options) : base(options)
     {
 

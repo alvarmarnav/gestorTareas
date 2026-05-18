@@ -8,7 +8,7 @@ namespace GestorTareas.Application.DTOs;
 
 public class UpdateTaskDto
 {
-    [MaxLength(50,ErrorMessage ="Longitud máxima permitida de 50 caracteres.")]
+    [MaxLength(30,ErrorMessage ="Longitud máxima permitida de 30 caracteres.")]
     public string? Title { get; set; } = null;
     [MaxLength(250,ErrorMessage ="Longitud máxima permitida de 250 caracteres.")]
     public string? TaskDescription { get; set; } = null;

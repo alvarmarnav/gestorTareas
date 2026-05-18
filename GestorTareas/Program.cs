@@ -85,8 +85,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
-
-
 var app = builder.Build();
 
 // PARTE 2: configurar el pipeline de peticiones

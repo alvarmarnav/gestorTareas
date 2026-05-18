@@ -41,14 +41,21 @@ public class TaskRepositoryEF : ITaskRepository
 
     public Task? GetTaskById(int id) => _context.Tasks.Include(t => t.User).FirstOrDefault(t => t.Id == id);
 
-    public (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage, bool? onlyCompletedTask = null,
+    public (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage,int userId, bool? onlyCompletedTask = null,
 string? search = null)
     {
+        User userConsultant = _context.Users.FirstOrDefault(u=>u.Id==userId);
+        
         // Consulta base — todavía no va a SQL
+        //TODO:Añadido para que solo muestre las del propio user
         var query = _context.Tasks
         .Include(t => t.User)
         .AsQueryable();
-
+        
+        if(!(bool)userConsultant.IsAdmin)
+        {
+            query = query.Where(t =>t.UserId ==userId);
+        }
         //TODO:REVISAR ESTA CONDICION
         // Aplicar filtros solo si se han especificado
         if (onlyCompletedTask.HasValue)
@@ -86,6 +93,18 @@ string? search = null)
     public void UpdateTask(Task task)
     {
         _context.Tasks.Update(task);
+        _context.SaveChanges();
+    }
+    public void AddNewTeamMember(CollaborativeTask collaborativeTask, User user)
+    {
+        _context.CollaborativeTasks.Attach(collaborativeTask);
+        collaborativeTask.AddMember(user);
+        _context.SaveChanges();
+    }
+    public void RemoveTeamMember(CollaborativeTask collaborativeTask, User user)
+    {
+        _context.CollaborativeTasks.Attach(collaborativeTask);
+        collaborativeTask.RemoveMember(user.Id);
         _context.SaveChanges();
     }
 }

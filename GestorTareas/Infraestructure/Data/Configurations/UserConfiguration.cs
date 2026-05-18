@@ -7,7 +7,7 @@ namespace GestorTareas.Infraestructure.Data.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<GestorTareas.Models.User> builder)
     {
         builder.ToTable("Users");
 
@@ -38,7 +38,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         .HasDefaultValue(null);
 
         builder
-        .HasMany(u => u.tasksList)
+        .HasMany(u => u.TasksList)
         .WithMany( t => t.UsersList)
         .UsingEntity<Dictionary<string, object>>(
             "UserTasks",

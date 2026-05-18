@@ -1,4 +1,5 @@
 using System;
+using GestorTareas.Models;
 using Task = GestorTareas.Models.Task;
 namespace GestorTareas.Interfaces;
 
@@ -10,6 +11,8 @@ public interface ITaskRepository
     void AddTask(Task task);
     void DeleteTask(Task task);
     void UpdateTask(Task task);
-    (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage, bool? onlyCompletedTask = null,
+    (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage,int userId, bool? onlyCompletedTask = null,
 string? search = null);
+    void AddNewTeamMember(CollaborativeTask collaborativeTask,User user);
+    void RemoveTeamMember(CollaborativeTask collaborativeTask,User user);
 };

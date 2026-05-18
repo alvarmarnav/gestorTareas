@@ -13,14 +13,21 @@ using Microsoft.JSInterop;
 using System.Security.Claims;
 using claimUser = System.Security.Claims.ClaimsPrincipal;
 using System.Collections.Immutable;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using GestorTareas.Controllers;
 
 namespace GestorTareas.Application.Services;
 
 public class TaskManagerService
 {
     private readonly ITaskRepository _repository;
-
-    public TaskManagerService(ITaskRepository repository) => _repository = repository;
+    private readonly IUserRepository _userRepository;
+    public TaskManagerService(ITaskRepository repository, IUserRepository userRepository)
+    {
+        _repository = repository;
+        _userRepository = userRepository;
+    }
 
     public List<Task> GetAllTasks()
     {
@@ -28,7 +35,9 @@ public class TaskManagerService
     }
     public List<Task> GetAllTasksByUser(int userId)
     {
-        return _repository.GetAllTasksByUser(userId);
+        var validUser = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
+
+        return _repository.GetAllTasksByUser(validUser.Id);
     }
     public List<ResponseTaskDto> GetAllTasksDto()
     {
@@ -114,10 +123,13 @@ public class TaskManagerService
         var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}");
         _repository.DeleteTask(task);
     }
-    public void UpdateTask(int id, UpdateTaskDto taskDto)
+    public void UpdateTask(int id, UpdateTaskDto taskDto, int userActiveId)
     {//TODO: observar esta exception
         var updateTask = _repository.GetTaskById(id) ?? throw new Exception();
-
+        var userActive = _userRepository.GetUserById(userActiveId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userActiveId}");
+        
+        if(!(bool)userActive.IsAdmin && updateTask.UserId!=userActiveId && !updateTask.UsersList.Any(u=>u.Id==userActiveId))
+            throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
         switch (updateTask)
         {
 
@@ -146,10 +158,11 @@ public class TaskManagerService
         _repository.UpdateTask(updateTask);
     }
 
-    public PaginationResponseDto<ResponseTaskDto> GetPagination(int pageNumber, int itemsPerPage)
+    public PaginationResponseDto<ResponseTaskDto> GetPagination(int pageNumber, int itemsPerPage, int userId)
     {
-
-        var (tasks, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage);
+        //Aqui debo incluir la identificacion del user para que solo las pueda ver el propietario
+        var userActive = _userRepository.GetUserById(userId)??throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
+        var (tasks, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage,userId);
 
         return new PaginationResponseDto<ResponseTaskDto>
         {
@@ -172,5 +185,27 @@ public class TaskManagerService
         total / (double)itemsPerPage)
         };
     }
-
+    public void AddNewTeamMember(int taskId, int userId)
+    {
+        var selectedUser = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
+        var selectedTask = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
+        if (selectedTask.GetType().Name == "CollaborativeTask")
+            _repository.AddNewTeamMember((CollaborativeTask)selectedTask, (User)selectedUser);
+        else
+            throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
+    }
+    public void RemoveTeamMember(int taskId, int userId)
+    {
+        var selectedUser = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
+        var selectedTask = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
+        if (selectedTask is CollaborativeTask colTask)
+        {
+            if (colTask.TeamMembers.Any(m => m.Id == userId))
+                throw new ArgumentException($"El usuario con ID({userId}) ya está en el equipo.");
+            else
+                _repository.RemoveTeamMember((CollaborativeTask)selectedTask, (User)selectedUser);
+        }
+        else
+            throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
+    }
 }

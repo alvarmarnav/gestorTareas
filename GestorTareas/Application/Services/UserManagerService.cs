@@ -17,15 +17,21 @@ public class UserManagerService
         string userLastName,
         string userEmail,
         bool? isActive,
-        bool? isAdmin)
+        bool? isAdmin,
+        int userActiveId)
     {
+        //TODO:AÑADIDO PARA QUE NO PUEDAN CREARSE USUARIOS ADMIN, SOLO EL ADMIN
+        var userActive = _userRepository.GetUserById(userActiveId)?? throw new KeyNotFoundException($"No existe usuario con el ID: {userActiveId}");
+        if(!(bool)userActive.IsAdmin)
+            isAdmin = false;
+
         var newUser = new User
         {
             UserName = userName,
             UserLastName = userLastName,
             UserEmail = userEmail,
             IsActive = isActive,
-            IsAdmin = isAdmin
+            IsAdmin = isAdmin??false
         };
         _userRepository.AddUser(newUser);
         return newUser;

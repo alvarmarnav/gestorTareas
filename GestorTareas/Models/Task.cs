@@ -136,7 +136,7 @@ public abstract class Task : IIdentificable
         UserId = userId;
         TaskDescription = taskDescription?.Trim() ?? "Sin descripción.";
         Priority = priority;
-        Status = status;
+        Status = TaskStatus.Pending;
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
         DueTime = dueTime;
@@ -147,8 +147,8 @@ public abstract class Task : IIdentificable
     {
         if (string.IsNullOrWhiteSpace(newTitle))
             throw new ArgumentException("Título vacío");
-        if (newTitle.Length > 20)
-            throw new ArgumentException("Máx 20 caracteres");
+        if (newTitle.Length > 30)
+            throw new ArgumentException("Máx 30 caracteres");
         Title = newTitle.Trim();
     }
 

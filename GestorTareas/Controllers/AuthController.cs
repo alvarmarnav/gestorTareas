@@ -13,11 +13,12 @@ public class AuthController : ControllerBase
     private readonly AuthService _authService;
     public AuthController(AuthService authService)
     => _authService = authService;
+
     [HttpPost("register")]
     [AllowAnonymous]
-    public IActionResult Register([FromBody] RegistrationDto dto)
+    public async Task<IActionResult> Register([FromBody] RegistrationDto dto)
     {
-        var result = _authService.Register(dto);
+        var result = await _authService.Register(dto);
         if (result == null)
             return Conflict("El email ya está registrado");
         return Ok(result);

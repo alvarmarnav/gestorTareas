@@ -21,7 +21,6 @@ namespace GestorTareas.Controllers;
 public class TasksController : ControllerBase
 {
     private readonly TaskManagerService _taskManagerService;
-
     public TasksController(TaskManagerService taskManagerService) => _taskManagerService = taskManagerService;
 
     // [HttpGet] // GET /api/tareas
@@ -37,8 +36,18 @@ public class TasksController : ControllerBase
     /// Obtiene todas las tareas que pertenecen a un usuario mediante ID.
     /// </summary>
     /// <returns>Lista de tareas con el nombre del usuario asignado.</returns>
+    [Authorize(Roles ="Admin")]
     [HttpGet("user/{userId:int}")] // GET /api/tareas
-    public IActionResult GetAllTaskByUser()
+    public IActionResult GetAllTaskByUser(int userId)
+    {
+        return Ok(_taskManagerService.GetAllTasksByUser(userId));
+    }
+    /// <summary>
+    /// Obtiene todas las tareas que pertenecen a un usuario mediante ID.
+    /// </summary>
+    /// <returns>Lista de tareas con el nombre del usuario asignado.</returns>
+    [HttpGet("tasks")] // GET /api/tareas
+    public IActionResult GetAllTaskOwnUser()
     {
         // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -53,11 +62,19 @@ public class TasksController : ControllerBase
     /// </summary>
     /// <returns>Tarea seleccionada con ID.</returns>
     [HttpGet("taskId/{taskId:int}")] // GET /api/tareas/1
-    public IActionResult GetById(int id)
+    public IActionResult GetById(int taskId)
     {
-        var task = _taskManagerService.GetTaskById(id);
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdStr is null) return NotFound();
+        
+        var userId = int.Parse(userIdStr);
+
+        var task = _taskManagerService.GetTaskById(taskId);
         if (task == null) return NotFound();
-        return Ok(_taskManagerService.GetTaskById(id));
+
+        if(task.UserId!=userId || !task.UsersList.Any(u=>u.Id ==userId) || !User.IsInRole("Admin"))
+            return Unauthorized();
+        return Ok(_taskManagerService.GetTaskById(taskId));
     }
     /// <summary>
     /// Obtiene DTO todas las tareas.
@@ -69,7 +86,10 @@ public class TasksController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int itemsPerPage = 10)
     {
-        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage);
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(userIdStr is null) return NotFound();
+        int userId = int.Parse(userIdStr);
+        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage,userId);
         return Ok(result);
     }
     /// <summary>
@@ -114,8 +134,11 @@ public class TasksController : ControllerBase
     [HttpPut("{id}")] // PUT /api/tareas/1
     public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
     {
-        _taskManagerService.UpdateTask(id, taskDto);
-
+        //Diferenciar entre Propietario y Admin
+        var userActiveStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+         if (userActiveStr is null) return Unauthorized();
+        var userActiveId = int.Parse(userActiveStr);
+        _taskManagerService.UpdateTask(id, taskDto,userActiveId);
         return NoContent();
     }
     /// <summary>
@@ -128,6 +151,30 @@ public class TasksController : ControllerBase
     public IActionResult Delete(int id)
     {
         _taskManagerService.DeleteTask(id);
+        return NoContent();
+    }
+    /// <summary>
+    /// Añadir nuevo usuario a una CollaborativeTask
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpPut("/collaborativeTask/{taskId:int}/{userId:int}")]
+    public IActionResult AddNewTeamMember(int taskId, int userId)
+    {
+        _taskManagerService.AddNewTeamMember(taskId,userId);
+        return NoContent();
+    }
+    /// <summary>
+    /// Eliminar usuario de una CollaborativeTask
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}/{userId:int}")]
+    public IActionResult RemoveTeamMember(int taskId, int userId)
+    {
+        _taskManagerService.RemoveTeamMember(taskId,userId);
         return NoContent();
     }
 }
