@@ -55,7 +55,7 @@ public class UsersController : ControllerBase
           userDto.UserEmail,
           userDto.IsActive,
           userDto.IsAdmin,//TODO:ATENTO A ESTE PUNTO, SI DEBE SER ACCESIBLE O LIMITAR
-         userDto.UserActiveId
+          userDto.UserActiveId
       );
 
       return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
@@ -99,14 +99,5 @@ public class UsersController : ControllerBase
       {
          return Problem($"Error: {ex.Message}");
       }
-   }
-   [Authorize]
-   [HttpGet("ownUser")]
-   public IActionResult GetOwnUserInfo()
-   {
-      var userActiveStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-      if (userActiveStr is null) return Unauthorized();
-      var userActiveId = int.Parse(userActiveStr);
-      return Ok(_userManagerService.GetUserById(userActiveId));
    }
 }
