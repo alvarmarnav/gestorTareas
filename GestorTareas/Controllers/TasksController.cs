@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Task = GestorTareas.Models.Task;
+using  GestorTareas.Helpers.UserConnectedHelper;
 
 
 namespace GestorTareas.Controllers;
@@ -50,10 +51,7 @@ public class TasksController : ControllerBase
     public IActionResult GetAllTaskOwnUser()
     {
         // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr is null) return NotFound();
-
-        int userId = int.Parse(userIdStr);
+      int userId = GetConnectedUser(ClaimsPrincipal user)
 
         return Ok(_taskManagerService.GetAllTasksByUser(userId));
     }
@@ -61,20 +59,21 @@ public class TasksController : ControllerBase
     /// Obtiene la tarea seleccioinada por ID.
     /// </summary>
     /// <returns>Tarea seleccionada con ID.</returns>
-    [HttpGet("taskId/{taskId:int}")] // GET /api/tareas/1
+    [HttpGet("{taskId:int}")] // GET /api/tareas/1
     public IActionResult GetById(int taskId)
     {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr is null) return NotFound();
+        if (userIdStr is null) return Unauthorized();
         
-        var userId = int.Parse(userIdStr);
+        int.TryParse(userIdStr,out var userId);
 
         var task = _taskManagerService.GetTaskById(taskId);
         if (task == null) return NotFound();
 
-        if(task.UserId!=userId || !task.UsersList.Any(u=>u.Id ==userId) || !User.IsInRole("Admin"))
+        if(task.UserId!=userId && !task.UsersList.Any(u=>u.Id ==userId) && !User.IsInRole("Admin"))
             return Unauthorized();
-        return Ok(_taskManagerService.GetTaskById(taskId));
+       
+        return Ok(task);
     }
     /// <summary>
     /// Obtiene DTO todas las tareas.

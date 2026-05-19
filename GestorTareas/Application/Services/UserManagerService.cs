@@ -26,7 +26,7 @@ public class UserManagerService
             IsAdmin = (bool)u.IsAdmin
         });
     }
-    public User AddUser(
+    public UserResponseDto AddUser(
         string userName,
         string userLastName,
         string userEmail,
@@ -44,11 +44,19 @@ public class UserManagerService
             UserName = userName,
             UserLastName = userLastName,
             UserEmail = userEmail,
-            IsActive = isActive,
+            IsActive = isActive??true,
             IsAdmin = isAdmin ?? false
         };
         _userRepository.AddUser(newUser);
-        return newUser;
+
+        return new UserResponseDto
+        {
+            UserName = newUser.UserName,
+            UserLastName = newUser.UserLastName,
+            UserEmail = newUser.UserEmail,
+            IsActive = (bool)newUser.IsActive,
+            IsAdmin = (bool)newUser.IsAdmin
+        };
     }
 
     public UserResponseDto? GetUserById(int id)

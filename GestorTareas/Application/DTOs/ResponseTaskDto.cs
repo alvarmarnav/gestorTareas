@@ -1,5 +1,6 @@
 using System;
 using GestorTareas.Enums;
+using GestorTareas.Models;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas;
@@ -14,6 +15,7 @@ public class ResponseTaskDto
     public TaskStatus TaskStatus { get; set; }
     public DateTime DueTime { get; set; }
     public string? CancelReason { get; set; }
+    public List<User> UsersList{get;set;} = []; 
 
     public ResponseTaskDto() { }
     public ResponseTaskDto(
@@ -23,7 +25,8 @@ public class ResponseTaskDto
         TaskPriority taskPriority,
         TaskStatus taskStatus,
         DateTime dueTime,
-        String cancelReason
+        String cancelReason,
+        List<User> usersList
     )
     {
         Id = id;
@@ -33,6 +36,7 @@ public class ResponseTaskDto
         TaskStatus = taskStatus;
         DueTime = dueTime;
         CancelReason = cancelReason;
+        UsersList = usersList;
     }
 
 }
