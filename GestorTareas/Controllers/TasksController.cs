@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Task = GestorTareas.Models.Task;
-using  GestorTareas.Helpers.UserConnectedHelper;
+using GestorTareas.Helpers;
 
 
 namespace GestorTareas.Controllers;
@@ -37,7 +37,7 @@ public class TasksController : ControllerBase
     /// Obtiene todas las tareas que pertenecen a un usuario mediante ID.
     /// </summary>
     /// <returns>Lista de tareas con el nombre del usuario asignado.</returns>
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpGet("user/{userId:int}")] // GET /api/tareas
     public IActionResult GetAllTaskByUser(int userId)
     {
@@ -50,9 +50,11 @@ public class TasksController : ControllerBase
     [HttpGet("tasks")] // GET /api/tareas
     public IActionResult GetAllTaskOwnUser()
     {
-        // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
-      int userId = GetConnectedUser(ClaimsPrincipal user)
-
+        var claimUser = ClaimsPrincipal.Current;
+        if(claimUser is null)
+            return Unauthorized();
+        var userId = UserConnectedHelper.GetConnectedUser(claimUser);
+        
         return Ok(_taskManagerService.GetAllTasksByUser(userId));
     }
     /// <summary>
@@ -64,15 +66,15 @@ public class TasksController : ControllerBase
     {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdStr is null) return Unauthorized();
-        
-        int.TryParse(userIdStr,out var userId);
+
+        int.TryParse(userIdStr, out var userId);
 
         var task = _taskManagerService.GetTaskById(taskId);
         if (task == null) return NotFound();
 
-        if(task.UserId!=userId && !task.UsersList.Any(u=>u.Id ==userId) && !User.IsInRole("Admin"))
+        if (task.UserId != userId && !task.UsersList.Any(u => u.Id == userId) && !User.IsInRole("Admin"))
             return Unauthorized();
-       
+
         return Ok(task);
     }
     /// <summary>
@@ -86,9 +88,9 @@ public class TasksController : ControllerBase
         [FromQuery] int itemsPerPage = 10)
     {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if(userIdStr is null) return NotFound();
+        if (userIdStr is null) return NotFound();
         int userId = int.Parse(userIdStr);
-        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage,userId);
+        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage, userId);
         return Ok(result);
     }
     /// <summary>
@@ -135,9 +137,9 @@ public class TasksController : ControllerBase
     {
         //Diferenciar entre Propietario y Admin
         var userActiveStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-         if (userActiveStr is null) return Unauthorized();
+        if (userActiveStr is null) return Unauthorized();
         var userActiveId = int.Parse(userActiveStr);
-        _taskManagerService.UpdateTask(id, taskDto,userActiveId);
+        _taskManagerService.UpdateTask(id, taskDto, userActiveId);
         return NoContent();
     }
     /// <summary>
@@ -161,7 +163,7 @@ public class TasksController : ControllerBase
     [HttpPut("/collaborativeTask/{taskId:int}/{userId:int}")]
     public IActionResult AddNewTeamMember(int taskId, int userId)
     {
-        _taskManagerService.AddNewTeamMember(taskId,userId);
+        _taskManagerService.AddNewTeamMember(taskId, userId);
         return NoContent();
     }
     /// <summary>
@@ -173,7 +175,7 @@ public class TasksController : ControllerBase
     [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}/{userId:int}")]
     public IActionResult RemoveTeamMember(int taskId, int userId)
     {
-        _taskManagerService.RemoveTeamMember(taskId,userId);
+        _taskManagerService.RemoveTeamMember(taskId, userId);
         return NoContent();
     }
 }
