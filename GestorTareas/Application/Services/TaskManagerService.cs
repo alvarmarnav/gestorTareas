@@ -33,11 +33,23 @@ public class TaskManagerService
     {
         return _repository.GetAllTasks();
     }
-    public List<Task> GetAllTasksByUser(int userId)
+    public List<ResponseTaskDto> GetAllTasksByUser(int userId)
     {
         var validUser = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
 
-        return _repository.GetAllTasksByUser(validUser.Id);
+        return _repository.GetAllTasksByUser(userId)
+        .Select(t => new ResponseTaskDto
+        {
+            Id=t.Id,
+            Title=t.Title,
+            UserId=t.UserId,
+            TaskDescription=t.TaskDescription,
+            TaskPriority= (TaskPriority)t.Priority,
+            TaskStatus= (TaskStatus)t.Status,
+            DueTime= (DateTime)t.DueTime,
+            CancelReason=t.CancelReason,
+            UsersList=t.UsersList
+            }).ToList();
     }
     public List<ResponseTaskDto> GetAllTasksDto()
     {
@@ -53,7 +65,21 @@ public class TaskManagerService
             CancelReason = t.CancelReason
         }).ToList();
     }
-    public Task? GetTaskById(int id) => _repository.GetTaskById(id);
+    public ResponseTaskDto? GetTaskById(int id)
+    {
+        var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}.");
+        return new ResponseTaskDto
+        {
+            Id = task.Id,
+            Title = task.Title,
+            UserId = task.UserId,
+            TaskDescription = task.TaskDescription,
+            TaskPriority = (TaskPriority)task.Priority,
+            TaskStatus = (Enums.TaskStatus)task.Status,
+            DueTime = (DateTime)task.DueTime,
+            CancelReason = task.CancelReason
+        };
+    }
 
     public Task AddTask(
         string title,
@@ -127,8 +153,8 @@ public class TaskManagerService
     {//TODO: observar esta exception
         var updateTask = _repository.GetTaskById(id) ?? throw new Exception();
         var userActive = _userRepository.GetUserById(userActiveId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userActiveId}");
-        
-        if(!(bool)userActive.IsAdmin && updateTask.UserId!=userActiveId && !updateTask.UsersList.Any(u=>u.Id==userActiveId))
+
+        if (!(bool)userActive.IsAdmin && updateTask.UserId != userActiveId && !updateTask.UsersList.Any(u => u.Id == userActiveId))
             throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
         switch (updateTask)
         {
@@ -161,8 +187,8 @@ public class TaskManagerService
     public PaginationResponseDto<ResponseTaskDto> GetPagination(int pageNumber, int itemsPerPage, int userId)
     {
         //Aqui debo incluir la identificacion del user para que solo las pueda ver el propietario
-        var userActive = _userRepository.GetUserById(userId)??throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
-        var (tasks, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage,userId);
+        var userActive = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
+        var (tasks, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage, userId);
 
         return new PaginationResponseDto<ResponseTaskDto>
         {

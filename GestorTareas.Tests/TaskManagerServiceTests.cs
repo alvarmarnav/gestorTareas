@@ -11,6 +11,7 @@ namespace GestorTareas.Tests;
 public class TaskManagerServiceTests
 {
     private Mock<ITaskRepository> _mockRepository;
+    private Mock<IUserRepository> _mockUserRepository;
     private TaskManagerService _taskService;
 
     // private static IEnumerable<TestCaseData> TestCaseDatas()
@@ -33,7 +34,7 @@ public class TaskManagerServiceTests
     public void Setup()
     {
         _mockRepository = new Mock<ITaskRepository>();
-        _taskService = new TaskManagerService(_mockRepository.Object);
+        _taskService = new TaskManagerService(_mockRepository.Object,_mockUserRepository.Object);
         _taskToTest = new List<Models.Task>(_taskListBase);
     }
     [Test]

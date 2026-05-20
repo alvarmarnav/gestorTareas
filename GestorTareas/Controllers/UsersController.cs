@@ -54,9 +54,8 @@ public class UsersController : ControllerBase
           userDto.UserLastName,
           userDto.UserEmail,
           userDto.IsActive,
-          userDto.IsAdmin,//TODO:ATENTO A ESTE PUNTO, SI DEBE SER ACCESIBLE O LIMITAR
-          userDto.UserActiveId
-      );
+          userDto.IsAdmin//TODO:ATENTO A ESTE PUNTO, SI DEBE SER ACCESIBLE O LIMITAR
+          );
 
       return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
 

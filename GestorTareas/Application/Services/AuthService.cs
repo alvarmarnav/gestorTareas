@@ -40,7 +40,7 @@ public class AuthService
     public TokenResponseDto? Login(LoginDto dto)
     {
         var user = _userRepository.GetUserByEmail(dto.UserEmail);
-        if (user == null) return null;
+        if (user == null || (bool)!user.IsActive) return null;
         if (!BCrypt.Net.BCrypt.Verify(dto.UserPassword, user.PasswordHash))
             return null;
         return GenerarToken(user);

@@ -57,10 +57,10 @@ public abstract class Task : IIdentificable
                 field = value;
         }
     }
-    private TaskStatus _status;
+    // private TaskStatus _status;
     public TaskStatus? Status
     {
-        get; set
+        get;private set
         {
             if (value is not null && !Enum.IsDefined(typeof(TaskStatus), value))
             {
@@ -70,11 +70,11 @@ public abstract class Task : IIdentificable
             {
                 value = TaskStatus.Pending;
             }
-            else if (_status == TaskStatus.Completed && (value == TaskStatus.InProgress || value == TaskStatus.Pending))
+            else if (field == TaskStatus.Completed && (value == TaskStatus.InProgress || value == TaskStatus.Pending))
             {
                 throw new ArgumentException("No se puede modificar el estado de una tarea ya completada.");
             }
-            _status = (TaskStatus)value;
+            field = (TaskStatus)value;
         }
     }
     public DateTime CreatedAt { get; set; }
