@@ -38,18 +38,5 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
         builder.HasOne(t => t.User)
         .WithMany()
         .HasForeignKey("UserId");
-
-        builder
-        .HasOne(t => t.Task)
-        .WithMany(t => t.Dependencies)
-        .HasForeignKey(td => td.TaskId)
-        .OnDelete(DeleteBehavior.Restrict);
-
-        builder
-            .HasOne(td => td.DependsOn)
-            .WithMany(t => t.RequiredBy)
-            .HasForeignKey(td => td.DependsOnTaskId)
-            .OnDelete(DeleteBehavior.Restrict);
-
     }
 }

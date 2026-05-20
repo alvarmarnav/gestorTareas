@@ -10,13 +10,6 @@ public class CompositeTaskConfiguration : IEntityTypeConfiguration<Models.Compos
   {
     builder.ToTable("CompositeTasks");
 
-    builder.Property(ct => ct.CompositeTaskType)
-    .IsRequired();
-
-    builder.HasMany(ct => ct.LinkedTaskList)
-      .WithOne()
-      .HasForeignKey("FKCompositeTaskId_Linked");
-
     builder.HasMany(ct => ct.SubTaskList)
     .WithOne()
     .HasForeignKey("FKCompositeTaskId_Sub");

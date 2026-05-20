@@ -101,21 +101,19 @@ public class TaskManagerService
         User? taskSupervisor)
     {
 
-
+//TODO::observar
         Task newTask = compositeTaskType switch
         {
             // Casos con compositeTaskType != null
             not null when linkedTaskOrder is not null
-                => new LinkedTask
-                {
-                    CompositeTaskType = compositeTaskType.Value,
-                    LinkedTaskOrder = linkedTaskOrder
-                },
+            //     => new LinkedTask
+            //     {
+            //         LinkedTaskOrder = linkedTaskOrder
+            //     },
 
-            not null
+            // not null
                 => new SubTask
                 {
-                    CompositeTaskType = compositeTaskType.Value
                 },
 
             // Casos con compositeTaskType == null
@@ -169,9 +167,9 @@ public class TaskManagerService
         switch (updateTask)
         {
 
-            case LinkedTask linked:
-                linked.LinkedTaskOrder = taskDto.LinkedTaskOrder ?? linked.LinkedTaskOrder;
-                break;
+            // case LinkedTask linked:
+            //     linked.LinkedTaskOrder = taskDto.LinkedTaskOrder ?? linked.LinkedTaskOrder;
+            //     break;
             case RecurringTask recurring:
 
                 recurring.RecurrenceRule = taskDto.RecurrenceRule ?? recurring.RecurrenceRule;
@@ -226,7 +224,7 @@ public class TaskManagerService
         var selectedUser = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
         var selectedTask = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
         if (selectedTask.GetType().Name == "CollaborativeTask")
-            _repository.AddNewTeamMember((CollaborativeTask)selectedTask, (User)selectedUser);
+            _repository.AddNewTeamMember((CollaborativeTask)selectedTask, (TaskCollaborator)selectedUser);
         else
             throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
     }
@@ -236,10 +234,10 @@ public class TaskManagerService
         var selectedTask = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
         if (selectedTask is CollaborativeTask colTask)
         {
-            if (colTask.TeamMembers.Any(m => m.Id == userId))
+            if (colTask.TaskCollaborators.Any(m => m.UserId == userId))
                 throw new ArgumentException($"El usuario con ID({userId}) ya está en el equipo.");
             else
-                _repository.RemoveTeamMember((CollaborativeTask)selectedTask, (User)selectedUser);
+                _repository.RemoveTeamMember((CollaborativeTask)selectedTask, (TaskCollaborator)selectedUser);
         }
         else
             throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");

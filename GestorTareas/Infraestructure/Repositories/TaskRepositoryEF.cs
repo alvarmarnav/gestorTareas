@@ -95,16 +95,16 @@ string? search = null)
         _context.Tasks.Update(task);
         _context.SaveChanges();
     }
-    public void AddNewTeamMember(CollaborativeTask collaborativeTask, User user)
+    public void AddNewTeamMember(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
     {
         _context.CollaborativeTasks.Attach(collaborativeTask);
-        collaborativeTask.AddMember(user);
+        collaborativeTask.AddMTaskCollaborator(tcollaborator);
         _context.SaveChanges();
     }
-    public void RemoveTeamMember(CollaborativeTask collaborativeTask, User user)
+    public void RemoveTeamMember(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
     {
         _context.CollaborativeTasks.Attach(collaborativeTask);
-        collaborativeTask.RemoveMember(user.Id);
+        collaborativeTask.RemoveMember(tcollaborator.UserId);
         _context.SaveChanges();
     }
 }

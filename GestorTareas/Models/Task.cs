@@ -58,9 +58,10 @@ public abstract class Task : IIdentificable
         }
     }
     // private TaskStatus _status;
+    //TODO: Atento a corregir la accesibilidad
     public TaskStatus? Status
     {
-        get; private set
+        get; set
         {
             if (value is not null && !Enum.IsDefined(typeof(TaskStatus), value))
             {
@@ -93,7 +94,7 @@ public abstract class Task : IIdentificable
     {
         get;
 
-        private set
+        set
         {
             if (value > DateTime.UtcNow.AddYears(2))
                 throw new ArgumentException("La fecha de fin de tarea es mayor a 2 años, No es una fecha válida.");

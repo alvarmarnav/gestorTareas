@@ -11,7 +11,6 @@ namespace GestorTareas.Models;
 public class CompositeTask : Task
 {
     public List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
-
     private const int _MAX_ITEMS = 30;
     [JsonConstructor]
     public CompositeTask() : base() { }
@@ -50,7 +49,6 @@ public class CompositeTask : Task
         SubTask subTask = new SubTask(
             subTaskTitle,
             userId,
-            compositeTaskType,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,

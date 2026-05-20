@@ -17,7 +17,7 @@ public void Configure(EntityTypeBuilder<Models.CollaborativeTask> builder)
         .HasForeignKey("TaskSupervisorId")
         .OnDelete(DeleteBehavior.SetNull)//TODO: AQUI NO SÉ QUÉ ES MEJOR, PREGUNTAR FRAN
         .IsRequired();
-        builder.HasMany(ct => ct.TeamMembers)
+        builder.HasMany(ct => ct.TaskCollaborators)
         .WithMany()
         .UsingEntity(j => j.ToTable("CollaborativeTaskTeamMembers"));
     }

@@ -13,6 +13,6 @@ public interface ITaskRepository
     void UpdateTask(Task task);
     (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage,int userId, bool? onlyCompletedTask = null,
 string? search = null);
-    void AddNewTeamMember(CollaborativeTask collaborativeTask,User user);
-    void RemoveTeamMember(CollaborativeTask collaborativeTask,User user);
+    void AddNewTeamMember(CollaborativeTask collaborativeTask,TaskCollaborator tcollaborator);
+    void RemoveTeamMember(CollaborativeTask collaborativeTask,TaskCollaborator tcollaborator);
 };

@@ -5,14 +5,15 @@ using GestorTareas.Models;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Models;
+
 public class CollaborativeTask : GestorTareas.Models.Task
 {
-    public List<User> TeamMembers { get; set; } = new List<User>(20);
+    public List<TaskCollaborator> TaskCollaborators { get; set; } = new List<TaskCollaborator>(20);
     // private User _taskSupervisor;
 
-    public User TaskSupervisor{get;set;}
-//TODO: Incluir en la logica esta CLASE
-public CollaborativeTask() : base() { }
+    public User TaskSupervisor { get; set; }
+    //TODO: Incluir en la logica esta CLASE
+    public CollaborativeTask() : base() { }
     public CollaborativeTask(
         string title,
         int userId,
@@ -32,10 +33,15 @@ public CollaborativeTask() : base() { }
             dueTime,
             cancelReason)
     {
-        TeamMembers = new List<User>(20);
-        
+        TaskCollaborators = new List<TaskCollaborator>(20);
+
         this.TaskSupervisor = taskSupervisor;
-        TeamMembers.Add(taskSupervisor);
+        TaskCollaborators.Add(new TaskCollaborator
+        {
+            TaskId = this.Id,
+            UserId = taskSupervisor.Id,
+            CollaboratorRole = CollaboratorRole.Admin,
+        });
     }
 
     // public override string ResumeTask()
@@ -45,26 +51,30 @@ public CollaborativeTask() : base() { }
     public override string ResumeTask() => $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
 
 
-    public void AddMember(User user)
+    public void AddMTaskCollaborator(TaskCollaborator tcollaborator)
     {
-        this.TeamMembers.Add(user);
+        if (TaskCollaborators.Any(tc => tc.UserId == tcollaborator.UserId))
+            throw new Exception($"El usuario con ID{tcollaborator.UserId} ya es collaborador.");
+            
+        this.TaskCollaborators.Add(tcollaborator);
     }
 
     public void RemoveMember(int userId)
     {
-        if(userId>0){
-            var userSelected = this.GetTeamMemberUserById(userId);
-            TeamMembers.Remove(userSelected);
+        if (userId > 0)
+        {
+            var userSelected = this.GetTaskCollaboratorById(userId);
+            TaskCollaborators.Remove(userSelected);
         }
     }
 
-    public List<User> GetTeamMembers()
+    public List<TaskCollaborator> GetTaskCollaborators()
     {
-       return TeamMembers;
+        return TaskCollaborators;
     }
-    public User GetTeamMemberUserById(int userId)
+    public TaskCollaborator GetTaskCollaboratorById(int userId)
     {
-        var userSelected = TeamMembers.FirstOrDefault(i => i.Id ==userId) ??throw new KeyNotFoundException("No hay usuario con este ID en el Equipo");
+        var userSelected = TaskCollaborators.FirstOrDefault(i => i.UserId == userId) ?? throw new KeyNotFoundException("No hay usuario con este ID en el Equipo");
         return userSelected;
     }
 }

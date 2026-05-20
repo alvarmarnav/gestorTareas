@@ -21,46 +21,26 @@ public class LinkedTask
 
     
     // public void UpdateLinkedTaskOrder(int newOrder) { }
-    // public void CompleteLinkedTask(int linkedTaskId)
-    // {
-    //     if (linkedTaskId<=0)
-    //         throw new ArgumentException("El identificador no es válido.");
+    public void CompleteLinkedTask(int linkedTaskId)
+    {
+        if (linkedTaskId<=0 && linkedTaskId != TaskId)
+            throw new ArgumentException("El identificador no es válido o bien No existe la tarea.");
+        if (Task.Status == TaskStatus.Completed)
+            throw new ArgumentException("Tarea YA Completada anteriormente.");
+        if (DependsOn.Status != TaskStatus.Completed)
+            throw new InvalidOperationException($"Existen tareas previas SIN Completar.");      
 
-    //     if (ListOfLinkedTasks is null || !ListOfLinkedTasks.Any())
-    //         throw new InvalidOperationException("No existen tareas.");
+        Task.Status = TaskStatus.Completed;
+    }
 
-    //     var task = ListOfLinkedTasks
-    //     .FirstOrDefault(lt => lt.Id == linkedTaskId) ?? throw new ArgumentException($"No existe la tarea con el ID: {linkedTaskId}");
+    public bool CanStartLinkedTask(LinkedTask lTask)
+    {
+        if (DependsOn is null || DependsOn.Status != TaskStatus.Completed)
+            return false;
+        else    
+            return true;
+    }
 
-    //     var previousTasks = ListOfLinkedTasks.Where(t => t.LinkedTaskOrder < task.LinkedTaskOrder);
-
-    //     if (previousTasks.Any(t => t.Status != TaskStatus.Completed))
-    //         throw new InvalidOperationException($"Existen tareas previas SIN Completar.");
-
-    //     if (task.Status == TaskStatus.Completed)
-    //         throw new ArgumentException("Tarea YA Completada anteriormente.");
-
-    //     task.Status = TaskStatus.Completed;
-    // }
-
-    // public bool CanStartLinkedTask(LinkedTask lTask)
-    // {
-    //     if (ListOfLinkedTasks is null || !ListOfLinkedTasks.Any())
-    //         return false;
-    //     else
-    //     {
-    //         foreach (var t in ListOfLinkedTasks
-    //         .Where(t => t.Id != lTask.Id))
-    //         {
-    //             if (t.Status == TaskStatus.InProgress || t.Status == TaskStatus.Pending)
-    //             {
-    //                 return false;
-    //             }
-    //         }
-    //         return true;
-    //     }
-    // }
-
-    public override string ResumeTask() => $"Tarea Enlazada Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nOrden: {LinkedTaskOrder}";
+    // public override string ResumeTask() => $"Tarea Enlazada Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nOrden: {LinkedTaskOrder}";
 
 }

@@ -62,16 +62,14 @@ public class RecurringTask : Task
 
         RecurringTasksCount++;
 
-        DateTime newDueTime = dueTime.AddDays(RecurrenceRule);
-
         return new RecurringTask(
             title:this.Title,
             userId:this.UserId,
-            dueTime:newDueTime,
+            dueTime: dueTime.AddDays(RecurrenceRule),
             recurrenceRule:this.RecurrenceRule,
             taskDescription:this.TaskDescription,
             taskPriority:this.Priority,
-            taskStatus:this.Status,
+            taskStatus:TaskStatus.Pending,
             cancelReason:CancelReason
             );
     }
