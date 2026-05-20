@@ -34,10 +34,10 @@ namespace GestorTareas.Tests
         public void GenerateNewInstance_DebeIncrementarContadorInstancias()
         {
             // Arrange
-            var tarea = new RecurringTask("Test", 1, DateTime.Now, 1);
+            var tarea = new RecurringTask("Test", 1, DateTime.UtcNow, 1);
 
             // Act
-            var instancia1 = tarea.GenerateNewInstance(DateTime.Now);
+            var instancia1 = tarea.GenerateNewInstance(DateTime.UtcNow);
             var instancia2 = instancia1.GenerateNewInstance((DateTime)instancia1.DueTime);
 
             // Assert
@@ -53,7 +53,7 @@ namespace GestorTareas.Tests
             var tareaLimite = new RecurringTask(
                 title: "Limite",
                 userId: 1,
-                dueTime: DateTime.Now,
+                dueTime: DateTime.UtcNow,
                 recurrenceRule: 1
             // recurringTasksCount: 15
             );
@@ -62,7 +62,7 @@ namespace GestorTareas.Tests
             // Verificamos que al intentar generar la 16 lance InvalidOperationException
             Assert.Throws<InvalidOperationException>(() =>
             {
-                tareaLimite.GenerateNewInstance(DateTime.Now);
+                tareaLimite.GenerateNewInstance(DateTime.UtcNow);
             });
         }
     }

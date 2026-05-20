@@ -15,7 +15,7 @@ public class SimpleTaskTests
         yield return new TestCaseData("Titulo 1", null, null, null, null)
         .SetName("Constructor HappyWay sólo título");
 
-        yield return new TestCaseData("Titulo 2", "Description", TaskPriority.High, TaskStatus.InProgress, DateTime.Now.AddDays(10))
+        yield return new TestCaseData("Titulo 2", "Description", TaskPriority.High, TaskStatus.InProgress, DateTime.UtcNow.AddDays(10))
         .SetName("Constructor HappyWay todos params.");
     }
 

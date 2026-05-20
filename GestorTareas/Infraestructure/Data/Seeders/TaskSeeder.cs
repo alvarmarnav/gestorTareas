@@ -28,9 +28,9 @@ public class TaskSeeder
     TaskDescription = "Revisar métricas y generar informe.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.InProgress,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(2),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(2),
     CancelReason = "Tarea no cancelada."
 },
 new SimpleTask()
@@ -40,9 +40,9 @@ new SimpleTask()
     TaskDescription = "Añadir ejemplos Swagger.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(5),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(5),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -53,9 +53,9 @@ new SimpleTask()
     TaskDescription = "Error de autenticación JWT.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.Completed,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(1),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(1),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -66,9 +66,9 @@ new SimpleTask()
     TaskDescription = "mockup responsive.",
     Priority = TaskPriority.Low,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(10),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(10),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -79,9 +79,9 @@ new SimpleTask()
     TaskDescription = "Reducir tiempos de respuesta.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.InProgress,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(4),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(4),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -92,9 +92,9 @@ new SimpleTask()
     TaskDescription = "Cubrir servicios principales.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(7),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(7),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -105,9 +105,9 @@ new SimpleTask()
     TaskDescription = "Deploy de nueva versión.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(1),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(1),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -118,9 +118,9 @@ new SimpleTask()
     TaskDescription = "Validar código pendiente.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.InProgress,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(3),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(3),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -131,9 +131,9 @@ new SimpleTask()
     TaskDescription = "Mejorar rendimiento backend.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(6),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(6),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -144,9 +144,9 @@ new SimpleTask()
     TaskDescription = "Migrar paquetes NuGet.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.Completed,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(8),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(8),
     CancelReason = "Tarea no cancelada."
 },
 new SimpleTask()
@@ -156,9 +156,9 @@ new SimpleTask()
     TaskDescription = "Preparar contenedores para desarrollo.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.InProgress,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(3),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(3),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -169,9 +169,9 @@ new SimpleTask()
     TaskDescription = "Separar lógica de negocio.",
     Priority = Enums.TaskPriority.Normal,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(5),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(5),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -182,9 +182,9 @@ new SimpleTask()
     TaskDescription = "Añadir logging centralizado.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.Completed,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(2),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(2),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -195,9 +195,9 @@ new SimpleTask()
     TaskDescription = "Mostrar tareas completadas y pendientes.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.InProgress,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(6),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(6),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -208,9 +208,9 @@ new SimpleTask()
     TaskDescription = "Validar emails y campos obligatorios.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(1),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(1),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -221,9 +221,9 @@ new SimpleTask()
     TaskDescription = "Crear panel principal administrativo.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(9),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(9),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -234,9 +234,9 @@ new SimpleTask()
     TaskDescription = "Reducir uso innecesario de memoria.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.InProgress,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(4),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(4),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -247,9 +247,9 @@ new SimpleTask()
     TaskDescription = "Documentar instalación y despliegue.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.Completed,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(7),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(7),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -260,9 +260,9 @@ new SimpleTask()
     TaskDescription = "Paginar resultados de tareas.",
     Priority = Enums.TaskPriority.Normal,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(5),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(5),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -273,9 +273,9 @@ new SimpleTask()
     TaskDescription = "Adaptar interfaz a móviles.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.InProgress,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(4),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(4),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -286,9 +286,9 @@ new SimpleTask()
     TaskDescription = "Enviar avisos de tareas vencidas.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(3),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(3),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -299,9 +299,9 @@ new SimpleTask()
     TaskDescription = "Evaluar separación por capas.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.Completed,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(10),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(10),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -312,9 +312,9 @@ new SimpleTask()
     TaskDescription = "Mapear entidades y DTOs.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(2),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(2),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -325,9 +325,9 @@ new SimpleTask()
     TaskDescription = "Limpiar clases sin uso.",
     Priority = Enums.TaskPriority.Low,
     Status = Enums.TaskStatus.InProgress,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(6),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(6),
     CancelReason = "Tarea no cancelada."
 },
 
@@ -338,9 +338,9 @@ new SimpleTask()
     TaskDescription = "Filtrar tareas por estado y prioridad.",
     Priority = Enums.TaskPriority.High,
     Status = Enums.TaskStatus.Pending,
-    CreatedAt = DateTime.Now,
-    UpdatedAt = DateTime.Now,
-    DueTime = DateTime.Now.AddDays(5),
+    CreatedAt = DateTime.UtcNow,
+    UpdatedAt = DateTime.UtcNow,
+    DueTime = DateTime.UtcNow.AddDays(5),
     CancelReason = "Tarea no cancelada."
 }
 };

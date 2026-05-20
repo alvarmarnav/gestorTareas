@@ -17,6 +17,6 @@ public class RegistrationDto
     public string UserPassword{get;set;}=string.Empty;
     // public bool IsActive { get; set; } = true;
     // public bool IsAdmin { get; set; }= false;
-    // public DateTime CreatedAt { get; set; } = DateTime.Now;
+    // public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     // public DateTime? UpdatedAt { get; set; } = null;
 }

@@ -9,7 +9,20 @@ public class LinkedTaskConfiguration : IEntityTypeConfiguration<Models.LinkedTas
 public void Configure(EntityTypeBuilder<Models.LinkedTask> builder)
     {
         builder.ToTable("LinkedTasks");
-        builder.Property(lt=>lt.LinkedTaskOrder)
-        .IsRequired();
+        
+        builder.HasKey(lt => lt.Id);
+
+        builder.Property(lt => lt.LinkedTaskOrder)
+            .IsRequired();
+
+        builder.HasOne(lt => lt.Task)
+            .WithMany(t => t.Dependencies)
+            .HasForeignKey(lt => lt.TaskId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(lt => lt.DependsOn)
+            .WithMany(t => t.RequiredByOtherTask)
+            .HasForeignKey(lt => lt.DependsOnTaskId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

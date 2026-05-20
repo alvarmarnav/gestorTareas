@@ -57,10 +57,10 @@ public abstract class Task : IIdentificable
                 field = value;
         }
     }
-    private TaskStatus _status;
+    // private TaskStatus _status;
     public TaskStatus? Status
     {
-        get; set
+        get; private set
         {
             if (value is not null && !Enum.IsDefined(typeof(TaskStatus), value))
             {
@@ -70,14 +70,14 @@ public abstract class Task : IIdentificable
             {
                 value = TaskStatus.Pending;
             }
-            else if (_status == TaskStatus.Completed && (value == TaskStatus.InProgress || value == TaskStatus.Pending))
+            else if (field == TaskStatus.Completed && (value == TaskStatus.InProgress || value == TaskStatus.Pending))
             {
                 throw new ArgumentException("No se puede modificar el estado de una tarea ya completada.");
             }
-            _status = (TaskStatus)value;
+            field = (TaskStatus)value;
         }
-    }
-    public DateTime CreatedAt { get; set; }
+    } = TaskStatus.Pending;
+    public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt
     {
@@ -93,15 +93,20 @@ public abstract class Task : IIdentificable
     {
         get;
 
-        set
+        private set
         {
-            if (value is not null && value <= DateTime.Now)
-                throw new ArgumentException("La fecha introducida para su vencimiento no puede ser anterior a la actual.");
-            else if (value > DateTime.Now.AddYears(2))
+            if (value > DateTime.UtcNow.AddYears(2))
                 throw new ArgumentException("La fecha de fin de tarea es mayor a 2 años, No es una fecha válida.");
+            if (value < (DateTime.UtcNow.AddMonths(-1)))
+                throw new ArgumentException("La fecha introducida no puede estar vencida por más de 1 mes.");
+            if (value is not null && value <= DateTime.UtcNow.AddMinutes(1))
+                throw new ArgumentException("La fecha introducida para su vencimiento no puede ser anterior a la actual.");
+            if (CreatedAt is not null && value < CreatedAt)
+                throw new ArgumentException("La fecha de vencimiento introducida no puede ser inferiior a la de creación.");
+
             field = value;
         }
-    }
+    } = DateTime.UtcNow;
     public string? CancelReason
     {
         get; set
@@ -119,6 +124,9 @@ public abstract class Task : IIdentificable
     public User? User { get; set; }
 
     public List<User> UsersList { get; set; } = new(10);
+    public ICollection<LinkedTask> Dependencies { get; set; }
+    public ICollection<LinkedTask> RequiredByOtherTask { get; set; }
+
     // Constructor vacio para trabajar la serialización
     // con polimorfismo
     [JsonConstructor]
@@ -137,8 +145,8 @@ public abstract class Task : IIdentificable
         TaskDescription = taskDescription?.Trim() ?? "Sin descripción.";
         Priority = priority;
         Status = TaskStatus.Pending;
-        CreatedAt = DateTime.Now;
-        UpdatedAt = DateTime.Now;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
         DueTime = dueTime;
         CancelReason = cancelReason ?? $"Tarea no cancelada. Estado: {this.Status.ToString()}";
     }
@@ -166,19 +174,22 @@ public abstract class Task : IIdentificable
     }
     public void UpdateDueTime(DateTime newDueTime)
     {
-        if (newDueTime <= DateTime.Now)
-            throw new ArgumentException("La fecha introducida para su vencimiento no puede ser anterior a la actual.");
-        else if (newDueTime > DateTime.Now.AddYears(2))
+        if (newDueTime > DateTime.UtcNow.AddYears(2))
             throw new ArgumentException("La fecha de fin de tarea es mayor a 2 años, No es una fecha válida.");
+        if (newDueTime <= DateTime.UtcNow.AddMinutes(1))
+            throw new ArgumentException("La fecha introducida para su vencimiento no puede ser anterior a la actual.");
+        if (CreatedAt is not null && newDueTime < CreatedAt)
+            throw new ArgumentException("La fecha de vencimiento introducida no puede ser inferiior a la de creación.");
+
         DueTime = newDueTime;
-        UpdatedAt = DateTime.Now;
+        UpdatedAt = DateTime.UtcNow;
     }
     public bool CompleteTask()
     {
         if (Status != TaskStatus.Completed && Status != TaskStatus.Cancelled)
         {
             Status = TaskStatus.Completed;
-            UpdatedAt = DateTime.Now;
+            UpdatedAt = DateTime.UtcNow;
             return true;
         }
         return false;
@@ -188,7 +199,7 @@ public abstract class Task : IIdentificable
         if (this.Status != TaskStatus.InProgress)
         {
             this.Status = TaskStatus.InProgress;
-            this.UpdatedAt = DateTime.Now;
+            this.UpdatedAt = DateTime.UtcNow;
             return true;
         }
         return false;
@@ -199,7 +210,7 @@ public abstract class Task : IIdentificable
         {
             this.CancelReason = cancelReason ?? "No se aporta motivo.";
             this.Status = TaskStatus.Cancelled;
-            this.UpdatedAt = DateTime.Now;
+            this.UpdatedAt = DateTime.UtcNow;
         }
         else
         {
@@ -211,7 +222,7 @@ public abstract class Task : IIdentificable
         if (this.Status == TaskStatus.Pending)
         {
             this.Status = TaskStatus.InProgress;
-            this.UpdatedAt = DateTime.Now;
+            this.UpdatedAt = DateTime.UtcNow;
         }
         else
         {
@@ -226,14 +237,14 @@ public abstract class Task : IIdentificable
         if (this.Status == TaskStatus.Completed || this.Status == TaskStatus.Cancelled)
             return false;
 
-        return DateTime.Now > this.DueTime;
+        return DateTime.UtcNow > this.DueTime;
     }
     public int CalculateDays()
     {
         if (this.DueTime is null)
             throw new ArgumentException("No existe fecha de fin establecida.");
 
-        TimeSpan daysDiference = (TimeSpan)(DateTime.Now - this.DueTime);
+        TimeSpan daysDiference = (TimeSpan)(DateTime.UtcNow - this.DueTime);
         return (int)daysDiference.Days;
     }
 

@@ -29,15 +29,35 @@ public class TaskManagerService
         _userRepository = userRepository;
     }
 
-    public List<Task> GetAllTasks()
+    public List<ResponseTaskDto> GetAllTasks()
     {
-        return _repository.GetAllTasks();
+        return _repository.GetAllTasks()
+        .Select(t=> new ResponseTaskDto
+        {
+            Id = t.Id,
+            Title = t.Title,
+            TaskDescription = t.TaskDescription,
+            TaskPriority = (TaskPriority)t.Priority,
+            TaskStatus = (TaskStatus)t.Status,
+            DueTime = (DateTime)t.DueTime,
+            CancelReason = t.CancelReason
+        }).ToList();
     }
-    public List<Task> GetAllTasksByUser(int userId)
+    public List<ResponseTaskDto> GetAllTasksByUser(int userId)
     {
         var validUser = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
 
-        return _repository.GetAllTasksByUser(validUser.Id);
+        return _repository.GetAllTasksByUser(validUser.Id)
+        .Select(t=> new ResponseTaskDto
+        {
+            Id = t.Id,
+            Title = t.Title,
+            TaskDescription = t.TaskDescription,
+            TaskPriority = (TaskPriority)t.Priority,
+            TaskStatus = (TaskStatus)t.Status,
+            DueTime = (DateTime)t.DueTime,
+            CancelReason = t.CancelReason
+        }).ToList();;
     }
     public List<ResponseTaskDto> GetAllTasksDto()
     {
@@ -53,8 +73,20 @@ public class TaskManagerService
             CancelReason = t.CancelReason
         }).ToList();
     }
-    public Task? GetTaskById(int id) => _repository.GetTaskById(id);
-
+    public ResponseTaskDto? GetTaskById(int id){
+         var task = _repository.GetTaskById(id);
+         var responseTaskDto = new ResponseTaskDto
+         {
+            Id = task.Id,
+            Title = task.Title,
+            TaskDescription = task.TaskDescription,
+            TaskPriority = (TaskPriority)task.Priority,
+            TaskStatus = (TaskStatus)task.Status,
+            DueTime = (DateTime)task.DueTime,
+            CancelReason = task.CancelReason 
+         };
+         return responseTaskDto;
+    }
     public Task AddTask(
         string title,
         int userId,
@@ -118,9 +150,13 @@ public class TaskManagerService
         return newTask;
     }
 
-    public void DeleteTask(int id)
+    public void DeleteTask(int id, int userActiveId)
     {
         var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}");
+        var userActive = _userRepository.GetUserById(userActiveId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userActiveId}");
+        
+        if(!(bool)userActive.IsAdmin && task.UserId!=userActiveId && !task.UsersList.Any(u=>u.Id==userActiveId))
+            throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
         _repository.DeleteTask(task);
     }
     public void UpdateTask(int id, UpdateTaskDto taskDto, int userActiveId)

@@ -14,7 +14,6 @@ public class SubTask : CompositeTask
     public SubTask(
         string subTaskTitle,
         int userId,
-        CompositeTaskType compositeTaskType,
         string? subTaskDescription = null,
         TaskPriority? subTaskPriority = TaskPriority.Normal,
         TaskStatus? subTaskStatus = TaskStatus.Pending,
@@ -23,15 +22,12 @@ public class SubTask : CompositeTask
         ) : base(
             subTaskTitle,
             userId,
-            compositeTaskType,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
             dueTime,
             cancelReason)
-    {
-        CompositeTaskType = CompositeTaskType.SubTask;
-    }
+    {}
 
     public void UpdateSubTaskOrder(int newOrder)
     {

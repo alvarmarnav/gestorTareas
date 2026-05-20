@@ -148,10 +148,14 @@ public class TasksController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")] // DELETE /api/tareas/1
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
-        _taskManagerService.DeleteTask(id);
+        var claimUser = ClaimsPrincipal.Current;
+        if(claimUser is null)
+            return Unauthorized();
+        var userId = UserConnectedHelper.GetConnectedUser(claimUser);
+        _taskManagerService.DeleteTask(id,userId);
         return NoContent();
     }
     /// <summary>

@@ -16,7 +16,7 @@ public class CreateUserDto
     public string UserEmail { get; set;}
     public bool IsActive { get; set; } = true;
     public bool IsAdmin { get; set; }= false;
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public int UserActiveId {get;set;}
     public DateTime? UpdatedAt { get; set; } = null;
 }

@@ -47,7 +47,7 @@ public class User
 
     public bool? IsAdmin { get; set; } = false;
 
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime? UpdatedAt { get; set; } = null;
     public string PasswordHash{get;set;} = string.Empty;
@@ -68,7 +68,7 @@ public class User
         this.UserEmail = userEmail;
         this.IsActive = isActive;
         IsAdmin = isAdmin;
-        this.CreatedAt = DateTime.Now;
+        this.CreatedAt = DateTime.UtcNow;
         this.UpdatedAt = null;
     }
 }

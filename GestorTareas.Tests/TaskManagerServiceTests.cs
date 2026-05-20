@@ -18,7 +18,7 @@ public class TaskManagerServiceTests
     //     yield return new TestCaseData("Titulo 1", null, null, null, null)
     //     .SetName("Constructor HappyWay sólo título");
 
-    //     yield return new TestCaseData("Titulo 2", "Description", TaskPriority.High, TaskStatus.InProgress, DateTime.Now.AddDays(10))
+    //     yield return new TestCaseData("Titulo 2", "Description", TaskPriority.High, TaskStatus.InProgress, DateTime.UtcNow.AddDays(10))
     //     .SetName("Constructor HappyWay todos params.");
     // }
     private readonly List<Models.Task> _taskListBase = new(){
@@ -171,7 +171,7 @@ public class TaskManagerServiceTests
         var selectedTaskId = 2;
         var selectedTask = _taskToTest.FirstOrDefault(t => t.Id == selectedTaskId);
 
-        var newTaskDto = new Application.DTOs.UpdateTaskDto("New Title", "NEw taskdescription", Enums.TaskPriority.Critical, Enums.TaskStatus.InProgress, DateTime.Now.AddDays(30), null, null, null);
+        var newTaskDto = new Application.DTOs.UpdateTaskDto("New Title", "NEw taskdescription", Enums.TaskPriority.Critical, Enums.TaskStatus.InProgress, DateTime.UtcNow.AddDays(30), null, null, null);
         // {
         //     Title = "New Title",
         //     TaskDescription = "NEw taskdescription",
