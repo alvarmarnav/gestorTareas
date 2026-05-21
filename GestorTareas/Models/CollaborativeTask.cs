@@ -9,15 +9,12 @@ namespace GestorTareas.Models;
 public class CollaborativeTask : GestorTareas.Models.Task
 {
     public List<TaskCollaborator> TaskCollaborators { get; set; } = new List<TaskCollaborator>(20);
-    // private User _taskSupervisor;
-
-    public User TaskSupervisor { get; set; }
+    
     //TODO: Incluir en la logica esta CLASE
     public CollaborativeTask() : base() { }
     public CollaborativeTask(
         string title,
         int userId,
-        User taskSupervisor,
         string? taskDescription = null,
         TaskPriority? taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
@@ -35,11 +32,10 @@ public class CollaborativeTask : GestorTareas.Models.Task
     {
         TaskCollaborators = new List<TaskCollaborator>(20);
 
-        this.TaskSupervisor = taskSupervisor;
         TaskCollaborators.Add(new TaskCollaborator
         {
             TaskId = this.Id,
-            UserId = taskSupervisor.Id,
+            UserId = this.UserId,
             CollaboratorRole = CollaboratorRole.Admin,
         });
     }

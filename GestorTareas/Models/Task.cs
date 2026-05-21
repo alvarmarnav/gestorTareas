@@ -57,11 +57,11 @@ public abstract class Task : IIdentificable
                 field = value;
         }
     }
-    // private TaskStatus _status;
+    // // private TaskStatus _status;
     //TODO: Atento a corregir la accesibilidad
     public TaskStatus? Status
     {
-        get; set
+        get;set
         {
             if (value is not null && !Enum.IsDefined(typeof(TaskStatus), value))
             {
@@ -75,6 +75,7 @@ public abstract class Task : IIdentificable
             {
                 throw new ArgumentException("No se puede modificar el estado de una tarea ya completada.");
             }
+            field = (TaskStatus)value;
             field = (TaskStatus)value;
         }
     } = TaskStatus.Pending;
@@ -251,4 +252,8 @@ public abstract class Task : IIdentificable
 
     public abstract string ResumeTask();
 
+    public static implicit operator Task(LinkedTask v)
+    {
+        throw new NotImplementedException();
+    }
 }

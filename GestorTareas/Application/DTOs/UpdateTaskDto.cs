@@ -19,7 +19,6 @@ public class UpdateTaskDto
     public int? LinkedTaskOrder { get; set; } = null;
     [Range(1,365,ErrorMessage ="La periodicidad de la tarea no puede ser mayor de un año ni menor de 1 día.")]
     public int? RecurrenceRule { get; set; } = null;
-    public User? TaskSupervisor { get; set; } = null;
 
     public UpdateTaskDto(
         string? title,
@@ -28,8 +27,7 @@ public class UpdateTaskDto
         TaskStatus? status,
         DateTime? dueTime,
         int? linkedTaskOrder,
-        int? recurrenceRule,
-        User? taskSupervisor
+        int? recurrenceRule
     )
     {
         Title = title;
@@ -39,7 +37,6 @@ public class UpdateTaskDto
         DueTime = dueTime;
         LinkedTaskOrder = linkedTaskOrder;
         RecurrenceRule = recurrenceRule;
-        TaskSupervisor = taskSupervisor;
     }
 
 }

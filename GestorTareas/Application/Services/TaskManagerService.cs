@@ -32,7 +32,7 @@ public class TaskManagerService
     public List<ResponseTaskDto> GetAllTasks()
     {
         return _repository.GetAllTasks()
-        .Select(t=> new ResponseTaskDto
+        .Select(t => new ResponseTaskDto
         {
             Id = t.Id,
             Title = t.Title,
@@ -48,7 +48,7 @@ public class TaskManagerService
         var validUser = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
 
         return _repository.GetAllTasksByUser(validUser.Id)
-        .Select(t=> new ResponseTaskDto
+        .Select(t => new ResponseTaskDto
         {
             Id = t.Id,
             Title = t.Title,
@@ -57,7 +57,7 @@ public class TaskManagerService
             TaskStatus = (TaskStatus)t.Status,
             DueTime = (DateTime)t.DueTime,
             CancelReason = t.CancelReason
-        }).ToList();;
+        }).ToList(); ;
     }
     public List<ResponseTaskDto> GetAllTasksDto()
     {
@@ -73,67 +73,77 @@ public class TaskManagerService
             CancelReason = t.CancelReason
         }).ToList();
     }
-    public ResponseTaskDto? GetTaskById(int id){
-         var task = _repository.GetTaskById(id);
-         var responseTaskDto = new ResponseTaskDto
-         {
+    public ResponseTaskDto? GetTaskById(int id)
+    {
+        var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}.");
+        return new ResponseTaskDto
+        {
             Id = task.Id,
             Title = task.Title,
+            UserId = task.UserId,
             TaskDescription = task.TaskDescription,
             TaskPriority = (TaskPriority)task.Priority,
-            TaskStatus = (TaskStatus)task.Status,
+            TaskStatus = (Enums.TaskStatus)task.Status,
             DueTime = (DateTime)task.DueTime,
-            CancelReason = task.CancelReason 
-         };
-         return responseTaskDto;
+            CancelReason = task.CancelReason
+        };
     }
     public Task AddTask(
-        string title,
-        int userId,
-        string? taskDescription,
-        TaskPriority? taskPriority,
-        TaskStatus? taskStatus,
-        DateTime? dueTime,
-        string? cancelReason,
-        CompositeTaskType? compositeTaskType,
-        int? linkedTaskOrder,
-        int? recurrenceRule,
-        User? taskSupervisor)
+            string title,
+            int userId,
+            string? taskDescription,
+            TaskPriority? taskPriority,
+            TaskStatus? taskStatus,
+            DateTime? dueTime,
+            int? recurrenceRule,
+            List<TaskCollaborator>? taskCollaborators,
+            List<SubTask>? subTasks,
+            int? compositeTaskId,
+            int? linkedTaskOrder,
+            int? taskId,
+            int? dependOnId
+            )
     {
 
-//TODO::observar
-        Task newTask = compositeTaskType switch
+        //TODO::observar
+        Task newTask;
+
+        if (linkedTaskOrder is not null)
         {
-            // Casos con compositeTaskType != null
-            not null when linkedTaskOrder is not null
-            //     => new LinkedTask
-            //     {
-            //         LinkedTaskOrder = linkedTaskOrder
-            //     },
-
-            // not null
-                => new SubTask
-                {
-                },
-
-            // Casos con compositeTaskType == null
-            null when recurrenceRule is not null
-                => new RecurringTask
-                {
-                    RecurrenceRule = recurrenceRule.Value
-                },
-
-            null when taskSupervisor is not null
-                => new CollaborativeTask
-                {
-                    TaskSupervisor = taskSupervisor
-                },
-
-
-            _ => new SimpleTask(),
-
-            // _ => throw new ArgumentException("Error al introducir los parámetros")
-        };
+            newTask = new LinkedTask();
+            // newTask.Id = IdentityApiEndpointRouteBuilderExtensions,
+            newTask.TaskId=taskId;
+            // newTask.Task=Task;
+            newTask.DependsOnTaskId = dependsOnTaskId;
+            // newTask.DependsOn =dependsOn;
+            newTask.LinkedTaskOrder = linkedTaskOrder;
+        }
+        else if (recurrenceRule is not null){
+            newTask = new RecurringTask
+            {
+                RecurrenceRule = (int)recurrenceRule
+            };
+        }
+        else if (taskCollaborators is not null && taskCollaborators.Any()){
+            newTask = new CollaborativeTask
+            {
+                TaskCollaborators = taskCollaborators
+            };
+        }
+        else if (subTasks is not null && subTasks.Any()){
+            newTask = new CompositeTask
+            {
+                SubTaskList = subTasks
+            };
+        }
+        else if (compositeTaskId is not null){
+            newTask = new SubTask
+            {
+                CompositeTaskId = (int)compositeTaskId
+            };
+        }
+        else
+            newTask = new SimpleTask();
 
         newTask.Title = title;
         newTask.UserId = userId;
@@ -141,7 +151,6 @@ public class TaskManagerService
         newTask.Priority = taskPriority;
         newTask.Status = taskStatus;
         newTask.DueTime = dueTime;
-        newTask.CancelReason = cancelReason;
 
         _repository.AddTask(newTask);
 
@@ -152,8 +161,8 @@ public class TaskManagerService
     {
         var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}");
         var userActive = _userRepository.GetUserById(userActiveId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userActiveId}");
-        
-        if(!(bool)userActive.IsAdmin && task.UserId!=userActiveId && !task.UsersList.Any(u=>u.Id==userActiveId))
+
+        if (!(bool)userActive.IsAdmin && task.UserId != userActiveId && !task.UsersList.Any(u => u.Id == userActiveId))
             throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
         _repository.DeleteTask(task);
     }
@@ -161,8 +170,8 @@ public class TaskManagerService
     {//TODO: observar esta exception
         var updateTask = _repository.GetTaskById(id) ?? throw new Exception();
         var userActive = _userRepository.GetUserById(userActiveId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userActiveId}");
-        
-        if(!(bool)userActive.IsAdmin && updateTask.UserId!=userActiveId && !updateTask.UsersList.Any(u=>u.Id==userActiveId))
+
+        if (!(bool)userActive.IsAdmin && updateTask.UserId != userActiveId && !updateTask.UsersList.Any(u => u.Id == userActiveId))
             throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
         switch (updateTask)
         {
@@ -176,7 +185,7 @@ public class TaskManagerService
                 break;
 
             case CollaborativeTask collab:
-                collab.TaskSupervisor = taskDto.TaskSupervisor ?? collab.TaskSupervisor;
+
                 break;
 
             default:
@@ -195,8 +204,8 @@ public class TaskManagerService
     public PaginationResponseDto<ResponseTaskDto> GetPagination(int pageNumber, int itemsPerPage, int userId)
     {
         //Aqui debo incluir la identificacion del user para que solo las pueda ver el propietario
-        var userActive = _userRepository.GetUserById(userId)??throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
-        var (tasks, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage,userId);
+        var userActive = _userRepository.GetUserById(userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
+        var (tasks, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage, userId);
 
         return new PaginationResponseDto<ResponseTaskDto>
         {

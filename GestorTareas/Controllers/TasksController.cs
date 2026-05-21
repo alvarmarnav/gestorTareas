@@ -50,11 +50,11 @@ public class TasksController : ControllerBase
     [HttpGet("tasks")] // GET /api/tareas
     public IActionResult GetAllTaskOwnUser()
     {
-        var claimUser = ClaimsPrincipal.Current;
-        if(claimUser is null)
-            return Unauthorized();
-        var userId = UserConnectedHelper.GetConnectedUser(claimUser);
-        
+        // var claimUser = ClaimsPrincipal.Current;
+        // if (claimUser is null)
+        //     return Unauthorized();
+        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
+
         return Ok(_taskManagerService.GetAllTasksByUser(userId));
     }
     /// <summary>
@@ -64,10 +64,9 @@ public class TasksController : ControllerBase
     [HttpGet("{taskId:int}")] // GET /api/tareas/1
     public IActionResult GetById(int taskId)
     {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr is null) return Unauthorized();
-
-        int.TryParse(userIdStr, out var userId);
+        // var currentUser=ClaimsPrincipal.Current;
+        // if(currentUser is null) return  Unauthorized();
+        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
 
         var task = _taskManagerService.GetTaskById(taskId);
         if (task == null) return NotFound();
@@ -87,9 +86,10 @@ public class TasksController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int itemsPerPage = 10)
     {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr is null) return NotFound();
-        int userId = int.Parse(userIdStr);
+        // var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        // if (userIdStr is null) return NotFound();
+        // int userId = int.Parse(userIdStr);
+        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
         var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage, userId);
         return Ok(result);
     }
@@ -104,10 +104,11 @@ public class TasksController : ControllerBase
     public IActionResult Create([FromBody] CreateTaskDto dto)
     {
         //Obtener ID del usuario
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr is null) return Unauthorized();
+        // var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        // if (userIdStr is null) return Unauthorized();
 
-        int userId = int.Parse(userIdStr);
+        // int userId = int.Parse(userIdStr);
+        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
 
         var task = _taskManagerService.AddTask(
         dto.Title,
@@ -116,11 +117,13 @@ public class TasksController : ControllerBase
         dto.Priority,
         dto.Status,
         dto.DueTime,
-        dto.CancelReason,
-        dto.CompositeTaskType,
-        dto.LinkedTaskOrder,
         dto.RecurrenceRule,
-        dto.TaskSupervisor
+        dto.TaskCollaborators,
+        dto.SubTasks,
+        dto.CompositeTaskId,
+        dto.LinkedTaskOrder,
+        dto.TaskID,
+        dto.DependsOnTaskId
         );
 
         return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
@@ -136,10 +139,12 @@ public class TasksController : ControllerBase
     public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
     {
         //Diferenciar entre Propietario y Admin
-        var userActiveStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userActiveStr is null) return Unauthorized();
-        var userActiveId = int.Parse(userActiveStr);
-        _taskManagerService.UpdateTask(id, taskDto, userActiveId);
+        // var userActiveStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        // if (userActiveStr is null) return Unauthorized();
+        // var userActiveId = int.Parse(userActiveStr);
+        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
+
+        _taskManagerService.UpdateTask(id, taskDto, userId);
         return NoContent();
     }
     /// <summary>

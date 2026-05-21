@@ -13,9 +13,9 @@ public class UserManagerService
 {
     private readonly IUserRepository _userRepository;
     public UserManagerService(IUserRepository userRepository) => _userRepository = userRepository;
-    public List<User> GetAllUsers()
+    public List<UserResponseDto> GetAllUsers()
     {
-        return (List<User>)_userRepository.GetAllUsers()
+        return (List<UserResponseDto>)_userRepository.GetAllUsers()
         .Select(u => new UserResponseDto
         {
             Id = u.Id,
@@ -24,28 +24,22 @@ public class UserManagerService
             UserEmail = u.UserEmail,
             IsActive = (bool)u.IsActive,
             IsAdmin = (bool)u.IsAdmin
-        });
+        }).ToList();
     }
-    public UserResponseDto AddUser(
-        string userName,
-        string userLastName,
-        string userEmail,
-        bool? isActive,
-        bool? isAdmin,
-        int userActiveId)
+    public UserResponseDto AddUser(CreateUserDto createUserDto, int userActiveId)
     {
         //TODO:AÑADIDO PARA QUE NO PUEDAN CREARSE USUARIOS ADMIN, SOLO EL ADMIN
         var userActive = _userRepository.GetUserById(userActiveId) ?? throw new KeyNotFoundException($"No existe usuario con el ID: {userActiveId}");
         if (!(bool)userActive.IsAdmin)
-            isAdmin = false;
+            createUserDto.IsAdmin = false;
 
         var newUser = new User
         {
-            UserName = userName,
-            UserLastName = userLastName,
-            UserEmail = userEmail,
-            IsActive = isActive??true,
-            IsAdmin = isAdmin ?? false
+            UserName = createUserDto.UserName,
+            UserLastName = createUserDto.UserLastName,
+            UserEmail = createUserDto.UserEmail,
+            IsActive = createUserDto.IsActive,
+            IsAdmin = createUserDto.IsAdmin
         };
         _userRepository.AddUser(newUser);
 

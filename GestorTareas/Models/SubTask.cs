@@ -9,11 +9,15 @@ namespace GestorTareas.Models;
 
 public class SubTask : CompositeTask
 {
+    public int CompositeTaskId { get; set; }
+    public CompositeTask CompositeTaskFather { get; set; }
+
     [JsonConstructor]
     public SubTask() : base() { }
     public SubTask(
         string subTaskTitle,
         int userId,
+        int compositeTaskId,
         string? subTaskDescription = null,
         TaskPriority? subTaskPriority = TaskPriority.Normal,
         TaskStatus? subTaskStatus = TaskStatus.Pending,
@@ -27,10 +31,8 @@ public class SubTask : CompositeTask
             subTaskStatus,
             dueTime,
             cancelReason)
-    {}
-
-    public void UpdateSubTaskOrder(int newOrder)
     {
+        CompositeTaskId = compositeTaskId;
     }
     public override string ResumeTask() => $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
 

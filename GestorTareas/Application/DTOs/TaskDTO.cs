@@ -26,6 +26,4 @@ public abstract class TaskDTO
     public CompositeTaskType? CompositeTaskType{get;set;}
     public int? LinkedTaskOrder{get;set;}
     public int? RecurrenceRule{get;set;}
-    public User? TaskSupervisor{get;set;}
-
 }
