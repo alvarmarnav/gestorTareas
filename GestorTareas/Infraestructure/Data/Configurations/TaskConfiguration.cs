@@ -16,10 +16,10 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
         builder.Property(t => t.Id)
         .ValueGeneratedOnAdd();
         builder.Property(t => t.Title)
-        .HasMaxLength(30)
+        .HasMaxLength(50)
         .IsRequired();
         builder.Property(t => t.TaskDescription)
-        .HasMaxLength(30)
+        .HasMaxLength(300)
         .HasDefaultValue(null);
         builder.Property(t => t.Priority)
         .HasDefaultValue(Enums.TaskPriority.Normal);

@@ -9,10 +9,10 @@ namespace GestorTareas.Application.DTOs;
 public class CreateTaskDto
 {
     [Required(ErrorMessage = "El título es obligatorio.")]
-    [MaxLength(30, ErrorMessage = "Longitud máxima de 30 caracteres.")]
+    [MaxLength(50, ErrorMessage = "Longitud máxima de 50 caracteres.")]
     public string Title { get; set; } = string.Empty;
     // public int UserId{get;set;}
-    [MaxLength(250, ErrorMessage = "Longitud máxima de 250 caracteres.")]
+    [MaxLength(300, ErrorMessage = "Longitud máxima de 300 caracteres.")]
     public string? TaskDescription { get; set; } = string.Empty;
     public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
     public TaskStatus? Status { get; set; } = TaskStatus.Pending;

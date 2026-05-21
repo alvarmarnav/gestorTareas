@@ -9,21 +9,9 @@ public class SubTaskConfiguration : IEntityTypeConfiguration<Models.SubTask>
     {
         builder.ToTable("SubTask");
 
-        builder.HasKey(st => st.Id);
-
-        builder.Property(st => st.Title)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(st => st.TaskDescription)
-            .HasMaxLength(500);
-
-        builder.Property(st => st.Status)
-            .IsRequired();
-
-        builder.HasOne(st => st.CompositeTaskFather)
-            .WithMany(ct => ct.SubTaskList)
-            .HasForeignKey(st => st.CompositeTaskId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(s => s.ParentCompositeTask)
+        .WithMany(c => c.SubTaskList)
+        .HasForeignKey(s => s.ParentCompositeTaskId)
+        .OnDelete(DeleteBehavior.Restrict);
     }
 }

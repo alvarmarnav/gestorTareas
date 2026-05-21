@@ -22,6 +22,32 @@ namespace GestorTareas.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GestorTareas.Models.LinkedTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DependsOnTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LinkedTaskOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DependsOnTaskId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("LinkedTasks", (string)null);
+                });
+
             modelBuilder.Entity("GestorTareas.Models.Task", b =>
                 {
                     b.Property<int>("Id")
@@ -53,13 +79,13 @@ namespace GestorTareas.Migrations
                         .HasDefaultValue(0);
 
                     b.Property<string>("TaskDescription")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -74,6 +100,27 @@ namespace GestorTareas.Migrations
                     b.ToTable("Tasks", (string)null);
 
                     b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("GestorTareas.Models.TaskCollaborator", b =>
+                {
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CollaboratorRole")
+                        .HasColumnType("int");
+
+                    b.HasKey("TaskId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TaskCollaborators", (string)null);
                 });
 
             modelBuilder.Entity("GestorTareas.Models.User", b =>
@@ -143,12 +190,16 @@ namespace GestorTareas.Migrations
                     b.ToTable("UserTasks");
                 });
 
-            modelBuilder.Entity("GestorTareas.Models.CompositeTask", b =>
+            modelBuilder.Entity("GestorTareas.Models.CollaborativeTask", b =>
                 {
                     b.HasBaseType("GestorTareas.Models.Task");
 
-                    b.Property<int>("CompositeTaskType")
-                        .HasColumnType("int");
+                    b.ToTable("CollaborativeTasks", (string)null);
+                });
+
+            modelBuilder.Entity("GestorTareas.Models.CompositeTask", b =>
+                {
+                    b.HasBaseType("GestorTareas.Models.Task");
 
                     b.ToTable("CompositeTasks", (string)null);
                 });
@@ -175,36 +226,38 @@ namespace GestorTareas.Migrations
                     b.ToTable("SimpleTasks");
                 });
 
-            modelBuilder.Entity("GestorTareas.Models.LinkedTask", b =>
-                {
-                    b.HasBaseType("GestorTareas.Models.CompositeTask");
-
-                    b.Property<int?>("FKCompositeTaskId_Linked")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("LinkedTaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LinkedTaskOrder")
-                        .HasColumnType("int");
-
-                    b.HasIndex("FKCompositeTaskId_Linked");
-
-                    b.HasIndex("LinkedTaskId");
-
-                    b.ToTable("LinkedTasks", (string)null);
-                });
-
             modelBuilder.Entity("GestorTareas.Models.SubTask", b =>
                 {
-                    b.HasBaseType("GestorTareas.Models.CompositeTask");
+                    b.HasBaseType("GestorTareas.Models.Task");
 
-                    b.Property<int?>("FKCompositeTaskId_Sub")
+                    b.Property<int>("FKCompositeTaskId_Sub")
                         .HasColumnType("int");
 
-                    b.HasIndex("FKCompositeTaskId_Sub");
+                    b.Property<int>("ParentCompositeTaskId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("ParentCompositeTaskId");
 
                     b.ToTable("SubTasks", (string)null);
+                });
+
+            modelBuilder.Entity("GestorTareas.Models.LinkedTask", b =>
+                {
+                    b.HasOne("GestorTareas.Models.Task", "DependsOn")
+                        .WithMany("RequiredByOtherTask")
+                        .HasForeignKey("DependsOnTaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GestorTareas.Models.Task", "Task")
+                        .WithMany("Dependencies")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DependsOn");
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("GestorTareas.Models.Task", b =>
@@ -216,6 +269,25 @@ namespace GestorTareas.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GestorTareas.Models.TaskCollaborator", b =>
+                {
+                    b.HasOne("GestorTareas.Models.CollaborativeTask", "Task")
+                        .WithMany("TaskCollaborators")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("GestorTareas.Models.User", "UserTask")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+
+                    b.Navigation("UserTask");
                 });
 
             modelBuilder.Entity("UserTasks", b =>
@@ -230,6 +302,15 @@ namespace GestorTareas.Migrations
                         .WithMany()
                         .HasForeignKey("tasksListId")
                         .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GestorTareas.Models.CollaborativeTask", b =>
+                {
+                    b.HasOne("GestorTareas.Models.Task", null)
+                        .WithOne()
+                        .HasForeignKey("GestorTareas.Models.CollaborativeTask", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -260,46 +341,38 @@ namespace GestorTareas.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GestorTareas.Models.LinkedTask", b =>
-                {
-                    b.HasOne("GestorTareas.Models.CompositeTask", null)
-                        .WithMany("LinkedTaskList")
-                        .HasForeignKey("FKCompositeTaskId_Linked");
-
-                    b.HasOne("GestorTareas.Models.CompositeTask", null)
-                        .WithOne()
-                        .HasForeignKey("GestorTareas.Models.LinkedTask", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GestorTareas.Models.LinkedTask", null)
-                        .WithMany("ListOfLinkedTasks")
-                        .HasForeignKey("LinkedTaskId");
-                });
-
             modelBuilder.Entity("GestorTareas.Models.SubTask", b =>
                 {
-                    b.HasOne("GestorTareas.Models.CompositeTask", null)
-                        .WithMany("SubTaskList")
-                        .HasForeignKey("FKCompositeTaskId_Sub");
-
-                    b.HasOne("GestorTareas.Models.CompositeTask", null)
+                    b.HasOne("GestorTareas.Models.Task", null)
                         .WithOne()
                         .HasForeignKey("GestorTareas.Models.SubTask", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("GestorTareas.Models.CompositeTask", "ParentCompositeTask")
+                        .WithMany("SubTaskList")
+                        .HasForeignKey("ParentCompositeTaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ParentCompositeTask");
+                });
+
+            modelBuilder.Entity("GestorTareas.Models.Task", b =>
+                {
+                    b.Navigation("Dependencies");
+
+                    b.Navigation("RequiredByOtherTask");
+                });
+
+            modelBuilder.Entity("GestorTareas.Models.CollaborativeTask", b =>
+                {
+                    b.Navigation("TaskCollaborators");
                 });
 
             modelBuilder.Entity("GestorTareas.Models.CompositeTask", b =>
                 {
-                    b.Navigation("LinkedTaskList");
-
                     b.Navigation("SubTaskList");
-                });
-
-            modelBuilder.Entity("GestorTareas.Models.LinkedTask", b =>
-                {
-                    b.Navigation("ListOfLinkedTasks");
                 });
 #pragma warning restore 612, 618
         }

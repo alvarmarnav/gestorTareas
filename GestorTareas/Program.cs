@@ -57,8 +57,9 @@ options.UseSqlServer(builder.Configuration
 .GetConnectionString("GestorTareas")
 )
 );
-builder.Services.AddTransient<UsersSeeder>();
-builder.Services.AddTransient<TaskSeeder>();
+builder.Services.AddScoped<UsersSeeder>();
+builder.Services.AddScoped<TaskSeeder>();
+builder.Services.AddScoped<DbSeeder>();
 
 //REPOSITORIOS CON SUS INTERFACES
 builder.Services.AddScoped<ITaskRepository, TaskRepositoryEF>();
@@ -110,14 +111,13 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    // var context = services.GetRequiredService<GestorTareasContext>();
-    // // Crear BD y ejecutar migrations pendientes
-    // await context.Database.MigrateAsync();
+    var context = services.GetRequiredService<GestorTareasContext>();
+    // Crear BD y ejecutar migrations pendientes
+    await context.Database.MigrateAsync();
 
-    var seeder = services.GetRequiredService<UsersSeeder>();
-    await seeder.AsyncSeeder();
-    var seeder2 = services.GetRequiredService<TaskSeeder>();
-    await seeder2.AsyncSeeder();
+    var seeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
+
+    await seeder.SeedAsync();
 }
 
 app.Run(); // arranca el servidor y se queda

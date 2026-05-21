@@ -17,11 +17,13 @@ public class TaskCollaboratorConfiguration : IEntityTypeConfiguration<Models.Tas
         // Relación con la tarea colaborativa
         builder.HasOne(tc => tc.Task)
                .WithMany(t => t.TaskCollaborators)
-               .HasForeignKey(tc => tc.TaskId);
+               .HasForeignKey(tc => tc.TaskId)
+               .OnDelete(DeleteBehavior.NoAction);
 
         // Relación con el usuario
         builder.HasOne(tc => tc.UserTask)
                .WithMany()
-               .HasForeignKey(tc => tc.UserId);
+               .HasForeignKey(tc => tc.UserId)
+               .OnDelete(DeleteBehavior.NoAction);
     }
 }

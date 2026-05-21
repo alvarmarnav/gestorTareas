@@ -75,6 +75,7 @@ public static class DtoManager
             SubTaskDTO sub => new SubTask(
                 sub.Title!,
                 sub.UserId,
+                sub.ParentCompositeTaskId,
                 sub.TaskDescription!,
                 (TaskPriority)sub.Priority,
                 (Enums.TaskStatus)sub.Status,
@@ -104,7 +105,6 @@ public static class DtoManager
                 rt.UserId,
                 rt.DueTime,
                 rt.RecurrenceRule,
-
                 rt.TaskDescription!,
                 (TaskPriority)rt.Priority,
                 (Enums.TaskStatus)rt.Status,

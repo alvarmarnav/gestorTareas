@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GestorTareas.Migrations
 {
     /// <inheritdoc />
-    public partial class CreacionInicial : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,7 +23,8 @@ namespace GestorTareas.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,8 +37,8 @@ namespace GestorTareas.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    TaskDescription = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TaskDescription = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
                     Priority = table.Column<int>(type: "int", nullable: true, defaultValue: 1),
                     Status = table.Column<int>(type: "int", nullable: true, defaultValue: 0),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
@@ -58,11 +59,27 @@ namespace GestorTareas.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CollaborativeTasks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CollaborativeTasks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CollaborativeTasks_Tasks_Id",
+                        column: x => x.Id,
+                        principalTable: "Tasks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CompositeTasks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    CompositeTaskType = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,6 +90,33 @@ namespace GestorTareas.Migrations
                         principalTable: "Tasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LinkedTasks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    DependsOnTaskId = table.Column<int>(type: "int", nullable: false),
+                    LinkedTaskOrder = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LinkedTasks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LinkedTasks_Tasks_DependsOnTaskId",
+                        column: x => x.DependsOnTaskId,
+                        principalTable: "Tasks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LinkedTasks_Tasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "Tasks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -134,32 +178,26 @@ namespace GestorTareas.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LinkedTasks",
+                name: "TaskCollaborators",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    LinkedTaskOrder = table.Column<int>(type: "int", nullable: false),
-                    FKCompositeTaskId_Linked = table.Column<int>(type: "int", nullable: true),
-                    LinkedTaskId = table.Column<int>(type: "int", nullable: true)
+                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CollaboratorRole = table.Column<int>(type: "int", nullable: false),
+                    AddedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LinkedTasks", x => x.Id);
+                    table.PrimaryKey("PK_TaskCollaborators", x => new { x.TaskId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_LinkedTasks_CompositeTasks_FKCompositeTaskId_Linked",
-                        column: x => x.FKCompositeTaskId_Linked,
-                        principalTable: "CompositeTasks",
+                        name: "FK_TaskCollaborators_CollaborativeTasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "CollaborativeTasks",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LinkedTasks_CompositeTasks_Id",
-                        column: x => x.Id,
-                        principalTable: "CompositeTasks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LinkedTasks_LinkedTasks_LinkedTaskId",
-                        column: x => x.LinkedTaskId,
-                        principalTable: "LinkedTasks",
+                        name: "FK_TaskCollaborators_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -168,38 +206,45 @@ namespace GestorTareas.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    FKCompositeTaskId_Sub = table.Column<int>(type: "int", nullable: true)
+                    ParentCompositeTaskId = table.Column<int>(type: "int", nullable: false),
+                    FKCompositeTaskId_Sub = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubTasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubTasks_CompositeTasks_FKCompositeTaskId_Sub",
-                        column: x => x.FKCompositeTaskId_Sub,
+                        name: "FK_SubTasks_CompositeTasks_ParentCompositeTaskId",
+                        column: x => x.ParentCompositeTaskId,
                         principalTable: "CompositeTasks",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_SubTasks_CompositeTasks_Id",
+                        name: "FK_SubTasks_Tasks_Id",
                         column: x => x.Id,
-                        principalTable: "CompositeTasks",
+                        principalTable: "Tasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LinkedTasks_FKCompositeTaskId_Linked",
+                name: "IX_LinkedTasks_DependsOnTaskId",
                 table: "LinkedTasks",
-                column: "FKCompositeTaskId_Linked");
+                column: "DependsOnTaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LinkedTasks_LinkedTaskId",
+                name: "IX_LinkedTasks_TaskId",
                 table: "LinkedTasks",
-                column: "LinkedTaskId");
+                column: "TaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubTasks_FKCompositeTaskId_Sub",
+                name: "IX_SubTasks_ParentCompositeTaskId",
                 table: "SubTasks",
-                column: "FKCompositeTaskId_Sub");
+                column: "ParentCompositeTaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskCollaborators_UserId",
+                table: "TaskCollaborators",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_UserId",
@@ -234,10 +279,16 @@ namespace GestorTareas.Migrations
                 name: "SubTasks");
 
             migrationBuilder.DropTable(
+                name: "TaskCollaborators");
+
+            migrationBuilder.DropTable(
                 name: "UserTasks");
 
             migrationBuilder.DropTable(
                 name: "CompositeTasks");
+
+            migrationBuilder.DropTable(
+                name: "CollaborativeTasks");
 
             migrationBuilder.DropTable(
                 name: "Tasks");

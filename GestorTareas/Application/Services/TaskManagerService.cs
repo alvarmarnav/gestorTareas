@@ -98,10 +98,10 @@ public class TaskManagerService
             int? recurrenceRule,
             List<TaskCollaborator>? taskCollaborators,
             List<SubTask>? subTasks,
-            int? compositeTaskId,
+            int? parentCompositeTaskId,
             int? linkedTaskOrder,
             int? taskId,
-            int? dependOnId
+            int? dependsOnTaskId
             )
     {
 
@@ -110,13 +110,15 @@ public class TaskManagerService
 
         if (linkedTaskOrder is not null)
         {
-            newTask = new LinkedTask();
-            // newTask.Id = IdentityApiEndpointRouteBuilderExtensions,
-            newTask.TaskId=taskId;
-            // newTask.Task=Task;
-            newTask.DependsOnTaskId = dependsOnTaskId;
-            // newTask.DependsOn =dependsOn;
-            newTask.LinkedTaskOrder = linkedTaskOrder;
+            newTask = new LinkedTask
+            {
+                // newTask.Id = IdentityApiEndpointRouteBuilderExtensions,
+                TaskId = (int)taskId,
+                // newTask.Task=Task;
+                DependsOnTaskId = (int)dependsOnTaskId,
+                // newTask.DependsOn =dependsOn;
+                LinkedTaskOrder = (int)linkedTaskOrder
+            };
         }
         else if (recurrenceRule is not null){
             newTask = new RecurringTask
@@ -136,10 +138,13 @@ public class TaskManagerService
                 SubTaskList = subTasks
             };
         }
-        else if (compositeTaskId is not null){
+        else if (parentCompositeTaskId is not null){
+
+            var parentTask = _repository.GetTaskById((int)parentCompositeTaskId);
             newTask = new SubTask
             {
-                CompositeTaskId = (int)compositeTaskId
+                ParentCompositeTaskId = (int)parentCompositeTaskId,
+                ParentCompositeTask = (CompositeTask)parentTask
             };
         }
         else

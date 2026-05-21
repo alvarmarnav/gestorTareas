@@ -8,7 +8,7 @@ public class TaskCollaborator
     public CollaborativeTask Task{get;set;}
     public int UserId { get; set; }
     public Models.User UserTask {get;set;}
-    public Enum CollaboratorRole { get; set; } = GestorTareas.Enums.CollaboratorRole.Viewer;
+    public Enums.CollaboratorRole CollaboratorRole { get; set; } = GestorTareas.Enums.CollaboratorRole.Viewer;
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
     public static explicit operator TaskCollaborator(User v)

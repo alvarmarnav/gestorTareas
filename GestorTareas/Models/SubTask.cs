@@ -7,17 +7,17 @@ using TaskStatus = GestorTareas.Enums.TaskStatus;
 using TaskPriority = GestorTareas.Enums.TaskPriority;
 namespace GestorTareas.Models;
 
-public class SubTask : CompositeTask
+public class SubTask : Task
 {
-    public int CompositeTaskId { get; set; }
-    public CompositeTask CompositeTaskFather { get; set; }
+    public int ParentCompositeTaskId { get; set; }
+    public CompositeTask ParentCompositeTask { get; set; }
 
     [JsonConstructor]
     public SubTask() : base() { }
     public SubTask(
         string subTaskTitle,
         int userId,
-        int compositeTaskId,
+        int parentCompositeTaskId,
         string? subTaskDescription = null,
         TaskPriority? subTaskPriority = TaskPriority.Normal,
         TaskStatus? subTaskStatus = TaskStatus.Pending,
@@ -32,7 +32,8 @@ public class SubTask : CompositeTask
             dueTime,
             cancelReason)
     {
-        CompositeTaskId = compositeTaskId;
+        ParentCompositeTaskId = parentCompositeTaskId;
+        // ParentCompositeTask = 
     }
     public override string ResumeTask() => $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
 

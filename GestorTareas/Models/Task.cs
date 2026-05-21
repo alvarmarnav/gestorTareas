@@ -28,8 +28,8 @@ public abstract class Task : IIdentificable
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("El título no puede estar vacío");
-            if (value.Length > 30)
-                throw new ArgumentException("El título no puede contener más de 30 caracteres");
+            if (value.Length > 50)
+                throw new ArgumentException("El título no puede contener más de 50 caracteres");
             field = value.Trim();
         }
     }
@@ -39,8 +39,8 @@ public abstract class Task : IIdentificable
         {
             if (string.IsNullOrWhiteSpace(value))
                 field = "Sin descripcion.";
-            else if (value.Length > 250)
-                throw new ArgumentException("LA descripción no puede ser superior a 250 caracteres.");
+            else if (value.Length > 300)
+                throw new ArgumentException("LA descripción no puede ser superior a 300 caracteres.");
             else
                 field = value.Trim();
         }

@@ -23,7 +23,6 @@ public abstract class TaskDTO
     public int? Status { get; set; }
     public DateTime? DueTime { get; set; }
     public string? CancelReason {get;set;}
-    public CompositeTaskType? CompositeTaskType{get;set;}
     public int? LinkedTaskOrder{get;set;}
     public int? RecurrenceRule{get;set;}
 }

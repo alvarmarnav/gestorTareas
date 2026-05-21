@@ -8,9 +8,9 @@ namespace GestorTareas.Application.DTOs;
 
 public class UpdateTaskDto
 {
-    [MaxLength(30,ErrorMessage ="Longitud máxima permitida de 30 caracteres.")]
+    [MaxLength(50,ErrorMessage ="Longitud máxima permitida de 50 caracteres.")]
     public string? Title { get; set; } = null;
-    [MaxLength(250,ErrorMessage ="Longitud máxima permitida de 250 caracteres.")]
+    [MaxLength(300,ErrorMessage ="Longitud máxima permitida de 300 caracteres.")]
     public string? TaskDescription { get; set; } = null;
     public TaskPriority? Priority { get; set; } = null;
     public TaskStatus? Status { get; set; } = null;
@@ -19,7 +19,7 @@ public class UpdateTaskDto
     public int? LinkedTaskOrder { get; set; } = null;
     [Range(1,365,ErrorMessage ="La periodicidad de la tarea no puede ser mayor de un año ni menor de 1 día.")]
     public int? RecurrenceRule { get; set; } = null;
-
+    public string? CancelReason{get;set;}=null;
     public UpdateTaskDto(
         string? title,
         string? taskDescription,
@@ -27,8 +27,9 @@ public class UpdateTaskDto
         TaskStatus? status,
         DateTime? dueTime,
         int? linkedTaskOrder,
-        int? recurrenceRule
-    )
+        int? recurrenceRule,
+        string? cancelReason
+        )
     {
         Title = title;
         TaskDescription = taskDescription;
@@ -37,6 +38,7 @@ public class UpdateTaskDto
         DueTime = dueTime;
         LinkedTaskOrder = linkedTaskOrder;
         RecurrenceRule = recurrenceRule;
+        CancelReason = cancelReason;
     }
 
 }

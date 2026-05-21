@@ -30,7 +30,9 @@ public class CompositeTask : Task
             taskStatus,
             dueTime,
             cancelReason)
-    {}
+    {
+        SubTaskList = new List<SubTask>(_MAX_ITEMS);
+    }
 
     public void AddSubTask(
         string subTaskTitle,
@@ -49,6 +51,7 @@ public class CompositeTask : Task
         SubTask subTask = new SubTask(
             subTaskTitle,
             userId,
+            this.Id,
             subTaskDescription,
             subTaskPriority,
             subTaskStatus,
@@ -77,7 +80,7 @@ public class CompositeTask : Task
             if (this.CalculateProgress() != 100)
                 throw new ArgumentException("No se puede completar la Tarea padre sin tener todas las subtareas completadas.");
         }
-        this.ChangeStatus(newStatus);
+        base.Status = newStatus;
     }
 
     public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
