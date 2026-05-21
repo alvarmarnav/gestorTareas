@@ -38,7 +38,15 @@ public class UserManagerServiceTests
         // _mockRepository.Setup(r => r.AddUser(It.IsAny<User>()));
         _mockRepository.Setup(r => r.AddUser(newUser));
 
-        var createdUser = _userManagerService.AddUser(newUser.UserName,newUser.UserLastName, newUser.UserEmail,true,false);
+        var createdUser = _userManagerService.AddUser
+        (new Application.DTOs.CreateUserDto{
+            UserName = newUser.UserName,
+            UserLastName=newUser.UserLastName,
+            UserEmail = newUser.UserEmail,
+            IsActive =true,
+            IsAdmin = false,
+            UserActiveId = 1,
+        },1);
 
         _mockRepository.Verify(r => r.AddUser(newUser),Times.Once());
         Assert.That(createdUser.UserEmail, Is.EqualTo(newUser.UserEmail));

@@ -34,7 +34,7 @@ public class TaskManagerServiceTests
     public void Setup()
     {
         _mockRepository = new Mock<ITaskRepository>();
-        _taskService = new TaskManagerService(_mockRepository.Object,_mockUserRepository.Object);
+        _taskService = new TaskManagerService(_mockRepository.Object, _mockUserRepository.Object);
         _taskToTest = new List<Models.Task>(_taskListBase);
     }
     [Test]
@@ -43,7 +43,20 @@ public class TaskManagerServiceTests
 
         // _mockRepository.Setup(r => r.AddTask(_taskToTest.Find(t => t.Id == 1)));
 
-        var result = _taskService.AddTask(_taskToTest[0].Title, _taskToTest[0].UserId, _taskToTest[0].TaskDescription, null, null, null, null, null, null, null, null);
+        var result = _taskService.AddTask(
+            _taskToTest[0].Title,
+            _taskToTest[0].UserId,
+            _taskToTest[0].TaskDescription,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
 
         _mockRepository.Verify(r => r.AddTask(It.IsAny<Task>()), Times.Once());
         _mockRepository.Verify(r => r.AddTask(It.Is<Task>(t => t.Title == result.Title && t.UserId == result.UserId)));
@@ -51,7 +64,21 @@ public class TaskManagerServiceTests
     [Test]
     public void AddTaskWithTitleEmpty_MustThrowArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => _taskService.AddTask("", 2, null, null, null, null, null, null, null, null, null));
+        Assert.Throws<ArgumentException>(() => _taskService.AddTask(
+            "",
+            2,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+            ));
     }
     [Test]
     public void AddTaskWithPastDateTime_MustThrowInvalidDate()
@@ -126,7 +153,7 @@ public class TaskManagerServiceTests
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result,Has.Some.Matches<Task>(t => t.Title == "Cambiar Rueda"));
+        Assert.That(result, Has.Some.Matches<Task>(t => t.Title == "Cambiar Rueda"));
         Assert.That(result.All(t => t.UserId == 2), Is.True);
     }
     [Test]
@@ -146,7 +173,7 @@ public class TaskManagerServiceTests
 
         // _mockRepository.Setup(r => r.DeleteTask(taskToDelete)).Verifiable();
 
-        _taskService.DeleteTask(taskIdToDelete);
+        _taskService.DeleteTask(taskIdToDelete,1);
 
         _mockRepository.Verify(r => r.DeleteTask(taskToDelete), Times.Once());
 
@@ -163,7 +190,7 @@ public class TaskManagerServiceTests
         .Returns((Task?)null);
 
 
-        Assert.Throws<KeyNotFoundException>(() => _taskService.DeleteTask(taskIdNotExist));
+        Assert.Throws<KeyNotFoundException>(() => _taskService.DeleteTask(taskIdNotExist,1));
         _mockRepository.Verify(r => r.DeleteTask(It.IsAny<Task>()), Times.Never);
     }
     [Test]
@@ -172,7 +199,15 @@ public class TaskManagerServiceTests
         var selectedTaskId = 2;
         var selectedTask = _taskToTest.FirstOrDefault(t => t.Id == selectedTaskId);
 
-        var newTaskDto = new Application.DTOs.UpdateTaskDto("New Title", "NEw taskdescription", Enums.TaskPriority.Critical, Enums.TaskStatus.InProgress, DateTime.UtcNow.AddDays(30), null, null, null);
+        var newTaskDto = new Application.DTOs.UpdateTaskDto(
+            "New Title",
+            "NEw taskdescription",
+            Enums.TaskPriority.Critical,
+            Enums.TaskStatus.InProgress,
+            DateTime.UtcNow.AddDays(30),
+            null,
+            null,
+            null);
         // {
         //     Title = "New Title",
         //     TaskDescription = "NEw taskdescription",
@@ -184,7 +219,10 @@ public class TaskManagerServiceTests
         _mockRepository.Setup(r => r.UpdateTask(selectedTask))
         .Callback<Task>(t => selectedTask.Title = t.Title);
 
-        _taskService.UpdateTask(selectedTaskId, newTaskDto);
+        _taskService.UpdateTask(
+            selectedTaskId,
+            newTaskDto,
+            1);
 
         Assert.That(selectedTask.Title, Is.EqualTo("New Title"));
         _mockRepository.Verify(r => r.UpdateTask(It.IsAny<Task>()), Times.Once);
