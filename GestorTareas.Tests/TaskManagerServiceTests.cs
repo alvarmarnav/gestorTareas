@@ -38,12 +38,12 @@ public class TaskManagerServiceTests
         _taskToTest = new List<Models.Task>(_taskListBase);
     }
     [Test]
-    public void AddTask_PassTheCorrectValueToRepo()
+    public void CreateTask_PassTheCorrectValueToRepo()
     {
 
-        // _mockRepository.Setup(r => r.AddTask(_taskToTest.Find(t => t.Id == 1)));
+        // _mockRepository.Setup(r => r.CreateTask(_taskToTest.Find(t => t.Id == 1)));
 
-        var result = _taskService.AddTask(
+        var result = _taskService.CreateTask(
             _taskToTest[0].Title,
             _taskToTest[0].UserId,
             _taskToTest[0].TaskDescription,
@@ -58,13 +58,13 @@ public class TaskManagerServiceTests
             null,
             null);
 
-        _mockRepository.Verify(r => r.AddTask(It.IsAny<Task>()), Times.Once());
-        _mockRepository.Verify(r => r.AddTask(It.Is<Task>(t => t.Title == result.Title && t.UserId == result.UserId)));
+        _mockRepository.Verify(r => r.CreateTask(It.IsAny<Task>()), Times.Once());
+        _mockRepository.Verify(r => r.CreateTask(It.Is<Task>(t => t.Title == result.Title && t.UserId == result.UserId)));
     }
     [Test]
-    public void AddTaskWithTitleEmpty_MustThrowArgumentException()
+    public void CreateTaskWithTitleEmpty_MustThrowArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => _taskService.AddTask(
+        Assert.Throws<ArgumentException>(() => _taskService.CreateTask(
             "",
             2,
             null,
@@ -81,7 +81,7 @@ public class TaskManagerServiceTests
             ));
     }
     [Test]
-    public void AddTaskWithPastDateTime_MustThrowInvalidDate()
+    public void CreateTaskWithPastDateTime_MustThrowInvalidDate()
     {
 
     }

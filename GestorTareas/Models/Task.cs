@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using GestorTareas.Enums;
 using GestorTareas.Interfaces;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
@@ -91,24 +92,7 @@ public abstract class Task : IIdentificable
         }
     }
 
-    public DateTime? DueTime
-    {
-        get;
-
-        set
-        {
-            if (value > DateTime.UtcNow.AddYears(2))
-                throw new ArgumentException("La fecha de fin de tarea es mayor a 2 años, No es una fecha válida.");
-            if (value < (DateTime.UtcNow.AddMonths(-1)))
-                throw new ArgumentException("La fecha introducida no puede estar vencida por más de 1 mes.");
-            if (value is not null && value <= DateTime.UtcNow.AddMinutes(1))
-                throw new ArgumentException("La fecha introducida para su vencimiento no puede ser anterior a la actual.");
-            if (CreatedAt is not null && value < CreatedAt)
-                throw new ArgumentException("La fecha de vencimiento introducida no puede ser inferiior a la de creación.");
-
-            field = value;
-        }
-    } = DateTime.UtcNow;
+    public DateTime? DueTime {get;set;} = DateTime.UtcNow;
     public string? CancelReason
     {
         get; set
@@ -241,15 +225,22 @@ public abstract class Task : IIdentificable
 
         return DateTime.UtcNow > this.DueTime;
     }
-    public int CalculateDays()
+    public int CalculateOverDueDays()
+    {
+        if(this.DueTime is null)
+                    throw new InvalidOperationException("No existe fecha de fin establecida.");
+        if(this.DueTime.Value >= DateTime.UtcNow)
+        return 0;
+
+        return (DateTime.UtcNow.Date - this.DueTime.Value).Days;
+    }
+    public int CalculateRemainingDays()
     {
         if (this.DueTime is null)
-            throw new ArgumentException("No existe fecha de fin establecida.");
+            throw new InvalidOperationException("No existe fecha de fin establecida.");
 
-        TimeSpan daysDiference = (TimeSpan)(DateTime.UtcNow - this.DueTime);
-        return (int)daysDiference.Days;
+        return (this.DueTime.Value.Date - DateTime.UtcNow.Date).Days;
     }
-
     public abstract string ResumeTask();
 
     public static implicit operator Task(LinkedTask v)

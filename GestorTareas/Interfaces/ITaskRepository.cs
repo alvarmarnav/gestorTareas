@@ -8,11 +8,14 @@ public interface ITaskRepository
     List<Task> GetAllTasks();
     List<Task> GetAllTasksByUser(int userId);
     Task? GetTaskById(int id);
-    void AddTask(Task task);
+    void CreateTask(Task task);
     void DeleteTask(Task task);
     void UpdateTask(Task task);
     (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage,int userId, bool? onlyCompletedTask = null,
 string? search = null);
-    void AddNewTeamMember(CollaborativeTask collaborativeTask,TaskCollaborator tcollaborator);
-    void RemoveTeamMember(CollaborativeTask collaborativeTask,TaskCollaborator tcollaborator);
+    void AddTaskCollaborator(CollaborativeTask collaborativeTask,TaskCollaborator tcollaborator);
+    void RemoveTaskCollaborator(CollaborativeTask collaborativeTask,TaskCollaborator tcollaborator);
+    bool ExistsRecurrenceRelation(int taskId, int dependsOnTaskId);
+    bool ExistsLinkedRelation(int taskId, int dependsOnTaskId);
+    LinkedTask AddLinkedRelation(LinkedTask linkedTask);
 };

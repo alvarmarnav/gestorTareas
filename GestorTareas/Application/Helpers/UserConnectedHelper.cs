@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using GestorTareas.Application.DTOs;
 using GestorTareas.Enums;
 using GestorTareas.Models;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
@@ -8,12 +9,15 @@ namespace GestorTareas.Helpers;
 
 public class UserConnectedHelper
 {
-    public static int GetConnectedUser(ClaimsPrincipal user){
-      var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr is null) throw new UnauthorizedAccessException();
-
-        if(!int.TryParse(userIdStr,out int userId))
-            throw new UnauthorizedAccessException();
-        return userId;
+    public static CurrentUserDto GetConnectedUser()
+    {
+        var currentUser = ClaimsPrincipal.Current;
+        if (currentUser is null) throw new UnauthorizedAccessException($"Acceso denegado.");
+        CurrentUserDto currentUserDto = new CurrentUserDto
+        {
+            CurrentUserId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value),
+            CurrentUserRole = (CollaboratorRole)Enum.Parse(typeof(CollaboratorRole), currentUser.FindFirst(ClaimTypes.Role)?.Value)
+        };
+        return currentUserDto;
     }
 }

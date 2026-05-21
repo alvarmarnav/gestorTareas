@@ -59,16 +59,14 @@ public class CompositeTask : Task
 
         SubTaskList.Add(subTask);
     }
-    public int CountTasks()
-    {
-        return SubTaskList.Count;
-    }
-
     public decimal CalculateProgress()
     {
-        int completedTasks;
-        completedTasks = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
-        return (decimal)completedTasks / CountTasks() * 100;
+        int totalTasks = SubTaskList.Count;
+        if(totalTasks==0)
+        return 0;
+
+        int completedTasks = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
+        return (decimal)completedTasks /totalTasks * 100;
     }
     public void ChangeStatus(TaskStatus newStatus)
     {

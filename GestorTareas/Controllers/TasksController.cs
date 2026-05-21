@@ -41,7 +41,7 @@ public class TasksController : ControllerBase
     [HttpGet("user/{userId:int}")] // GET /api/tareas
     public IActionResult GetAllTaskByUser(int userId)
     {
-        return Ok(_taskManagerService.GetAllTasksByUser(userId));
+        return Ok(_taskManagerService.GetAllTasksByUser(userId, UserConnectedHelper.GetConnectedUser()));
     }
     /// <summary>
     /// Obtiene todas las tareas que pertenecen a un usuario mediante ID.
@@ -50,12 +50,7 @@ public class TasksController : ControllerBase
     [HttpGet("tasks")] // GET /api/tareas
     public IActionResult GetAllTaskOwnUser()
     {
-        // var claimUser = ClaimsPrincipal.Current;
-        // if (claimUser is null)
-        //     return Unauthorized();
-        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
-
-        return Ok(_taskManagerService.GetAllTasksByUser(userId));
+        return Ok(_taskManagerService.GetAllTasksByUser(null, UserConnectedHelper.GetConnectedUser()));
     }
     /// <summary>
     /// Obtiene la tarea seleccioinada por ID.
@@ -64,15 +59,8 @@ public class TasksController : ControllerBase
     [HttpGet("{taskId:int}")] // GET /api/tareas/1
     public IActionResult GetById(int taskId)
     {
-        // var currentUser=ClaimsPrincipal.Current;
-        // if(currentUser is null) return  Unauthorized();
-        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
-
-        var task = _taskManagerService.GetTaskById(taskId);
+        var task = _taskManagerService.GetTaskById(taskId, UserConnectedHelper.GetConnectedUser());
         if (task == null) return NotFound();
-
-        if (task.UserId != userId && !task.UsersList.Any(u => u.Id == userId) && !User.IsInRole("Admin"))
-            return Unauthorized();
 
         return Ok(task);
     }
@@ -86,11 +74,7 @@ public class TasksController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int itemsPerPage = 10)
     {
-        // var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        // if (userIdStr is null) return NotFound();
-        // int userId = int.Parse(userIdStr);
-        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
-        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage, userId);
+        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage, UserConnectedHelper.GetConnectedUser());
         return Ok(result);
     }
     /// <summary>
@@ -103,16 +87,11 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult Create([FromBody] CreateTaskDto dto)
     {
-        //Obtener ID del usuario
-        // var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        // if (userIdStr is null) return Unauthorized();
+        CurrentUserDto currentUserDto = UserConnectedHelper.GetConnectedUser();
 
-        // int userId = int.Parse(userIdStr);
-        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
-
-        var task = _taskManagerService.AddTask(
+        var task = _taskManagerService.CreateTask(
         dto.Title,
-        userId,
+        currentUserDto,
         dto.TaskDescription,
         dto.Priority,
         dto.Status,
@@ -121,12 +100,12 @@ public class TasksController : ControllerBase
         dto.TaskCollaborators,
         dto.SubTasks,
         dto.CompositeTaskId,
-        dto.LinkedTaskOrder,
         dto.TaskID,
+        dto.LinkedTaskOrder,
         dto.DependsOnTaskId
         );
 
-        return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, dto);
         // return CreatedAtAction(nameof(GetById), new { id = task.Id }, tarea);
     }
     /// <summary>
@@ -138,13 +117,7 @@ public class TasksController : ControllerBase
     [HttpPut("{id}")] // PUT /api/tareas/1
     public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
     {
-        //Diferenciar entre Propietario y Admin
-        // var userActiveStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        // if (userActiveStr is null) return Unauthorized();
-        // var userActiveId = int.Parse(userActiveStr);
-        var userId = UserConnectedHelper.GetConnectedUser(ClaimsPrincipal.Current);
-
-        _taskManagerService.UpdateTask(id, taskDto, userId);
+        _taskManagerService.UpdateTask(id, taskDto, UserConnectedHelper.GetConnectedUser());
         return NoContent();
     }
     /// <summary>
@@ -156,35 +129,41 @@ public class TasksController : ControllerBase
     // [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
-        var claimUser = ClaimsPrincipal.Current;
-        if(claimUser is null)
-            return Unauthorized();
-        var userId = UserConnectedHelper.GetConnectedUser(claimUser);
-        _taskManagerService.DeleteTask(id,userId);
+        _taskManagerService.DeleteTask(id, UserConnectedHelper.GetConnectedUser());
         return NoContent();
     }
     /// <summary>
     /// Añadir nuevo usuario a una CollaborativeTask
     /// </summary>
     /// <param name="taskId"></param>
-    /// <param name="userId"></param>
+    /// <param name="taskCollaboratorDto"></param>
     /// <returns></returns>
-    [HttpPut("/collaborativeTask/{taskId:int}/{userId:int}")]
-    public IActionResult AddNewTeamMember(int taskId, int userId)
+    [HttpPut("/collaborativeTask/{taskId:int}/{taskCollaboratorDto:CreateTaskCollaboratorDto}")]
+    public IActionResult AddTaskCollaborator(int taskId, CreateTaskCollaboratorDto taskCollaboratorDto)
     {
-        _taskManagerService.AddNewTeamMember(taskId, userId);
+        _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto);
         return NoContent();
     }
     /// <summary>
     /// Eliminar usuario de una CollaborativeTask
     /// </summary>
     /// <param name="taskId"></param>
+    /// <param name="taskCollaboratorDto"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}/{userId:int}")]
-    public IActionResult RemoveTeamMember(int taskId, int userId)
+    [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}/{taskCollaboratorDto:RemoveTaskCollaboratorDto}")]
+    public IActionResult RemoveTaskCollaborator(int taskId, RemoveTaskCollaboratorDto taskCollaboratorDto)
     {
-        _taskManagerService.RemoveTeamMember(taskId, userId);
+        _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto);
         return NoContent();
     }
+    [Authorize]
+    [HttpPost("{taskId:int}/dependencies")]
+    public IActionResult AddLinkedTaskRelation(int taskId, [FromBody] CreateLinkedTaskRelationDto dto)
+    {
+        var linkedTaskRelation = _taskManagerService.AddLinkedTask(taskId, dto.DependesOnTaskId, dto.LinkedTaskOrder, UserConnectedHelper.GetConnectedUser());
+        return Ok(linkedTaskRelation);
+    }
+
+
 }

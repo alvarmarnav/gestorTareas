@@ -12,7 +12,7 @@ public class TaskRepositoryEF : ITaskRepository
 
     public TaskRepositoryEF(GestorTareasContext context) => _context = context;
 
-    public void AddTask(Task task)
+    public void CreateTask(Task task)
     {
         _context.Add(task);
         _context.SaveChanges();
@@ -95,18 +95,32 @@ string? search = null)
         _context.Tasks.Update(task);
         _context.SaveChanges();
     }
-    public void AddNewTeamMember(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
+    public void AddTaskCollaborator(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
     {
         _context.CollaborativeTasks.Attach(collaborativeTask);
         collaborativeTask.AddMTaskCollaborator(tcollaborator);
         _context.SaveChanges();
     }
-    public void RemoveTeamMember(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
+    public void RemoveTaskCollaborator(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
     {
         _context.CollaborativeTasks.Attach(collaborativeTask);
         collaborativeTask.RemoveMember(tcollaborator.UserId);
         _context.SaveChanges();
     }
 
-    
+ public bool ExistsRecurrenceRelation(int taskId, int dependsOnTaskId)
+    {
+        return _context.LinkedTasks.Any(lt => lt.TaskId == dependsOnTaskId && lt.DependsOnTaskId == taskId);
+    }
+    public bool ExistsLinkedRelation(int taskId, int dependsOnTaskId)
+    {
+        return _context.LinkedTasks.Any(lt => lt.TaskId == taskId && lt.DependsOnTaskId == dependsOnTaskId);
+    }
+    public LinkedTask AddLinkedRelation(LinkedTask linkedTask)
+    {
+        _context.LinkedTasks.Add(linkedTask);
+        _context.SaveChanges();
+        return linkedTask;
+    }
+
 }

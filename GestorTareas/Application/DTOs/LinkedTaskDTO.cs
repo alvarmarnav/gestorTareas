@@ -3,11 +3,10 @@ using GestorTareas.Models;
 
 namespace GestorTareas.Application.DTOs;
 
-public class LinkedTaskDTO : TaskDTO
+public class LinkedTaskDTO
 {
-    //TODO: pendiente de terminar logica de dependencias de la Clase LinkedTask
-    public int CompositeTaskType { get; set; }
-
-    public List<LinkedTask> ListOfLinkedTasks { get; set; } = new(60);
+    public int Id{get;set;}
+    public int TaskId{get;set;}
+    public int DependsOnTaskId{get;set;}
     public int LinkedTaskOrder { get; set; }
 }

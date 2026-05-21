@@ -38,7 +38,7 @@ public class TaskManager
         Repository.Save(listTasksDto);
     }
 
-    public void AddTask(Models.Task item)
+    public void CreateTask(Models.Task item)
     {
 
         ArgumentNullException.ThrowIfNull(item);
