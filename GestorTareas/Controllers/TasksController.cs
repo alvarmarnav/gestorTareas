@@ -149,7 +149,6 @@ public class TasksController : ControllerBase
     /// </summary>
     /// <param name="taskId"></param>
     /// <param name="taskCollaboratorDto"></param>
-    /// <param name="userId"></param>
     /// <returns></returns>
     [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}/{taskCollaboratorDto:RemoveTaskCollaboratorDto}")]
     public IActionResult RemoveTaskCollaborator(int taskId, RemoveTaskCollaboratorDto taskCollaboratorDto)

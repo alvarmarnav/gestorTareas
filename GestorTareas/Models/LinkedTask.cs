@@ -19,25 +19,40 @@ public class LinkedTask
     public Task DependsOn { get; set; }
     public int LinkedTaskOrder { get; set; }
 
-    
+
+    public LinkedTask() { }
+
+    public LinkedTask(int taskId, int dependsOnTaskId, int linkedTaskOrder)
+    {
+        if (taskId <= 0)
+            throw new ArgumentException("Id de la tarea no válido.");
+        if (dependsOnTaskId <= 0)
+            throw new ArgumentException("Id de la tarea de la que depende no válido.");
+        if (linkedTaskOrder <= 0)
+            throw new ArgumentException("Posición de la tarea no válida.");
+        TaskId=taskId;
+        DependsOnTaskId=dependsOnTaskId;
+        linkedTaskOrder=linkedTaskOrder;
+
+    }
     // public void UpdateLinkedTaskOrder(int newOrder) { }
     public void CompleteLinkedTask(int linkedTaskId)
     {
-        if (linkedTaskId<=0 && linkedTaskId != TaskId)
+        if (linkedTaskId <= 0 || linkedTaskId != Id)
             throw new ArgumentException("El identificador no es válido o bien No existe la tarea.");
         if (Task.Status == TaskStatus.Completed)
             throw new ArgumentException("Tarea YA Completada anteriormente.");
         if (DependsOn.Status != TaskStatus.Completed)
-            throw new InvalidOperationException($"Existen tareas previas SIN Completar.");      
+            throw new InvalidOperationException($"Existen tareas previas SIN Completar.");
 
         Task.Status = TaskStatus.Completed;
     }
 
     public bool CanStartLinkedTask(LinkedTask lTask)
     {
-        if (DependsOn is null || DependsOn.Status != TaskStatus.Completed)
+        if (lTask.DependsOn is null || lTask.DependsOn.Status != TaskStatus.Completed)
             return false;
-        else    
+        else
             return true;
     }
 
