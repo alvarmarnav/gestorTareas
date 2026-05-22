@@ -41,7 +41,7 @@ public class CompositeTask : Task
         string subTaskDescription,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
-        DateTime dueTime)
+        DateTime? dueTime)
     {
 
         //Validar no exceder n MAX SubTask permitidas

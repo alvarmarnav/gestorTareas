@@ -9,14 +9,21 @@ namespace GestorTareas.Helpers;
 
 public class UserConnectedHelper
 {
-    public static CurrentUserDto GetConnectedUser()
+    public static CurrentUserDto GetConnectedUser(ClaimsPrincipal currentUser)
     {
-        var currentUser = ClaimsPrincipal.Current;
-        if (currentUser is null) throw new UnauthorizedAccessException($"Acceso denegado.");
+        var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUserRole = currentUser.FindFirst(ClaimTypes.Role)?.Value;
+
+        if(!int.TryParse(currentUserId, out var userId))
+        throw new UnauthorizedAccessException($"Acceso denegado.");
+
+        if(!Enum.TryParse<CollaboratorRole>(currentUserRole, ignoreCase: true, out var userRole))
+                throw new UnauthorizedAccessException($"Acceso denegado.");
+
         CurrentUserDto currentUserDto = new CurrentUserDto
         {
-            CurrentUserId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value),
-            CurrentUserRole = (CollaboratorRole)Enum.Parse(typeof(CollaboratorRole), currentUser.FindFirst(ClaimTypes.Role)?.Value)
+            CurrentUserId = userId,
+            CurrentUserRole = userRole
         };
         return currentUserDto;
     }

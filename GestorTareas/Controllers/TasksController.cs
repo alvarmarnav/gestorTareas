@@ -41,7 +41,7 @@ public class TasksController : ControllerBase
     [HttpGet("user/{userId:int}")] // GET /api/tareas
     public IActionResult GetAllTaskByUser(int userId)
     {
-        return Ok(_taskManagerService.GetAllTasksByUser(userId, UserConnectedHelper.GetConnectedUser()));
+        return Ok(_taskManagerService.GetAllTasksByUser(userId, UserConnectedHelper.GetConnectedUser(User)));
     }
     /// <summary>
     /// Obtiene todas las tareas que pertenecen a un usuario mediante ID.
@@ -50,7 +50,7 @@ public class TasksController : ControllerBase
     [HttpGet("tasks")] // GET /api/tareas
     public IActionResult GetAllTaskOwnUser()
     {
-        return Ok(_taskManagerService.GetAllTasksByUser(null, UserConnectedHelper.GetConnectedUser()));
+        return Ok(_taskManagerService.GetAllTasksByUser(null, UserConnectedHelper.GetConnectedUser(User)));
     }
     /// <summary>
     /// Obtiene la tarea seleccioinada por ID.
@@ -59,7 +59,7 @@ public class TasksController : ControllerBase
     [HttpGet("{taskId:int}")] // GET /api/tareas/1
     public IActionResult GetById(int taskId)
     {
-        var task = _taskManagerService.GetTaskById(taskId, UserConnectedHelper.GetConnectedUser());
+        var task = _taskManagerService.GetTaskById(taskId, UserConnectedHelper.GetConnectedUser(User));
         if (task == null) return NotFound();
 
         return Ok(task);
@@ -74,7 +74,7 @@ public class TasksController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int itemsPerPage = 10)
     {
-        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage, UserConnectedHelper.GetConnectedUser());
+        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage, UserConnectedHelper.GetConnectedUser(User));
         return Ok(result);
     }
     /// <summary>
@@ -87,7 +87,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult Create([FromBody] CreateTaskDto dto)
     {
-        CurrentUserDto currentUserDto = UserConnectedHelper.GetConnectedUser();
+        CurrentUserDto currentUserDto = UserConnectedHelper.GetConnectedUser(User);
 
         var task = _taskManagerService.CreateTask(
         dto.Title,
@@ -117,7 +117,7 @@ public class TasksController : ControllerBase
     [HttpPut("{id}")] // PUT /api/tareas/1
     public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
     {
-        _taskManagerService.UpdateTask(id, taskDto, UserConnectedHelper.GetConnectedUser());
+        _taskManagerService.UpdateTask(id, taskDto, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
     /// <summary>
@@ -129,7 +129,7 @@ public class TasksController : ControllerBase
     // [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
-        _taskManagerService.DeleteTask(id, UserConnectedHelper.GetConnectedUser());
+        _taskManagerService.DeleteTask(id, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
     /// <summary>
@@ -141,7 +141,7 @@ public class TasksController : ControllerBase
     [HttpPut("/collaborativeTask/{taskId:int}/{taskCollaboratorDto:CreateTaskCollaboratorDto}")]
     public IActionResult AddTaskCollaborator(int taskId, CreateTaskCollaboratorDto taskCollaboratorDto)
     {
-        _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto);
+        _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto,UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
     /// <summary>
@@ -153,14 +153,14 @@ public class TasksController : ControllerBase
     [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}/{taskCollaboratorDto:RemoveTaskCollaboratorDto}")]
     public IActionResult RemoveTaskCollaborator(int taskId, RemoveTaskCollaboratorDto taskCollaboratorDto)
     {
-        _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto);
+        _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto,UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
     [Authorize]
-    [HttpPost("{taskId:int}/dependencies")]
+    [HttpPost("{taskId:int}/linkedRelation")]
     public IActionResult AddLinkedTaskRelation(int taskId, [FromBody] CreateLinkedTaskRelationDto dto)
     {
-        var linkedTaskRelation = _taskManagerService.AddLinkedTask(taskId, dto.DependesOnTaskId, dto.LinkedTaskOrder, UserConnectedHelper.GetConnectedUser());
+        var linkedTaskRelation = _taskManagerService.AddLinkedTask(taskId, dto.DependesOnTaskId, dto.LinkedTaskOrder, UserConnectedHelper.GetConnectedUser(User));
         return Ok(linkedTaskRelation);
     }
 

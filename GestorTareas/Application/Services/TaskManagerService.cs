@@ -44,14 +44,14 @@ public class TaskManagerService
             CancelReason = t.CancelReason
         }).ToList();
     }
-    public List<ResponseTaskDto> GetAllTasksByUser(int? userId, CurrentUserDto currentUserDto)
+    public List<ResponseTaskDto> GetAllTasksByUser(int userId, CurrentUserDto currentUserDto)
     {
+        if (userId <= 0) throw new ArgumentException("No se ha introducido valor de búsqueda.");
         var validUser = _userRepository.GetUserById(currentUserDto.CurrentUserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
-        if (userId is not null && userId != currentUserDto.CurrentUserId && currentUserDto.CurrentUserRole is not CollaboratorRole.Admin)
+        if (userId != currentUserDto.CurrentUserId && currentUserDto.CurrentUserRole is not CollaboratorRole.Admin)
             throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
-        if (userId is null) userId = (int)currentUserDto.CurrentUserId;
-
-        return _repository.GetAllTasksByUser(validUser.Id)
+        
+        return _repository.GetAllTasksByUser(userId)
         .Select(t => new ResponseTaskDto
         {
             Id = t.Id,
@@ -285,10 +285,15 @@ public class TaskManagerService
         total / (double)itemsPerPage)
         };
     }
-    public void AddTaskCollaborator(int taskId, CreateTaskCollaboratorDto createTaskCollaboratorDto)
+    public void AddTaskCollaborator(int taskId, CreateTaskCollaboratorDto createTaskCollaboratorDto, CurrentUserDto currentUserDto)
     {
         var selectedUser = _userRepository.GetUserById((int)createTaskCollaboratorDto.UserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {createTaskCollaboratorDto}");
+
         var selectedTask = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
+
+        if (!(bool)selectedUser.IsAdmin && selectedTask.UserId != currentUserDto.CurrentUserId && !selectedTask.UsersList.Any(u => u.Id == currentUserDto.CurrentUserId))
+            throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
+
         if (selectedTask.GetType().Name != "CollaborativeTask")
             throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
 
@@ -306,10 +311,15 @@ public class TaskManagerService
         _repository.AddTaskCollaborator((CollaborativeTask)selectedTask, taskCollaborator);
 
     }
-    public void RemoveTaskCollaborator(int taskId, RemoveTaskCollaboratorDto removeTaskCollaboratorDto)
+    public void RemoveTaskCollaborator(int taskId, RemoveTaskCollaboratorDto removeTaskCollaboratorDto, CurrentUserDto currentUserDto)
     {
         var selectedUser = _userRepository.GetUserById(removeTaskCollaboratorDto.UserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {removeTaskCollaboratorDto.UserId}");
+
         var selectedTask = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
+
+        if (!(bool)selectedUser.IsAdmin && selectedTask.UserId != currentUserDto.CurrentUserId && !selectedTask.UsersList.Any(u => u.Id == currentUserDto.CurrentUserId))
+            throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
+
         if (selectedTask is not CollaborativeTask colTask)
             throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
 

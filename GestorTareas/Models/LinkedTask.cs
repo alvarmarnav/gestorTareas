@@ -15,9 +15,9 @@ public class LinkedTask
     public int Id { get; set; }
     public int TaskId { get; set; }
     public Task Task { get; set; }
-    public int DependsOnTaskId { get; set; }
+    public int? DependsOnTaskId { get; set; }=null;
     public Task DependsOn { get; set; }
-    public int LinkedTaskOrder { get; set; }
+    public int? LinkedTaskOrder { get; set; }=null;
 
 
     public LinkedTask() { }
