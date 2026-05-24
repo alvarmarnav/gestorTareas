@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestorTareas.Migrations
 {
     [DbContext(typeof(GestorTareasContext))]
-    [Migration("20260521111846_Initial Migration")]
+    [Migration("20260524171009_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -33,7 +33,7 @@ namespace GestorTareas.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DependsOnTaskId")
+                    b.Property<int?>("DependsOnTaskId")
                         .HasColumnType("int");
 
                     b.Property<int>("LinkedTaskOrder")
@@ -233,15 +233,12 @@ namespace GestorTareas.Migrations
                 {
                     b.HasBaseType("GestorTareas.Models.Task");
 
-                    b.Property<int>("FKCompositeTaskId_Sub")
-                        .HasColumnType("int");
-
                     b.Property<int>("ParentCompositeTaskId")
                         .HasColumnType("int");
 
                     b.HasIndex("ParentCompositeTaskId");
 
-                    b.ToTable("SubTasks", (string)null);
+                    b.ToTable("SubTask", (string)null);
                 });
 
             modelBuilder.Entity("GestorTareas.Models.LinkedTask", b =>
@@ -249,8 +246,7 @@ namespace GestorTareas.Migrations
                     b.HasOne("GestorTareas.Models.Task", "DependsOn")
                         .WithMany("RequiredByOtherTask")
                         .HasForeignKey("DependsOnTaskId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GestorTareas.Models.Task", "Task")
                         .WithMany("Dependencies")

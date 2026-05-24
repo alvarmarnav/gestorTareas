@@ -85,29 +85,86 @@ public class TasksController : ControllerBase
     StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Create([FromBody] CreateTaskDto dto)
+    public IActionResult Create([FromBody] CreateSimpleTaskDto dto)
     {
-        CurrentUserDto currentUserDto = UserConnectedHelper.GetConnectedUser(User);
-
-        var task = _taskManagerService.CreateTask(
-        dto.Title,
-        currentUserDto,
-        dto.TaskDescription,
-        dto.Priority,
-        dto.Status,
-        dto.DueTime,
-        dto.RecurrenceRule,
-        dto.TaskCollaborators,
-        dto.SubTasks,
-        dto.CompositeTaskId,
-        dto.TaskID,
-        dto.LinkedTaskOrder,
-        dto.DependsOnTaskId
-        );
+        var task = _taskManagerService.CreateTask(dto, UserConnectedHelper.GetConnectedUser(User));
 
         return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, dto);
         // return CreatedAtAction(nameof(GetById), new { id = task.Id }, tarea);
     }
+
+/// <summary>
+/// Crear Nueva Dependencia de LinkedTask
+/// </summary>
+/// <param name="taskId"></param>
+/// <param name="dto"></param>
+/// <returns></returns>
+    [Authorize]
+    [HttpPost("{taskId:int}/linkedRelation")]
+    public IActionResult AddLinkedTaskRelation(int taskId, [FromBody] CreateLinkedTaskRelationDto dto)
+    {
+        var linkedTaskRelation = _taskManagerService.AddLinkedTask(taskId, dto.DependsOnTaskId, dto.LinkedTaskOrder, UserConnectedHelper.GetConnectedUser(User));
+        return Ok(linkedTaskRelation);
+    }
+    
+    /// <summary>
+    /// Crear CollaborativeTask
+    /// </summary>
+    /// <param name="collDto"></param>
+    /// <returns></returns>
+    [HttpPost("tasks/collaborative")]
+    [ProducesResponseType(typeof(TaskDTO),
+    StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult CreateCollaborativeTask([FromBody] CreateCollaborativeTaskDto collDto)
+    {
+        var task = _taskManagerService.CreateCollaborativeTask(collDto,UserConnectedHelper.GetConnectedUser(User) );
+
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, collDto);
+    }
+/// <summary>
+    /// Añadir nuevo usuario a una CollaborativeTask
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <param name="taskCollaboratorDto"></param>
+    /// <returns></returns>
+    [HttpPut("/collaborativeTask/{taskId:int}/collaborators")]
+    public IActionResult AddTaskCollaborator(int taskId, [FromBody] CreateTaskCollaboratorDto taskCollaboratorDto)
+    {
+        _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
+        return NoContent();
+    }
+
+/// <summary>
+    /// Crear CompositeTask
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("tasks/composite")]
+    [ProducesResponseType(typeof(TaskDTO),
+    StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult CreateCompositeTask([FromBody] CreateCompositeTaskDto compDto)
+    {
+        var task = _taskManagerService.CreateCompositeTask(compDto,UserConnectedHelper.GetConnectedUser(User) );
+
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, compDto);
+    }
+
+
+[HttpPost("/compositeTasks/{compositeTaskId:int}/subtasks")]
+ [ProducesResponseType(typeof(TaskDTO),
+    StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult AddSubtask(int compositeTaskId,[FromBody] CreateSubTaskDto subtaskDto)
+    {
+         var task = _taskManagerService.CreateSubTask(compositeTaskId,subtaskDto,UserConnectedHelper.GetConnectedUser(User) );
+
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, subtaskDto);
+    }
+
     /// <summary>
     /// Actualiza la Tarea seleccionada por Id
     /// </summary>
@@ -132,37 +189,20 @@ public class TasksController : ControllerBase
         _taskManagerService.DeleteTask(id, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-    /// <summary>
-    /// Añadir nuevo usuario a una CollaborativeTask
-    /// </summary>
-    /// <param name="taskId"></param>
-    /// <param name="taskCollaboratorDto"></param>
-    /// <returns></returns>
-    [HttpPut("/collaborativeTask/{taskId:int}/{taskCollaboratorDto:CreateTaskCollaboratorDto}")]
-    public IActionResult AddTaskCollaborator(int taskId, CreateTaskCollaboratorDto taskCollaboratorDto)
-    {
-        _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto,UserConnectedHelper.GetConnectedUser(User));
-        return NoContent();
-    }
+    
     /// <summary>
     /// Eliminar usuario de una CollaborativeTask
     /// </summary>
     /// <param name="taskId"></param>
     /// <param name="taskCollaboratorDto"></param>
     /// <returns></returns>
-    [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}/{taskCollaboratorDto:RemoveTaskCollaboratorDto}")]
-    public IActionResult RemoveTaskCollaborator(int taskId, RemoveTaskCollaboratorDto taskCollaboratorDto)
+    [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}")]
+    public IActionResult RemoveTaskCollaborator(int taskId, [FromBody] RemoveTaskCollaboratorDto taskCollaboratorDto)
     {
-        _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto,UserConnectedHelper.GetConnectedUser(User));
+        _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-    [Authorize]
-    [HttpPost("{taskId:int}/linkedRelation")]
-    public IActionResult AddLinkedTaskRelation(int taskId, [FromBody] CreateLinkedTaskRelationDto dto)
-    {
-        var linkedTaskRelation = _taskManagerService.AddLinkedTask(taskId, dto.DependesOnTaskId, dto.LinkedTaskOrder, UserConnectedHelper.GetConnectedUser(User));
-        return Ok(linkedTaskRelation);
-    }
+
 
 
 }

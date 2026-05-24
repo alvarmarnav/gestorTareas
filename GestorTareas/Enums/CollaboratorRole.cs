@@ -1,7 +1,7 @@
 namespace GestorTareas.Enums;
 public enum CollaboratorRole
 {
-    Admin,
+    TaskAdministrator,
     Collaborator,
     Viewer
 }

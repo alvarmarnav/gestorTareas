@@ -32,7 +32,7 @@ public class LinkedTask
             throw new ArgumentException("Posición de la tarea no válida.");
         TaskId=taskId;
         DependsOnTaskId=dependsOnTaskId;
-        linkedTaskOrder=linkedTaskOrder;
+        LinkedTaskOrder=linkedTaskOrder;
 
     }
     // public void UpdateLinkedTaskOrder(int newOrder) { }

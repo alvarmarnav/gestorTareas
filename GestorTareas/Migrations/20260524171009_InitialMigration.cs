@@ -99,7 +99,7 @@ namespace GestorTareas.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaskId = table.Column<int>(type: "int", nullable: false),
-                    DependsOnTaskId = table.Column<int>(type: "int", nullable: false),
+                    DependsOnTaskId = table.Column<int>(type: "int", nullable: true),
                     LinkedTaskOrder = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -202,24 +202,23 @@ namespace GestorTareas.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubTasks",
+                name: "SubTask",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    ParentCompositeTaskId = table.Column<int>(type: "int", nullable: false),
-                    FKCompositeTaskId_Sub = table.Column<int>(type: "int", nullable: false)
+                    ParentCompositeTaskId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SubTasks", x => x.Id);
+                    table.PrimaryKey("PK_SubTask", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubTasks_CompositeTasks_ParentCompositeTaskId",
+                        name: "FK_SubTask_CompositeTasks_ParentCompositeTaskId",
                         column: x => x.ParentCompositeTaskId,
                         principalTable: "CompositeTasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_SubTasks_Tasks_Id",
+                        name: "FK_SubTask_Tasks_Id",
                         column: x => x.Id,
                         principalTable: "Tasks",
                         principalColumn: "Id",
@@ -237,8 +236,8 @@ namespace GestorTareas.Migrations
                 column: "TaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubTasks_ParentCompositeTaskId",
-                table: "SubTasks",
+                name: "IX_SubTask_ParentCompositeTaskId",
+                table: "SubTask",
                 column: "ParentCompositeTaskId");
 
             migrationBuilder.CreateIndex(
@@ -276,7 +275,7 @@ namespace GestorTareas.Migrations
                 name: "SimpleTasks");
 
             migrationBuilder.DropTable(
-                name: "SubTasks");
+                name: "SubTask");
 
             migrationBuilder.DropTable(
                 name: "TaskCollaborators");

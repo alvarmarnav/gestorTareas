@@ -48,9 +48,9 @@ public class TaskManagerService
     {
         if (userId <= 0) throw new ArgumentException("No se ha introducido valor de búsqueda.");
         var validUser = _userRepository.GetUserById(currentUserDto.CurrentUserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
-        if (userId != currentUserDto.CurrentUserId && currentUserDto.CurrentUserRole is not CollaboratorRole.Admin)
+        if (userId != currentUserDto.CurrentUserId && currentUserDto.CurrentUserSystemRole is not SystemRole.Admin)
             throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
-        
+
         return _repository.GetAllTasksByUser(userId)
         .Select(t => new ResponseTaskDto
         {
@@ -68,7 +68,7 @@ public class TaskManagerService
         var validUser = _userRepository.GetUserById(currentUserDto.CurrentUserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
         // if (currentUserDto.CurrentUserRole is CollaboratorRole.Admin)
         //     throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
-        
+
         return _repository.GetAllTasksByUser(currentUserDto.CurrentUserId)
         .Select(t => new ResponseTaskDto
         {
@@ -100,7 +100,7 @@ public class TaskManagerService
     {
         var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}.");
 
-        if (task.UserId != userDto.CurrentUserId && !task.UsersList.Any(u => u.Id == userDto.CurrentUserId) && userDto.CurrentUserRole != Enums.CollaboratorRole.Admin)
+        if (task.UserId != userDto.CurrentUserId && !task.UsersList.Any(u => u.Id == userDto.CurrentUserId) && userDto.CurrentUserSystemRole != Enums.SystemRole.Admin)
             throw new UnauthorizedAccessException($"Acceso denegado.");
 
         return new ResponseTaskDto
@@ -115,66 +115,33 @@ public class TaskManagerService
             CancelReason = task.CancelReason
         };
     }
-    public Task CreateTask(
-            string title,
-            CurrentUserDto currentUserDto,
-            string? taskDescription,
-            TaskPriority? taskPriority,
-            TaskStatus? taskStatus,
-            DateTime? dueTime,
-            int? recurrenceRule,
-            List<TaskCollaborator>? taskCollaborators,
-            List<SubTask>? subTasks,
-            int? parentCompositeTaskId,
-            int? taskId,
-            int? linkedTaskOrder,
-            int? dependsOnTaskId
-            )
+    public TaskDTO CreateTask(CreateSimpleTaskDto dto, TaskType taskType, CurrentUserDto userDto)
     {
 
-        //TODO::observar
-        Task newTask;
+        if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
 
-        if (recurrenceRule is not null)
-        {
-            newTask = new RecurringTask
-            {
-                RecurrenceRule = (int)recurrenceRule
-            };
-        }
-        else if (taskCollaborators is not null && taskCollaborators.Any())
-        {
-            newTask = new CollaborativeTask
-            {
-                TaskCollaborators = taskCollaborators
-            };
-        }
-        else if (subTasks is not null && subTasks.Any())
-        {
-            newTask = new CompositeTask
-            {
-                SubTaskList = subTasks
-            };
-        }
-        else if (parentCompositeTaskId is not null)
-        {
 
-            var parentTask = _repository.GetTaskById((int)parentCompositeTaskId);
-            newTask = new SubTask
-            {
-                ParentCompositeTaskId = (int)parentCompositeTaskId,
-                ParentCompositeTask = (CompositeTask)parentTask
-            };
-        }
-        else
-            newTask = new SimpleTask();
-
-        newTask.Title = title;
-        newTask.UserId = currentUserDto.CurrentUserId;
-        newTask.TaskDescription = taskDescription;
-        newTask.Priority = taskPriority;
-        newTask.Status = taskStatus;
-        newTask.DueTime = dueTime;
+        // Task newTask = taskType switch
+        // {
+        //     TaskType.SimpleTask => new SimpleTask{},
+        //     TaskType.CollaborativeTask => new CollaborativeTask
+        //     {
+        //         Subtasks = 
+        //     },
+        //     TaskType.CompositeTask => new CompositeTask
+        //     {
+        //         SubTaskList = dto.
+        //     },
+        //     _ => throw new ArgumentOutOfRangeException(nameof(TaskType), "Tipos no válido"),
+        // };
+        var newTask = new SimpleTask
+        {
+            Title = dto.Title,
+            UserId = userDto.CurrentUserId,
+            TaskDescription = dto.TaskDescription,
+            Priority = dto.Priority,
+            DueTime = dto.DueTime,
+        };
 
         if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
         {
@@ -185,39 +152,178 @@ public class TaskManagerService
             throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
         }
 
+        var createdTask = _repository.CreateTask(newTask);
 
-
-        _repository.CreateTask(newTask);
-        if (linkedTaskOrder is not null)
-            this.AddLinkedTask(newTask.Id, dependsOnTaskId, linkedTaskOrder, currentUserDto);
-
-        return newTask;
+        return DtoManager.TaskToDto(createdTask);
     }
 
-    public LinkedTask AddLinkedTask(int taskId, int? dependsOnTaskId, int? linkedTaskOrder, CurrentUserDto currentUserDto)
+    public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
+    {
+
+        if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
+
+
+        // Task newTask = taskType switch
+        // {
+        //     TaskType.SimpleTask => new SimpleTask{},
+        //     TaskType.CollaborativeTask => new CollaborativeTask
+        //     {
+        //         Subtasks = 
+        //     },
+        //     TaskType.CompositeTask => new CompositeTask
+        //     {
+        //         SubTaskList = dto.
+        //     },
+        //     _ => throw new ArgumentOutOfRangeException(nameof(TaskType), "Tipos no válido"),
+        // };
+        var newTask = new SimpleTask
+        {
+            Title = dto.Title,
+            UserId = userDto.CurrentUserId,
+            TaskDescription = dto.TaskDescription,
+            Priority = dto.Priority,
+            DueTime = dto.DueTime,
+        };
+
+        if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
+        {
+            throw new ArgumentException("La fecha de vencimiento debe ser futura.");
+        }
+        else if (newTask.DueTime.HasValue && newTask.DueTime.Value > DateTime.UtcNow.AddYears(2))
+        {
+            throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
+        }
+
+        var createdTask = _repository.CreateTask(newTask);
+
+        return DtoManager.TaskToDto(createdTask);
+    }
+
+    public TaskDTO CreateCollaborativeTask(CreateCollaborativeTaskDto dto, CurrentUserDto userDto)
+    {
+
+        if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
+
+        var newTask = new CollaborativeTask
+        {
+            Title = dto.Title,
+            UserId = userDto.CurrentUserId,
+            TaskDescription = dto.TaskDescription,
+            Priority = dto.Priority,
+            DueTime = dto.DueTime,
+        };
+
+
+        if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
+        {
+            throw new ArgumentException("La fecha de vencimiento debe ser futura.");
+        }
+        else if (newTask.DueTime.HasValue && newTask.DueTime.Value > DateTime.UtcNow.AddYears(2))
+        {
+            throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
+        }
+
+        var createdTask = _repository.CreateTask(newTask);
+
+        var currentUserCollaborator = new CreateTaskCollaboratorDto
+        {
+            UserId = userDto.CurrentUserId,
+            CollaboratorRole = CollaboratorRole.TaskAdministrator
+        };
+
+        this.AddTaskCollaborator(createdTask.Id, currentUserCollaborator, userDto);
+
+        return DtoManager.TaskToDto(createdTask);
+    }
+    public TaskDTO CreateCompositeTask(CreateCompositeTaskDto dto, CurrentUserDto userDto)
+    {
+
+        if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
+
+        var newTask = new CompositeTask
+        {
+            Title = dto.Title,
+            UserId = userDto.CurrentUserId,
+            TaskDescription = dto.TaskDescription,
+            Priority = (TaskPriority?)dto.Priority,
+            DueTime = dto.DueTime,
+        };
+
+
+        if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
+        {
+            throw new ArgumentException("La fecha de vencimiento debe ser futura.");
+        }
+        else if (newTask.DueTime.HasValue && newTask.DueTime.Value > DateTime.UtcNow.AddYears(2))
+        {
+            throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
+        }
+
+        var createdTask = _repository.CreateTask(newTask);
+
+        return DtoManager.TaskToDto(createdTask);
+    }
+
+    public TaskDTO CreateSubTask(int compositeTaskId, CreateSubTaskDto dto, CurrentUserDto userDto)
+    {
+
+        if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
+
+        var compositeTask = _repository.GetTaskById(compositeTaskId) ?? throw new KeyNotFoundException($"No existe Tarea Compuesta con ID: {compositeTaskId}.");
+
+        var newTask = new SubTask
+        {
+            Title = dto.Title,
+            UserId = userDto.CurrentUserId,
+            TaskDescription = dto.TaskDescription,
+            Priority = dto.Priority,
+            DueTime = dto.DueTime,
+        };
+
+        if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
+        {
+            throw new ArgumentException("La fecha de vencimiento debe ser futura.");
+        }
+        else if (newTask.DueTime.HasValue && newTask.DueTime.Value > DateTime.UtcNow.AddYears(2))
+        {
+            throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
+        }
+
+        var createdTask = _repository.CreateTask(newTask);
+
+        _repository.UpdateCompositeTask(compositeTaskId, (SubTask)createdTask);
+
+        return DtoManager.TaskToDto(createdTask);
+    }
+    public LinkedTask AddLinkedTask(int taskId, int dependsOnTaskId, int linkedTaskOrder, CurrentUserDto currentUserDto)
     {
         if (currentUserDto is null)
             throw new UnauthorizedAccessException("Acceso no permitido.");
         if (linkedTaskOrder <= 0)//TODO::Aqui logica para si no pone nada poner la ultima y si no pone nada y es la primera ponerla en la 0
             throw new ArgumentException($"La posición no puede ser inferior a 0.");
+        if (taskId <= 0 || dependsOnTaskId <= 0)//TODO::Aqui logica para si no pone nada poner la ultima y si no pone nada y es la primera ponerla en la 0
+            throw new ArgumentException($"La Id no puede ser inferior a 0.");
         if (taskId == dependsOnTaskId)
             throw new ArgumentException($"Una tarea no debe depende de sí misma.");
 
         var taskTarget = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {taskId}.");
 
-        if (currentUserDto.CurrentUserRole is not CollaboratorRole.Admin && currentUserDto.CurrentUserId != taskTarget.UserId)
+        if (currentUserDto.CurrentUserSystemRole is not SystemRole.Admin && currentUserDto.CurrentUserId != taskTarget.UserId)
             throw new UnauthorizedAccessException("Acceso no autorizado.");
-        if (dependsOnTaskId is not null)
-        {
-            var dependsOnTask = _repository.GetTaskById(dependsOnTaskId.Value);
+        // if (dependsOnTaskId is not null)
+        // {
+        var dependsOnTask = _repository.GetTaskById(dependsOnTaskId);
 
-            if (dependsOnTask is null)
-                throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {dependsOnTaskId}.");
+        if (dependsOnTask is null)
+            throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {dependsOnTaskId}.");
 
-            if (dependsOnTask.UserId != currentUserDto.CurrentUserId && currentUserDto.CurrentUserRole is not CollaboratorRole.Admin)
-                throw new UnauthorizedAccessException("Acceso no autorizado.");
-        }
-        if (_repository.ExistsRecurrenceRelation(taskId, (int)dependsOnTaskId))
+        if (dependsOnTask.UserId != currentUserDto.CurrentUserId && currentUserDto.CurrentUserSystemRole is not SystemRole.Admin)
+            throw new UnauthorizedAccessException("Acceso no autorizado.");
+        // }
+        if (taskTarget.UserId != dependsOnTask.UserId)
+            throw new InvalidOperationException("No es posible añadir relación entre tareas de distinto usuario.");
+
+        if (_repository.ExistsRecurrenceRelation(taskId, dependsOnTaskId))
             throw new InvalidOperationException("No es posible añadir esta relacion recursiva.");
 
         if (_repository.ExistsLinkedRelation(taskId, (int)dependsOnTaskId))
@@ -356,4 +462,6 @@ public class TaskManagerService
         _repository.RemoveTaskCollaborator((CollaborativeTask)selectedTask, taskCollaborator);
 
     }
+
+
 }

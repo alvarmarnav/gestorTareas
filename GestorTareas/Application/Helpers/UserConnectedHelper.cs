@@ -12,18 +12,18 @@ public class UserConnectedHelper
     public static CurrentUserDto GetConnectedUser(ClaimsPrincipal currentUser)
     {
         var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var currentUserRole = currentUser.FindFirst(ClaimTypes.Role)?.Value;
+        var currentUserSystemRole = currentUser.FindFirst(ClaimTypes.Role)?.Value;
 
         if(!int.TryParse(currentUserId, out var userId))
         throw new UnauthorizedAccessException($"Acceso denegado.");
 
-        if(!Enum.TryParse<CollaboratorRole>(currentUserRole, ignoreCase: true, out var userRole))
+        if(!Enum.TryParse<SystemRole>(currentUserSystemRole, ignoreCase: true, out var userRole))
                 throw new UnauthorizedAccessException($"Acceso denegado.");
 
         CurrentUserDto currentUserDto = new CurrentUserDto
         {
             CurrentUserId = userId,
-            CurrentUserRole = userRole
+            CurrentUserSystemRole = userRole
         };
         return currentUserDto;
     }

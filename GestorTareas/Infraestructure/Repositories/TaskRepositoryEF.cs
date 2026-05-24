@@ -12,10 +12,11 @@ public class TaskRepositoryEF : ITaskRepository
 
     public TaskRepositoryEF(GestorTareasContext context) => _context = context;
 
-    public void CreateTask(Task task)
+    public Task CreateTask(Task task)
     {
         _context.Add(task);
         _context.SaveChanges();
+        return task;
     }
 
     public void DeleteTask(Task task)
@@ -121,6 +122,11 @@ string? search = null)
         _context.LinkedTasks.Add(linkedTask);
         _context.SaveChanges();
         return linkedTask;
+    }
+    public void UpdateCompositeTask(int compositeTaskId, SubTask createdTask)
+    {
+        _context.CompositeTasks.FirstOrDefault(ct => ct.Id==compositeTaskId).SubTaskList.Add(createdTask);
+        _context.SaveChanges();
     }
 
 }

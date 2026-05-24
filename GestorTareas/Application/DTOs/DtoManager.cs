@@ -3,6 +3,7 @@ using System.Data.Common;
 using System.Linq;
 using GestorTareas.Enums;
 using GestorTareas.Models;
+using TaskStatus = GestorTareas.Enums.TaskStatus;
 //using static GestorTareas.Models.Task;
 using Task = GestorTareas.Models.Task;
 
@@ -15,7 +16,7 @@ public static class DtoManager
     {
         return task switch
         {
-            SubTask sub => new SubTaskDTO
+            SubTask sub => new ResponseSubTaskDto
             {
                 Id = sub.Id,
                 Title = sub.Title,
@@ -23,27 +24,28 @@ public static class DtoManager
                 TaskDescription = sub.TaskDescription,
                 Priority = (int)sub.Priority,
                 Status = (int)sub.Status,
-                DueTime = (DateTime)sub.DueTime,
-                CancelReason = sub.CancelReason
+                DueTime = sub.DueTime,
+                CancelReason = sub.CancelReason,
+                ParentCompositeTaskId = sub.ParentCompositeTaskId
             },
-            CompositeTask ct => new CompositeTaskDTO
+            CompositeTask ct => new ResponseCompositeTaskDto
             {
                 Id = ct.Id,
                 Title = ct.Title,
                 UserId = ct.UserId,
                 TaskDescription = ct.TaskDescription,
-                Priority = (int)ct.Priority,
-                Status = (int)ct.Status,
-                DueTime = (DateTime)ct.DueTime,
-                SubTasks = ct.SubTaskList,
+                Priority = ct.Priority,
+                Status = (int?)ct.Status,
+                DueTime = ct.DueTime,
+                // SubTasksList = ct.SubTaskList,
             },
 
-            RecurringTask rt => new RecurringTaskDTO
+            RecurringTask rt => new ResponseRecurringTaskDto
             {
                 Id = rt.Id,
                 Title = rt.Title,
                 UserId = rt.UserId,
-                DueTime = (DateTime)rt.DueTime,
+                DueTime = rt.DueTime,
                 RecurrenceRule = rt.RecurrenceRule,
                 RecurringTasksCount = rt.RecurringTasksCount,
                 TaskDescription = rt.TaskDescription,
@@ -60,7 +62,7 @@ public static class DtoManager
                 TaskDescription = st.TaskDescription,
                 Priority = (int)st.Priority,
                 Status = (int)st.Status,
-                DueTime = (DateTime)st.DueTime,
+                DueTime = st.DueTime,
                 CancelReason = st.CancelReason
             },
 
@@ -72,20 +74,18 @@ public static class DtoManager
     {
         return taskDto switch
         {
-            SubTaskDTO sub => new SubTask(
+            ResponseSubTaskDto sub => new SubTask(
                 sub.Title!,
                 sub.UserId,
                 sub.ParentCompositeTaskId,
                 sub.TaskDescription!,
                 (TaskPriority)sub.Priority,
-                (Enums.TaskStatus)sub.Status,
+                (TaskStatus)sub.Status,
                 sub.DueTime,
                 sub.CancelReason
             )
-            {
-                Id = sub.Id,
-            },
-            CompositeTaskDTO ct =>
+            {},
+            CreateCompositeTaskDto ct =>
                 new CompositeTask(
                     ct.Title!,
                     ct.UserId,
@@ -97,10 +97,10 @@ public static class DtoManager
                 )
                 {
                     Id = ct.Id,
-                    SubTaskList = ct.SubTasks,
+                    SubTaskList = ct.SubTaskList,
                 },
 
-            RecurringTaskDTO rt => new RecurringTask(
+            ResponseRecurringTaskDto rt => new RecurringTask(
                 rt.Title!,
                 rt.UserId,
                 rt.DueTime,

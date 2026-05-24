@@ -18,7 +18,6 @@ namespace GestorTareas.Models;
 [JsonDerivedType(typeof(RecurringTask), "RecurringTask")]
 [JsonDerivedType(typeof(CompositeTask), "CompositeTask")]
 [JsonDerivedType(typeof(SubTask), "SubTask")]
-[JsonDerivedType(typeof(LinkedTask), "LinkedTask")]
 
 public abstract class Task : IIdentificable
 {
@@ -243,8 +242,4 @@ public abstract class Task : IIdentificable
     }
     public abstract string ResumeTask();
 
-    public static implicit operator Task(LinkedTask v)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -8,9 +8,9 @@ namespace GestorTareas.Application.DTOs;
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
 [JsonDerivedType(typeof(SimpleTaskDTO), typeDiscriminator: "simple")]
-[JsonDerivedType(typeof(CompositeTaskDTO), typeDiscriminator: "composite")]
-[JsonDerivedType(typeof(SubTaskDTO), typeDiscriminator: "subtask")]
-[JsonDerivedType(typeof(RecurringTaskDTO), typeDiscriminator: "recurring")]
+[JsonDerivedType(typeof(CreateCompositeTaskDto), typeDiscriminator: "composite")]
+[JsonDerivedType(typeof(ResponseSubTaskDto), typeDiscriminator: "subtask")]
+[JsonDerivedType(typeof(ResponseRecurringTaskDto), typeDiscriminator: "recurring")]
 public abstract class TaskDTO
 {
     public int Id { get; set; }

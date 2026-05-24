@@ -36,7 +36,7 @@ public class CollaborativeTask : GestorTareas.Models.Task
         {
             TaskId = this.Id,
             UserId = this.UserId,
-            CollaboratorRole = CollaboratorRole.Admin,
+            CollaboratorRole = CollaboratorRole.TaskAdministrator,
         });
     }
 
