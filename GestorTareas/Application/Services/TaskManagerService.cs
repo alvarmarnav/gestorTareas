@@ -63,6 +63,25 @@ public class TaskManagerService
             CancelReason = t.CancelReason
         }).ToList(); ;
     }
+    public List<ResponseTaskDto> GetAllTaskOwnUser(CurrentUserDto currentUserDto)
+    {
+        var validUser = _userRepository.GetUserById(currentUserDto.CurrentUserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
+        // if (currentUserDto.CurrentUserRole is CollaboratorRole.Admin)
+        //     throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
+        
+        return _repository.GetAllTasksByUser(currentUserDto.CurrentUserId)
+        .Select(t => new ResponseTaskDto
+        {
+            Id = t.Id,
+            Title = t.Title,
+            TaskDescription = t.TaskDescription,
+            TaskPriority = (TaskPriority)t.Priority,
+            TaskStatus = (TaskStatus)t.Status,
+            DueTime = t.DueTime,
+            CancelReason = t.CancelReason
+        }).ToList(); ;
+    }
+
     public List<ResponseTaskDto> GetAllTasksDto()
     {
         return _repository.GetAllTasks()

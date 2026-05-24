@@ -50,7 +50,7 @@ public class TasksController : ControllerBase
     [HttpGet("tasks")] // GET /api/tareas
     public IActionResult GetAllTaskOwnUser()
     {
-        return Ok(_taskManagerService.GetAllTasksByUser(null, UserConnectedHelper.GetConnectedUser(User)));
+        return Ok(_taskManagerService.GetAllTaskOwnUser(UserConnectedHelper.GetConnectedUser(User)));
     }
     /// <summary>
     /// Obtiene la tarea seleccioinada por ID.
