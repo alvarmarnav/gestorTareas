@@ -16,4 +16,5 @@ public class CreateSubTaskDto
     public string? TaskDescription { get; set; } = string.Empty;
     public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
     public DateTime? DueTime { get; set; } = null;
+    public int ParentCompositeTaskId{get;set;}
 }

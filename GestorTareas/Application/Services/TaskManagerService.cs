@@ -120,20 +120,6 @@ public class TaskManagerService
 
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
 
-
-        // Task newTask = taskType switch
-        // {
-        //     TaskType.SimpleTask => new SimpleTask{},
-        //     TaskType.CollaborativeTask => new CollaborativeTask
-        //     {
-        //         Subtasks = 
-        //     },
-        //     TaskType.CompositeTask => new CompositeTask
-        //     {
-        //         SubTaskList = dto.
-        //     },
-        //     _ => throw new ArgumentOutOfRangeException(nameof(TaskType), "Tipos no válido"),
-        // };
         var newTask = new SimpleTask
         {
             Title = dto.Title,
@@ -162,20 +148,6 @@ public class TaskManagerService
 
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
 
-
-        // Task newTask = taskType switch
-        // {
-        //     TaskType.SimpleTask => new SimpleTask{},
-        //     TaskType.CollaborativeTask => new CollaborativeTask
-        //     {
-        //         Subtasks = 
-        //     },
-        //     TaskType.CompositeTask => new CompositeTask
-        //     {
-        //         SubTaskList = dto.
-        //     },
-        //     _ => throw new ArgumentOutOfRangeException(nameof(TaskType), "Tipos no válido"),
-        // };
         var newTask = new SimpleTask
         {
             Title = dto.Title,
@@ -278,6 +250,7 @@ public class TaskManagerService
             TaskDescription = dto.TaskDescription,
             Priority = dto.Priority,
             DueTime = dto.DueTime,
+            ParentCompositeTaskId =dto.ParentCompositeTaskId
         };
 
         if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
@@ -426,7 +399,7 @@ public class TaskManagerService
             throw new ArgumentException($"El usuario con ID({createTaskCollaboratorDto.UserId}) ya está en el equipo.");
         TaskCollaborator taskCollaborator = new TaskCollaborator
         {
-            UserId = selectedUser.Id,
+            UserId = currentUserDto.CurrentUserId,
             UserTask = selectedUser,
             TaskId = selectedTask.Id,
             Task = (CollaborativeTask)selectedTask,
@@ -452,7 +425,7 @@ public class TaskManagerService
             throw new ArgumentException($"El usuario con ID({removeTaskCollaboratorDto.UserId}) NO está en el equipo.");
         TaskCollaborator taskCollaborator = new TaskCollaborator
         {
-            UserId = selectedUser.Id,
+            UserId = currentUserDto.CurrentUserId,
             UserTask = selectedUser,
             TaskId = selectedTask.Id,
             Task = (CollaborativeTask)selectedTask,

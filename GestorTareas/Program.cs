@@ -88,6 +88,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+// Antes de builder.Build()
+builder.Services.AddCors(options => {
+options.AddPolicy("FrontendDev", policy => {
+// Puerto 4200 — el que usa ng serve por defecto
+policy.WithOrigins("http://localhost:4200")
+.AllowAnyHeader()
+.AllowAnyMethod();
+});
+});
+
 var app = builder.Build();
 
 // PARTE 2: configurar el pipeline de peticiones
@@ -119,5 +129,7 @@ using (var scope = app.Services.CreateScope())
 
     await seeder.SeedAsync();
 }
+// Después de builder.Build() — antes de UseAuthentication
+app.UseCors("FrontendDev");
 
 app.Run(); // arranca el servidor y se queda
