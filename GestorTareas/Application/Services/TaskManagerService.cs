@@ -268,7 +268,7 @@ public class TaskManagerService
 
         return DtoManager.TaskToDto(createdTask);
     }
-    public LinkedTask AddLinkedTask(int taskId, int dependsOnTaskId, int linkedTaskOrder, CurrentUserDto currentUserDto)
+    public ResponseLinkedTaskDto AddLinkedTask(int taskId, int dependsOnTaskId, int linkedTaskOrder, CurrentUserDto currentUserDto)
     {
         if (currentUserDto is null)
             throw new UnauthorizedAccessException("Acceso no permitido.");
@@ -281,16 +281,16 @@ public class TaskManagerService
 
         var taskTarget = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {taskId}.");
 
-        if (currentUserDto.CurrentUserSystemRole is not SystemRole.Admin && currentUserDto.CurrentUserId != taskTarget.UserId)
-            throw new UnauthorizedAccessException("Acceso no autorizado.");
-        // if (dependsOnTaskId is not null)
+        // if (currentUserDto.CurrentUserSystemRole is not SystemRole.Admin && currentUserDto.CurrentUserId != taskTarget.UserId)
+        //     throw new UnauthorizedAccessException("Acceso no autorizado.");
+        // // if (dependsOnTaskId is not null)
         // {
         var dependsOnTask = _repository.GetTaskById(dependsOnTaskId);
 
         if (dependsOnTask is null)
             throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {dependsOnTaskId}.");
 
-        if (dependsOnTask.UserId != currentUserDto.CurrentUserId && currentUserDto.CurrentUserSystemRole is not SystemRole.Admin)
+        if (dependsOnTask.UserId != currentUserDto.CurrentUserId)
             throw new UnauthorizedAccessException("Acceso no autorizado.");
         // }
         if (taskTarget.UserId != dependsOnTask.UserId)
@@ -299,17 +299,26 @@ public class TaskManagerService
         if (_repository.ExistsRecurrenceRelation(taskId, dependsOnTaskId))
             throw new InvalidOperationException("No es posible añadir esta relacion recursiva.");
 
-        if (_repository.ExistsLinkedRelation(taskId, (int)dependsOnTaskId))
+        if (_repository.ExistsLinkedRelation(taskId, dependsOnTaskId))
             throw new InvalidOperationException("No es posible añadir esta relacion porque ya existe.");
 
 
         var linkedTask = new LinkedTask
         {
             TaskId = taskId,
-            DependsOnTaskId = (int)dependsOnTaskId,
-            LinkedTaskOrder = (int)linkedTaskOrder
+            DependsOnTaskId = dependsOnTaskId,
+            LinkedTaskOrder = linkedTaskOrder
         };
-        return _repository.AddLinkedRelation(linkedTask);
+        var ltCreated = _repository.AddLinkedRelation(linkedTask);
+
+        var linkedTaskDto = new ResponseLinkedTaskDto
+        {
+            Id=ltCreated.Id,
+            TaskId=ltCreated.TaskId,
+            DependsOnTaskId=ltCreated.DependsOnTaskId,
+            LinkedTaskOrder= (int)ltCreated.LinkedTaskOrder
+        };
+        return linkedTaskDto;
     }
 
     public void DeleteTask(int id, CurrentUserDto currentUserDto)
