@@ -10,5 +10,5 @@ public class ResponseCollaborativeTaskDto : TaskDTO
     public string? TaskDescription { get; set; } = string.Empty;
     public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
     public DateTime? DueTime { get; set; } = null;
-    public List<TaskCollaborator> taskCollaborators { get; set; } = [];
+    public List<TaskCollaboratorDto> TaskCollaborators { get; set; } = [];
 }

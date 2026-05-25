@@ -10,5 +10,5 @@ public class ResponseCompositeTaskDto : TaskDTO
     public string? TaskDescription { get; set; } = string.Empty;
     public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
     public DateTime? DueTime { get; set; } = null;
-    public List<SubTask> SubTasksList { get; set; } = [];
+    public List<ResponseSubTaskDto> SubTasksList { get; set; } = [];
 }

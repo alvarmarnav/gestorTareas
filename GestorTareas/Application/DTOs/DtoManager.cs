@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using GestorTareas.Enums;
@@ -39,7 +40,17 @@ public static class DtoManager
                 DueTime = ct.DueTime,
                 // SubTasksList = ct.SubTaskList,
             },
-
+            CollaborativeTask colt => new ResponseCollaborativeTaskDto
+            {
+                Id = colt.Id,
+                Title = colt.Title,
+                UserId = colt.UserId,
+                TaskDescription = colt.TaskDescription,
+                Priority = colt.Priority,
+                Status = (int?)colt.Status,
+                DueTime = colt.DueTime,
+                TaskCollaborators = ConvertTaskCollaboratorsToDto(colt.TaskCollaborators)
+            },
             RecurringTask rt => new ResponseRecurringTaskDto
             {
                 Id = rt.Id,
@@ -132,4 +143,8 @@ public static class DtoManager
         };
     }
 
+    private static List<TaskCollaboratorDto>? ConvertTaskCollaboratorsToDto(List<TaskCollaborator>? collaborators)
+    {
+        return collaborators?.Select(collaborator => new TaskCollaboratorDto()).ToList();
+    }
 }
