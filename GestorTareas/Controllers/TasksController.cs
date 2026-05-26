@@ -37,7 +37,7 @@ public class TasksController : ControllerBase
     /// Obtiene todas las tareas que pertenecen a un usuario mediante ID.
     /// </summary>
     /// <returns>Lista de tareas con el nombre del usuario asignado.</returns>
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [HttpGet("user/{userId:int}")] // GET /api/tareas
     public IActionResult GetAllTaskByUser(int userId)
     {

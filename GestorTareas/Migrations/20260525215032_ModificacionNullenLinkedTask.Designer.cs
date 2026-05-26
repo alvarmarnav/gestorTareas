@@ -4,6 +4,7 @@ using GestorTareas.Infraestructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestorTareas.Migrations
 {
     [DbContext(typeof(GestorTareasContext))]
-    partial class GestorTareasContextModelSnapshot : ModelSnapshot
+    [Migration("20260525215032_ModificacionNullenLinkedTask")]
+    partial class ModificacionNullenLinkedTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,8 +46,7 @@ namespace GestorTareas.Migrations
 
                     b.HasIndex("DependsOnTaskId");
 
-                    b.HasIndex("TaskId", "DependsOnTaskId")
-                        .IsUnique();
+                    b.HasIndex("TaskId");
 
                     b.ToTable("LinkedTasks", (string)null);
                 });

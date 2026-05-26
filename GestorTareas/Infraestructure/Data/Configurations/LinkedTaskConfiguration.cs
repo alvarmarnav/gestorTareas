@@ -24,5 +24,8 @@ public void Configure(EntityTypeBuilder<Models.LinkedTask> builder)
             .WithMany(t => t.RequiredByOtherTask)
             .HasForeignKey(lt => lt.DependsOnTaskId)
             .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(lt => new { lt.TaskId, lt.DependsOnTaskId })
+    .IsUnique();
     }
 }
