@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using System.Reflection;
 using GestorTareas.Infraestructure.Data.Seeders;
+using GestorTareas.Infraestructure.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -100,6 +101,9 @@ policy.WithOrigins("http://localhost:4200")
 
 var app = builder.Build();
 
+// PRIMERO: el middleware de errores captura cualquier excepción posterior
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 // PARTE 2: configurar el pipeline de peticiones
 if (app.Environment.IsDevelopment())
 {
@@ -110,10 +114,18 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = "";
     });
 }
+
+
+
+
+
+// Después de builder.Build() — antes de UseAuthentication
+app.UseCors("FrontendDev");
+
+
 app.UseHttpsRedirection();
 app.UseAuthentication(); // primero identifica al usuario
 app.UseAuthorization(); // luego comprueba sus permisos
-
 app.MapControllers();
 
 // MIGRATIONS + SEEDERS
@@ -129,7 +141,6 @@ using (var scope = app.Services.CreateScope())
 
     await seeder.SeedAsync();
 }
-// Después de builder.Build() — antes de UseAuthentication
-app.UseCors("FrontendDev");
+
 
 app.Run(); // arranca el servidor y se queda

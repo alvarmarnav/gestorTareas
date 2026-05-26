@@ -250,7 +250,7 @@ public class TaskManagerService
             TaskDescription = dto.TaskDescription,
             Priority = dto.Priority,
             DueTime = dto.DueTime,
-            ParentCompositeTaskId =dto.ParentCompositeTaskId
+            ParentCompositeTaskId = dto.ParentCompositeTaskId
         };
 
         if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
@@ -358,13 +358,16 @@ public class TaskManagerService
 
     public PaginationResponseDto<ResponseTaskDto> GetPagination(int pageNumber, int itemsPerPage, CurrentUserDto currentUserDto)
     {
-        //Aqui debo incluir la identificacion del user para que solo las pueda ver el propietario
+
+        if (pageNumber < 1) pageNumber = 1;
+        if (itemsPerPage < 1) itemsPerPage = 10;
+
         var userActive = _userRepository.GetUserById(currentUserDto.CurrentUserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
-        var (tasks, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage, currentUserDto.CurrentUserId);
+        var (taskQuery, total) = _repository.GetTotalPaginated(pageNumber, itemsPerPage, currentUserDto.CurrentUserId);
 
         return new PaginationResponseDto<ResponseTaskDto>
         {
-            Data = tasks
+            Data = taskQuery
         .Select(t => new ResponseTaskDto
         {
             Id = t.Id,
