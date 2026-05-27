@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using GestorTareas.Enums;
 using GestorTareas.Interfaces;
 using GestorTareas.Models;
 using Microsoft.EntityFrameworkCore;
@@ -40,22 +41,27 @@ public class TaskRepositoryEF : ITaskRepository
         .Where(t => t.UserId == userId).ToList();
     }
 
-    public Task? GetTaskById(int id) => _context.Tasks.Include(t => t.User).FirstOrDefault(t => t.Id == id);
+    public Task? GetTaskById(int id) => _context.Tasks
+    .Include(t => t.User)
+    .Include(t => t.UsersList)
+    .Include(t => t.Dependencies)
+    .Include(t => t.RequiredByOtherTask)
+    .FirstOrDefault(t => t.Id == id);
 
-    public (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage,int userId, bool? onlyCompletedTask = null,
+    public (List<Task> tasks, int total) GetTotalPaginated(int page, int ItemsPerPage, int userId, bool? onlyCompletedTask = null,
 string? search = null)
     {
-        User userConsultant = _context.Users.FirstOrDefault(u=>u.Id==userId);
-        
+        User userConsultant = _context.Users.FirstOrDefault(u => u.Id == userId);
+
         // Consulta base — todavía no va a SQL
         //TODO:Añadido para que solo muestre las del propio user
         var query = _context.Tasks
         .Include(t => t.User)
         .AsQueryable();
-        
-        if(!(bool)userConsultant.IsAdmin)
+
+        if (!(bool)userConsultant.IsAdmin)
         {
-            query = query.Where(t =>t.UserId ==userId);
+            query = query.Where(t => t.UserId == userId);
         }
         //TODO:REVISAR ESTA CONDICION
         // Aplicar filtros solo si se han especificado
@@ -109,7 +115,7 @@ string? search = null)
         _context.SaveChanges();
     }
 
- public bool ExistsRecurrenceRelation(int taskId, int dependsOnTaskId)
+    public bool ExistsRecurrenceRelation(int taskId, int dependsOnTaskId)
     {
         return _context.LinkedTasks.Any(lt => lt.TaskId == dependsOnTaskId && lt.DependsOnTaskId == taskId);
     }
@@ -125,8 +131,35 @@ string? search = null)
     }
     public void UpdateCompositeTask(int compositeTaskId, SubTask createdTask)
     {
-        _context.CompositeTasks.FirstOrDefault(ct => ct.Id==compositeTaskId).SubTaskList.Add(createdTask);
+        _context.CompositeTasks.FirstOrDefault(ct => ct.Id == compositeTaskId).SubTaskList.Add(createdTask);
         _context.SaveChanges();
     }
+    public CollaborativeTask? GetCollaborativeTaskById(int collTaskId)
+    {
+        return _context.CollaborativeTasks
+        .Include(ct => ct.TaskCollaborators)
+        .ThenInclude(tc => tc.UserTask)
+        .Include(ct => ct.User)
+        .FirstOrDefault(ct => ct.Id == collTaskId);
+    }
+    public bool UserHasCollaboratorRole(int taskId, int userId, CollaboratorRole role)
+    {
+        return _context.TaskCollaborators.Any(tc =>
+            tc.TaskId == taskId &&
+            tc.UserId == userId &&
+            tc.CollaboratorRole == role);
+    }
+    public List<Task> GetLinkableTasks(int userId, int? excludeTaskId = null)
+    {
+        var query = _context.Tasks
+        .Where(t => t.UserId == userId)
+        .AsQueryable();
 
+        if (excludeTaskId.HasValue)
+        {
+            query = query.Where(t => t.Id != excludeTaskId.Value);
+        }
+
+        return query.OrderByDescending(t => t.Title).ToList();
+    }
 }

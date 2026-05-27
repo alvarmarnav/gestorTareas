@@ -115,7 +115,34 @@ public class TaskManagerService
             CancelReason = task.CancelReason
         };
     }
-    public TaskDTO CreateTask(CreateSimpleTaskDto dto, TaskType taskType, CurrentUserDto userDto)
+    // public TaskDTO CreateTask(CreateSimpleTaskDto dto, TaskType taskType, CurrentUserDto userDto)
+    // {
+
+    //     if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
+
+    //     var newTask = new SimpleTask
+    //     {
+    //         Title = dto.Title,
+    //         UserId = userDto.CurrentUserId,
+    //         TaskDescription = dto.TaskDescription,
+    //         Priority = dto.Priority,
+    //         DueTime = dto.DueTime,
+    //     };
+
+    //     if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
+    //     {
+    //         throw new ArgumentException("La fecha de vencimiento debe ser futura.");
+    //     }
+    //     else if (newTask.DueTime.HasValue && newTask.DueTime.Value > DateTime.UtcNow.AddYears(2))
+    //     {
+    //         throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
+    //     }
+
+    //     var createdTask = _repository.CreateTask(newTask);
+
+    //     return DtoManager.TaskToDto(createdTask);
+    // }
+public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
     {
 
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
@@ -142,19 +169,19 @@ public class TaskManagerService
 
         return DtoManager.TaskToDto(createdTask);
     }
-
-    public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
+    public ResponseRecurringTaskDto CreateRecurringTask(CreateRecurringTaskDto dto, CurrentUserDto userDto)
     {
 
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
 
-        var newTask = new SimpleTask
+        var newTask = new RecurringTask
         {
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
+            DueTime = dto.DueTime,
+            RecurrenceRule = dto.RecurrenceRule,
             TaskDescription = dto.TaskDescription,
             Priority = dto.Priority,
-            DueTime = dto.DueTime,
         };
 
         if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
@@ -168,7 +195,19 @@ public class TaskManagerService
 
         var createdTask = _repository.CreateTask(newTask);
 
-        return DtoManager.TaskToDto(createdTask);
+        var dtoReturned = DtoManager.TaskToDto(createdTask);
+
+        var responseDto = new ResponseRecurringTaskDto
+        {
+            Title = dtoReturned.Title,
+            UserId = userDto.CurrentUserId,
+            TaskDescription = dtoReturned.TaskDescription,
+            Priority = dtoReturned.Priority,
+            DueTime = dtoReturned.DueTime,
+            RecurrenceRule = (int)dtoReturned.RecurrenceRule,
+            //  RecurringTasksCount= dtoReturned.recurringTaskCount,
+        };
+        return responseDto;
     }
 
     public TaskDTO CreateCollaborativeTask(CreateCollaborativeTaskDto dto, CurrentUserDto userDto)
@@ -242,7 +281,7 @@ public class TaskManagerService
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
 
         var compositeTask = _repository.GetTaskById(compositeTaskId) ?? throw new KeyNotFoundException($"No existe Tarea Compuesta con ID: {compositeTaskId}.");
-        if(compositeTask is not CompositeTask parent) throw new InvalidOperationException("La tarea a la que se quiere vincular la SubTarea NO es del tipo correcto.");
+        if (compositeTask is not CompositeTask parent) throw new InvalidOperationException("La tarea a la que se quiere vincular la SubTarea NO es del tipo correcto.");
         var newTask = new SubTask
         {
             Title = dto.Title,
@@ -313,10 +352,10 @@ public class TaskManagerService
 
         var linkedTaskDto = new ResponseLinkedTaskDto
         {
-            Id=ltCreated.Id,
-            TaskId=ltCreated.TaskId,
-            DependsOnTaskId=ltCreated.DependsOnTaskId,
-            LinkedTaskOrder= (int)ltCreated.LinkedTaskOrder
+            Id = ltCreated.Id,
+            TaskId = ltCreated.TaskId,
+            DependsOnTaskId = ltCreated.DependsOnTaskId,
+            LinkedTaskOrder = (int)ltCreated.LinkedTaskOrder
         };
         return linkedTaskDto;
     }

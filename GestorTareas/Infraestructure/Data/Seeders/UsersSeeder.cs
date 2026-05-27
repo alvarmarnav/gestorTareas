@@ -23,6 +23,7 @@ public class UsersSeeder
             UserName = _config["AdminUser:UserName"],
             UserLastName = _config["AdminUser:UserLastName"],
             UserEmail = _config["AdminUser:UserEmail"],
+            IsAdmin=true,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(
                 _config["AdminUser:PasswordHash"]
             )

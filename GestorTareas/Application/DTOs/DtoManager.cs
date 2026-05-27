@@ -95,8 +95,8 @@ public static class DtoManager
                 sub.DueTime,
                 sub.CancelReason
             )
-            {},
-            CreateCompositeTaskDto ct =>
+            { },
+            ResponseCompositeTaskDto ct =>
                 new CompositeTask(
                     ct.Title!,
                     ct.UserId,
@@ -108,7 +108,15 @@ public static class DtoManager
                 )
                 {
                     Id = ct.Id,
-                    SubTaskList = ct.SubTaskList,
+                    SubTaskList = ct.SubTasksList.Select(st => new SubTask
+                    {
+                        Title = st.Title,
+                        UserId = st.UserId,
+                        TaskDescription = st.TaskDescription,
+                        Priority = (TaskPriority?)st.Priority,
+                        DueTime = st.DueTime,
+                        ParentCompositeTaskId = st.ParentCompositeTaskId,
+                    }).ToList(),
                 },
 
             ResponseRecurringTaskDto rt => new RecurringTask(
