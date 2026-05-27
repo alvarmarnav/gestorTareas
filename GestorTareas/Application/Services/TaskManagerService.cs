@@ -368,8 +368,20 @@ public class TaskManagerService
         var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}");
         var userActive = _userRepository.GetUserById(currentUserDto.CurrentUserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
 
-        if (!(bool)userActive.IsAdmin && task.UserId != currentUserDto.CurrentUserId && !task.UsersList.Any(u => u.Id == currentUserDto.CurrentUserId))
-            throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
+        var isAdmin = currentUserDto.CurrentUserSystemRole == SystemRole.Admin;
+        var isOwner = task.UserId == currentUserDto.CurrentUserId;
+
+        //no admin no owner pero puede ser colaborador
+        if (!isAdmin && !isOwner)
+        {
+            if(task is not CollaborativeTask collaborativeTask) 
+            throw new ArgumentException($"La tarea seleccionada es del tipo({task.GetType().Name}) no es del tipo colaborativo.");
+
+            var collaborator = _repository.GetAllTaskCollaborators(task.Id,currentUserDto.CurrentUserId)??throw new UnauthorizedAccessException("No tiene permiso.");
+            _repository.RemoveTaskCollaborator(collaborativeTask,collaborator);
+            return;
+        }
+        
         _repository.DeleteTask(task);
     }
     public void UpdateTask(int id, UpdateTaskDto taskDto, CurrentUserDto currentUserDto)

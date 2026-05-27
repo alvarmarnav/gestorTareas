@@ -162,4 +162,9 @@ string? search = null)
 
         return query.OrderByDescending(t => t.Title).ToList();
     }
+
+    public TaskCollaborator? GetAllTaskCollaborators(int taskId, int currentUserId)
+    {
+        return _context.TaskCollaborators.FirstOrDefault(tc=>tc.UserId==currentUserId && tc.TaskId==taskId);
+    }
 }

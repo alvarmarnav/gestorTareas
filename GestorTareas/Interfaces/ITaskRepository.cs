@@ -19,4 +19,5 @@ string? search = null);
     bool ExistsLinkedRelation(int taskId, int dependsOnTaskId);
     LinkedTask AddLinkedRelation(LinkedTask linkedTask);
     void UpdateCompositeTask(int compositeTaskId, SubTask createdTask);
+    TaskCollaborator? GetAllTaskCollaborators(int id, int currentUserId);
 };
