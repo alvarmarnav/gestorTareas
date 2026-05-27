@@ -142,7 +142,7 @@ public class TaskManagerService
 
     //     return DtoManager.TaskToDto(createdTask);
     // }
-public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
+    public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
     {
 
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
@@ -282,6 +282,9 @@ public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
 
         var compositeTask = _repository.GetTaskById(compositeTaskId) ?? throw new KeyNotFoundException($"No existe Tarea Compuesta con ID: {compositeTaskId}.");
         if (compositeTask is not CompositeTask parent) throw new InvalidOperationException("La tarea a la que se quiere vincular la SubTarea NO es del tipo correcto.");
+
+        if (compositeTask.UserId != userDto.CurrentUserId) throw new InvalidOperationException("LA tarea no te pertenece y no puedes añadirle subtareas.");
+
         var newTask = new SubTask
         {
             Title = dto.Title,
@@ -303,7 +306,7 @@ public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
 
         var createdTask = _repository.CreateTask(newTask);
 
-        _repository.UpdateCompositeTask(compositeTaskId, (SubTask)createdTask);
+        // _repository.UpdateCompositeTask(compositeTaskId, (SubTask)createdTask);
 
         return DtoManager.TaskToDto(createdTask);
     }
@@ -335,7 +338,7 @@ public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
         if (taskTarget.UserId != dependsOnTask.UserId)
             throw new InvalidOperationException("No es posible añadir relación entre tareas de distinto usuario.");
 
-        if (_repository.ExistsRecurrenceRelation(taskId, dependsOnTaskId))
+        if (_repository.ExistsCircularRelation(taskId, dependsOnTaskId))
             throw new InvalidOperationException("No es posible añadir esta relacion recursiva.");
 
         if (_repository.ExistsLinkedRelation(taskId, dependsOnTaskId))
@@ -355,7 +358,7 @@ public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
             Id = ltCreated.Id,
             TaskId = ltCreated.TaskId,
             DependsOnTaskId = ltCreated.DependsOnTaskId,
-            LinkedTaskOrder = (int)ltCreated.LinkedTaskOrder
+            LinkedTaskOrder = ltCreated.LinkedTaskOrder??0,
         };
         return linkedTaskDto;
     }
@@ -443,8 +446,10 @@ public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
         if (!(bool)selectedUser.IsAdmin && selectedTask.UserId != currentUserDto.CurrentUserId && !selectedTask.UsersList.Any(u => u.Id == currentUserDto.CurrentUserId))
             throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
 
-        if (selectedTask.GetType().Name != "CollaborativeTask")
+        if (selectedTask is not CollaborativeTask collaborativeTaskSelected)
             throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
+
+        ValidateCanAddCollaborator(collaborativeTaskSelected, currentUserDto);
 
         if (selectedTask.UsersList.Any(m => m.Id == createTaskCollaboratorDto.UserId))
             throw new ArgumentException($"El usuario con ID({createTaskCollaboratorDto.UserId}) ya está en el equipo.");
@@ -453,37 +458,44 @@ public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
             UserId = selectedUser.Id,
             UserTask = selectedUser,
             TaskId = selectedTask.Id,
-            Task = (CollaborativeTask)selectedTask,
-            CollaboratorRole = CollaboratorRole.Collaborator,
+            Task = collaborativeTaskSelected,
+            CollaboratorRole = createTaskCollaboratorDto.CollaboratorRole,
             AddedAt = DateTime.UtcNow
         };
-        _repository.AddTaskCollaborator((CollaborativeTask)selectedTask, taskCollaborator);
+        _repository.AddTaskCollaborator(collaborativeTaskSelected, taskCollaborator);
 
     }
+    private void ValidateCanAddCollaborator(CollaborativeTask selectedTask, CurrentUserDto currentUserDto)
+    {
+        var isAdmin = currentUserDto.CurrentUserSystemRole == SystemRole.Admin;
+        var isOwner = selectedTask.UserId == currentUserDto.CurrentUserId;
+        var isTaskAdmin = selectedTask.TaskCollaborators.Any(tc =>
+            tc.UserId == currentUserDto.CurrentUserId &&
+            tc.CollaboratorRole == CollaboratorRole.TaskAdministrator);
+
+        if (!isAdmin && !isOwner && !isTaskAdmin)
+            throw new UnauthorizedAccessException("No tienes permisos para gestionar colaboradores en la tarea.");
+    }
+
     public void RemoveTaskCollaborator(int taskId, RemoveTaskCollaboratorDto removeTaskCollaboratorDto, CurrentUserDto currentUserDto)
     {
         var selectedUser = _userRepository.GetUserById(removeTaskCollaboratorDto.UserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {removeTaskCollaboratorDto.UserId}");
 
         var selectedTask = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
 
-        if (!(bool)selectedUser.IsAdmin && selectedTask.UserId != currentUserDto.CurrentUserId && !selectedTask.UsersList.Any(u => u.Id == currentUserDto.CurrentUserId))
-            throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
-
         if (selectedTask is not CollaborativeTask colTask)
             throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
 
-        if (!colTask.TaskCollaborators.Any(m => m.UserId == selectedUser.Id))
-            throw new ArgumentException($"El usuario con ID({selectedUser.Id}) NO está en el equipo.");
-        TaskCollaborator taskCollaborator = new TaskCollaborator
-        {
-            UserId = selectedUser.Id,
-            UserTask = selectedUser,
-            TaskId = selectedTask.Id,
-            Task = (CollaborativeTask)selectedTask,
-            CollaboratorRole = CollaboratorRole.Collaborator,
-            AddedAt = DateTime.UtcNow
-        };
-        _repository.RemoveTaskCollaborator((CollaborativeTask)selectedTask, taskCollaborator);
+        ValidateCanAddCollaborator(colTask, currentUserDto);
+
+
+        // if (!colTask.TaskCollaborators.Any(m => m.UserId == selectedUser.Id))
+        //     throw new ArgumentException($"El usuario con ID({selectedUser.Id}) NO está en el equipo.");
+
+var taskCollaborator = colTask.TaskCollaborators.FirstOrDefault(tc => tc.UserId ==removeTaskCollaboratorDto.UserId)?? throw new KeyNotFoundException($"El usuario con ID({removeTaskCollaboratorDto.UserId}) NO está en el equipo.");
+
+        
+        _repository.RemoveTaskCollaborator(colTask, taskCollaborator);
 
     }
 

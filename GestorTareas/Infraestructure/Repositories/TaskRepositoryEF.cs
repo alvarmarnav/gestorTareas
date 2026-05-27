@@ -115,7 +115,7 @@ string? search = null)
         _context.SaveChanges();
     }
 
-    public bool ExistsRecurrenceRelation(int taskId, int dependsOnTaskId)
+    public bool ExistsCircularRelation(int taskId, int dependsOnTaskId)
     {
         return _context.LinkedTasks.Any(lt => lt.TaskId == dependsOnTaskId && lt.DependsOnTaskId == taskId);
     }

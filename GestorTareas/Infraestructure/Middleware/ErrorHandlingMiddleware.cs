@@ -27,6 +27,17 @@ catch (ArgumentException ex)
 _logger.LogWarning(ex, "Argumento inválido");
 await EscribirError(context, 400, "Datos incorrectos", ex.Message);
 }
+catch (UnauthorizedAccessException ex)
+{
+    _logger.LogWarning(ex, "Acceso denegado");
+    await EscribirError(context, 403, "Acceso denegado", ex.Message);
+}
+catch (InvalidOperationException ex)
+{
+    _logger.LogWarning(ex, "Conflicto de negocio");
+    await EscribirError(context, 409, "Conflicto de negocio", ex.Message);
+}
+
 catch (Exception ex)
 {
 _logger.LogError(ex, "Error no controlado");

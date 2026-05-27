@@ -15,7 +15,7 @@ public interface ITaskRepository
 string? search = null);
     void AddTaskCollaborator(CollaborativeTask collaborativeTask,TaskCollaborator tcollaborator);
     void RemoveTaskCollaborator(CollaborativeTask collaborativeTask,TaskCollaborator tcollaborator);
-    bool ExistsRecurrenceRelation(int taskId, int dependsOnTaskId);
+    bool ExistsCircularRelation(int taskId, int dependsOnTaskId);
     bool ExistsLinkedRelation(int taskId, int dependsOnTaskId);
     LinkedTask AddLinkedRelation(LinkedTask linkedTask);
     void UpdateCompositeTask(int compositeTaskId, SubTask createdTask);

@@ -16,6 +16,6 @@ public class CreateCompositeTaskDto
     public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
 
     public DateTime? DueTime { get; set; }
-    public List<SubTask> SubTaskList {get;set;} = new List<SubTask>(30);
+    // public List<SubTask> SubTaskList {get;set;} = new List<SubTask>(30);
     
 }
