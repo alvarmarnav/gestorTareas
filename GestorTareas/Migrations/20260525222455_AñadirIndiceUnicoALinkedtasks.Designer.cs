@@ -244,7 +244,7 @@ namespace GestorTareas.Migrations
 
             modelBuilder.Entity("GestorTareas.Models.LinkedTask", b =>
                 {
-                    b.HasOne("GestorTareas.Models.Task", "DependsOn")
+                    b.HasOne("GestorTareas.Models.Task", "DependsOnTask")
                         .WithMany("RequiredByOtherTask")
                         .HasForeignKey("DependsOnTaskId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -256,7 +256,7 @@ namespace GestorTareas.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("DependsOn");
+                    b.Navigation("DependsOnTask");
 
                     b.Navigation("Task");
                 });

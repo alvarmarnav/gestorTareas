@@ -88,26 +88,36 @@ public class TasksController : ControllerBase
     public IActionResult Create([FromBody] CreateSimpleTaskDto dto)
     {
         var task = _taskManagerService.CreateTask(dto, UserConnectedHelper.GetConnectedUser(User));
-
         return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, dto);
-        // return CreatedAtAction(nameof(GetById), new { id = task.Id }, tarea);
     }
-
-/// <summary>
-/// Crear Nueva Dependencia de LinkedTask
-/// </summary>
-/// <param name="taskId"></param>
-/// <param name="dto"></param>
-/// <returns></returns>
-    [Authorize]
-    [HttpPost("{taskId:int}/linkedRelation")]
-    public IActionResult AddLinkedTaskRelation(int taskId, [FromBody] CreateLinkedTaskRelationDto dto)
-    {
-        var linkedTaskRelation = _taskManagerService.AddLinkedTask(taskId, dto.DependsOnTaskId, dto.LinkedTaskOrder, UserConnectedHelper.GetConnectedUser(User));
-        return Ok(linkedTaskRelation);
-    }
-    
     /// <summary>
+    /// Crear nueva tarea Recurrente
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    [HttpPost("/tasks/recurring")]
+    public IActionResult CreateRecurringTask([FromBody] CreateRecurringTaskDto dto)
+    {
+        var task = _taskManagerService.CreateRecurringTask(dto, UserConnectedHelper.GetConnectedUser(User));
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, dto);
+    }
+    /// <summary>
+    /// Crear nueva tarea Composite
+    /// </summary>
+    /// <param name="compDto"></param>
+    /// <returns></returns>
+    [HttpPost("tasks/composite")]
+    [ProducesResponseType(typeof(TaskDTO),
+    StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult CreateCompositeTask([FromBody] CreateCompositeTaskDto compDto)
+    {
+        var task = _taskManagerService.CreateCompositeTask(compDto, UserConnectedHelper.GetConnectedUser(User));
+
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, compDto);
+    }
+      /// <summary>
     /// Crear CollaborativeTask
     /// </summary>
     /// <param name="collDto"></param>
@@ -119,51 +129,55 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult CreateCollaborativeTask([FromBody] CreateCollaborativeTaskDto collDto)
     {
-        var task = _taskManagerService.CreateCollaborativeTask(collDto,UserConnectedHelper.GetConnectedUser(User) );
-
+        var task = _taskManagerService.CreateCollaborativeTask(collDto, UserConnectedHelper.GetConnectedUser(User));
         return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, collDto);
     }
-/// <summary>
+    /// <summary>
+    /// Añadir una subtask
+    /// </summary>
+    /// <param name="compositeTaskId"></param>
+    /// <param name="subtaskDto"></param>
+    /// <returns></returns>
+    [HttpPost("/tasks/{compositeTaskId:int}/subtasks")]
+    [ProducesResponseType(typeof(TaskDTO),
+        StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult AddSubtask(int compositeTaskId, [FromBody] CreateSubTaskDto subtaskDto)
+    {
+        var task = _taskManagerService.CreateSubTask(compositeTaskId, subtaskDto, UserConnectedHelper.GetConnectedUser(User));
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, subtaskDto);
+    }
+    /// <summary>
+    /// Crear Nueva Dependencia de LinkedTask
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost("tasks/{taskId:int}/linkedRelation")]
+    public IActionResult AddLinkedTaskRelation(int taskId, [FromBody] CreateLinkedTaskRelationDto dto)
+    {
+        var linkedTaskRelation = _taskManagerService.AddLinkedTask(taskId, dto.DependsOnTaskId, dto.LinkedTaskOrder, UserConnectedHelper.GetConnectedUser(User));
+        return Ok(linkedTaskRelation);
+    }
+    /// <summary>
     /// Añadir nuevo usuario a una CollaborativeTask
     /// </summary>
     /// <param name="taskId"></param>
     /// <param name="taskCollaboratorDto"></param>
     /// <returns></returns>
-    [HttpPut("/collaborativeTask/{taskId:int}/collaborators")]
+    [HttpPut("/tasks/{taskId:int}/collaborators")]
     public IActionResult AddTaskCollaborator(int taskId, [FromBody] CreateTaskCollaboratorDto taskCollaboratorDto)
     {
         _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
 
-/// <summary>
-    /// Crear CompositeTask
-    /// </summary>
-    /// <returns></returns>
-    [HttpPost("tasks/composite")]
-    [ProducesResponseType(typeof(TaskDTO),
-    StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult CreateCompositeTask([FromBody] CreateCompositeTaskDto compDto)
-    {
-        var task = _taskManagerService.CreateCompositeTask(compDto,UserConnectedHelper.GetConnectedUser(User) );
-
-        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, compDto);
-    }
 
 
-[HttpPost("/compositeTasks/{compositeTaskId:int}/subtasks")]
- [ProducesResponseType(typeof(TaskDTO),
-    StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult AddSubtask(int compositeTaskId,[FromBody] CreateSubTaskDto subtaskDto)
-    {
-         var task = _taskManagerService.CreateSubTask(compositeTaskId,subtaskDto,UserConnectedHelper.GetConnectedUser(User) );
 
-        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, subtaskDto);
-    }
+    
 
     /// <summary>
     /// Actualiza la Tarea seleccionada por Id
@@ -189,20 +203,21 @@ public class TasksController : ControllerBase
         _taskManagerService.DeleteTask(id, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-    
+
     /// <summary>
     /// Eliminar usuario de una CollaborativeTask
     /// </summary>
     /// <param name="taskId"></param>
     /// <param name="taskCollaboratorDto"></param>
     /// <returns></returns>
-    [HttpPut("/collaborativeTaskDeleteUser/{taskId:int}")]
+    [HttpPut("/tasks/{taskId:int}/collaborators/{userId:int}")]
     public IActionResult RemoveTaskCollaborator(int taskId, [FromBody] RemoveTaskCollaboratorDto taskCollaboratorDto)
     {
         _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-
+    // [HttpGet("/tasks/linkable?{excludeTaskId:int}")]
+    // public IActionResult 
 
 
 }

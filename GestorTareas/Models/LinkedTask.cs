@@ -14,10 +14,10 @@ public class LinkedTask
 {
     public int Id { get; set; }
     public int TaskId { get; set; }
-    public Task Task { get; set; }
+    public Task? Task { get; set; }
     public int DependsOnTaskId { get; set; }
-    public Task DependsOn { get; set; }
-    public int? LinkedTaskOrder { get; set; }=null;
+    public Task DependsOnTask { get; set; }
+    public int? LinkedTaskOrder { get; set; }
 
 
     public LinkedTask() { }
@@ -42,7 +42,7 @@ public class LinkedTask
             throw new ArgumentException("El identificador no es válido o bien No existe la tarea.");
         if (Task.Status == TaskStatus.Completed)
             throw new ArgumentException("Tarea YA Completada anteriormente.");
-        if (DependsOn.Status != TaskStatus.Completed)
+        if (DependsOnTask.Status != TaskStatus.Completed)
             throw new InvalidOperationException($"Existen tareas previas SIN Completar.");
 
         Task.Status = TaskStatus.Completed;
@@ -50,7 +50,7 @@ public class LinkedTask
 
     public bool CanStartLinkedTask(LinkedTask lTask)
     {
-        if (lTask.DependsOn is null || lTask.DependsOn.Status != TaskStatus.Completed)
+        if (lTask.DependsOnTask is null || lTask.DependsOnTask.Status != TaskStatus.Completed)
             return false;
         else
             return true;

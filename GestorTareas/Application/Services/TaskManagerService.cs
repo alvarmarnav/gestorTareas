@@ -242,7 +242,7 @@ public class TaskManagerService
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
 
         var compositeTask = _repository.GetTaskById(compositeTaskId) ?? throw new KeyNotFoundException($"No existe Tarea Compuesta con ID: {compositeTaskId}.");
-
+        if(compositeTask is not CompositeTask parent) throw new InvalidOperationException("La tarea a la que se quiere vincular la SubTarea NO es del tipo correcto.");
         var newTask = new SubTask
         {
             Title = dto.Title,
@@ -250,7 +250,7 @@ public class TaskManagerService
             TaskDescription = dto.TaskDescription,
             Priority = dto.Priority,
             DueTime = dto.DueTime,
-            ParentCompositeTaskId = dto.ParentCompositeTaskId
+            ParentCompositeTaskId = compositeTaskId
         };
 
         if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
@@ -411,7 +411,7 @@ public class TaskManagerService
             throw new ArgumentException($"El usuario con ID({createTaskCollaboratorDto.UserId}) ya está en el equipo.");
         TaskCollaborator taskCollaborator = new TaskCollaborator
         {
-            UserId = currentUserDto.CurrentUserId,
+            UserId = selectedUser.Id,
             UserTask = selectedUser,
             TaskId = selectedTask.Id,
             Task = (CollaborativeTask)selectedTask,
@@ -433,11 +433,11 @@ public class TaskManagerService
         if (selectedTask is not CollaborativeTask colTask)
             throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
 
-        if (!colTask.TaskCollaborators.Any(m => m.UserId == removeTaskCollaboratorDto.UserId))
-            throw new ArgumentException($"El usuario con ID({removeTaskCollaboratorDto.UserId}) NO está en el equipo.");
+        if (!colTask.TaskCollaborators.Any(m => m.UserId == selectedUser.Id))
+            throw new ArgumentException($"El usuario con ID({selectedUser.Id}) NO está en el equipo.");
         TaskCollaborator taskCollaborator = new TaskCollaborator
         {
-            UserId = currentUserDto.CurrentUserId,
+            UserId = selectedUser.Id,
             UserTask = selectedUser,
             TaskId = selectedTask.Id,
             Task = (CollaborativeTask)selectedTask,

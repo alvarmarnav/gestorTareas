@@ -20,7 +20,7 @@ public void Configure(EntityTypeBuilder<Models.LinkedTask> builder)
             .HasForeignKey(lt => lt.TaskId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(lt => lt.DependsOn)
+        builder.HasOne(lt => lt.DependsOnTask)
             .WithMany(t => t.RequiredByOtherTask)
             .HasForeignKey(lt => lt.DependsOnTaskId)
             .OnDelete(DeleteBehavior.Restrict);
