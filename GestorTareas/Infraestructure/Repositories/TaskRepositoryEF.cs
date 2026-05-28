@@ -192,4 +192,10 @@ string? search = null)
     {
         return _context.TaskCollaborators.FirstOrDefault(tc => tc.UserId == currentUserId && tc.TaskId == taskId);
     }
+
+    public void CompleteTask(Task taskToComplete)
+    {
+        _context.Tasks.Update(taskToComplete);
+        _context.SaveChanges();
+    }
 }

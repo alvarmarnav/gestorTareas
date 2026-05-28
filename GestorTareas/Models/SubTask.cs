@@ -19,7 +19,7 @@ public class SubTask : Task
         int userId,
         int parentCompositeTaskId,
         string? subTaskDescription = null,
-        TaskPriority? subTaskPriority = TaskPriority.Normal,
+        TaskPriority subTaskPriority = TaskPriority.Normal,
         TaskStatus? subTaskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null

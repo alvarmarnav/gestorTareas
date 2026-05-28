@@ -30,10 +30,10 @@ public class RecurringTask : Task
     public RecurringTask(
         string title,
         int userId,
-        DateTime? dueTime,
-        int recurrenceRule,
+        DateTime? dueTime=null,
+        int recurrenceRule = 7,
         string? taskDescription = null,
-        TaskPriority? taskPriority = TaskPriority.Normal,
+        TaskPriority taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         string? cancelReason = null
         ) : base(
@@ -42,7 +42,7 @@ public class RecurringTask : Task
             taskDescription,
             taskPriority,
             taskStatus,
-            dueTime,
+            dueTime ?? DateTime.UtcNow.AddMicroseconds(50),
             cancelReason
             )
     {

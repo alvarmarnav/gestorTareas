@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using GestorTareas.Controllers;
 using NUnit.Framework.Constraints;
+using Microsoft.VisualBasic;
 
 namespace GestorTareas.Application.Services;
 
@@ -152,7 +153,7 @@ public class TaskManagerService
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
             TaskDescription = dto.TaskDescription,
-            Priority = dto.Priority,
+            Priority = dto.Priority??TaskPriority.Normal,
             DueTime = dto.DueTime,
         };
 
@@ -181,7 +182,7 @@ public class TaskManagerService
             DueTime = dto.DueTime,
             RecurrenceRule = dto.RecurrenceRule,
             TaskDescription = dto.TaskDescription,
-            Priority = dto.Priority,
+            Priority = dto.Priority??TaskPriority.Normal,
         };
 
         if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
@@ -193,7 +194,7 @@ public class TaskManagerService
             throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
         }
 
-        var createdTask = _repository.CreateTask(newTask);
+         var createdTask = _repository.CreateTask(newTask);
 
         var dtoReturned = DtoManager.TaskToDto(createdTask);
 
@@ -207,6 +208,42 @@ public class TaskManagerService
             RecurrenceRule = (int)dtoReturned.RecurrenceRule,
             //  RecurringTasksCount= dtoReturned.recurringTaskCount,
         };
+
+
+        // var dayBetween = newTask.DueTime-DateTime.UtcNow;
+        DateTime today=DateTime.UtcNow;
+        while (today<=newTask.DueTime)
+        {
+            today.AddDays(newTask.RecurrenceRule);
+            createdTask = _repository.CreateTask(newTask);
+            dtoReturned = DtoManager.TaskToDto(createdTask);
+            responseDto = new ResponseRecurringTaskDto
+        {
+            Title = dtoReturned.Title,
+            UserId = userDto.CurrentUserId,
+            TaskDescription = dtoReturned.TaskDescription,
+            Priority = dtoReturned.Priority,
+            DueTime = dtoReturned.DueTime,
+            RecurrenceRule = (int)dtoReturned.RecurrenceRule,
+            //  RecurringTasksCount= dtoReturned.recurringTaskCount,
+        };
+        }
+
+        // var createdTask = _repository.CreateTask(newTask);
+
+        // var dtoReturned = DtoManager.TaskToDto(createdTask);
+
+        // var responseDto = new ResponseRecurringTaskDto
+        // {
+        //     Title = dtoReturned.Title,
+        //     UserId = userDto.CurrentUserId,
+        //     TaskDescription = dtoReturned.TaskDescription,
+        //     Priority = dtoReturned.Priority,
+        //     DueTime = dtoReturned.DueTime,
+        //     RecurrenceRule = (int)dtoReturned.RecurrenceRule,
+        //     //  RecurringTasksCount= dtoReturned.recurringTaskCount,
+        // };
+        
         return responseDto;
     }
 
@@ -214,14 +251,15 @@ public class TaskManagerService
     {
 
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
+        
 
         var newTask = new CollaborativeTask
         {
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
             TaskDescription = dto.TaskDescription,
-            Priority = dto.Priority,
-            DueTime = dto.DueTime,
+            Priority = dto.Priority??TaskPriority.Normal,
+            DueTime = dto.DueTime??null,
         };
 
 
@@ -256,7 +294,7 @@ public class TaskManagerService
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
             TaskDescription = dto.TaskDescription,
-            Priority = (TaskPriority?)dto.Priority,
+            Priority = dto.Priority??TaskPriority.Normal,
             DueTime = dto.DueTime,
         };
 
@@ -290,7 +328,7 @@ public class TaskManagerService
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
             TaskDescription = dto.TaskDescription,
-            Priority = dto.Priority,
+            Priority = dto.Priority??TaskPriority.Normal,
             DueTime = dto.DueTime,
             ParentCompositeTaskId = compositeTaskId
         };
@@ -511,5 +549,16 @@ var taskCollaborator = colTask.TaskCollaborators.FirstOrDefault(tc => tc.UserId 
 
     }
 
+    public void CompleteTask(int taskId, CurrentUserDto currentUserDto)
+    {
+       var taskToComplete = _repository.GetTaskById(taskId) ?? throw new Exception();
+        var userActive = _userRepository.GetUserById(currentUserDto.CurrentUserId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {currentUserDto.CurrentUserId}");
 
+        if (!(bool)userActive.IsAdmin && taskToComplete.UserId != currentUserDto.CurrentUserId && !taskToComplete.UsersList.Any(u => u.Id == currentUserDto.CurrentUserId))
+            throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
+
+       
+        taskToComplete.Status =TaskStatus.Completed;
+        _repository.CompleteTask(taskToComplete);
+    }
 }

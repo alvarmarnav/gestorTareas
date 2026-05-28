@@ -20,4 +20,5 @@ string? search = null);
     LinkedTask AddLinkedRelation(LinkedTask linkedTask);
     void UpdateCompositeTask(int compositeTaskId, SubTask createdTask);
     TaskCollaborator? GetAllTaskCollaborators(int id, int currentUserId);
+    void CompleteTask(Task taskToComplete);
 };

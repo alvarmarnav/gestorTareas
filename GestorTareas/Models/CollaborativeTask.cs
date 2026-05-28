@@ -16,7 +16,7 @@ public class CollaborativeTask : GestorTareas.Models.Task
         string title,
         int userId,
         string? taskDescription = null,
-        TaskPriority? taskPriority = TaskPriority.Normal,
+        TaskPriority taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null

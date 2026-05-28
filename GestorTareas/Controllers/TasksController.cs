@@ -177,25 +177,25 @@ public class TasksController : ControllerBase
     /// <summary>
     /// Actualiza la Tarea seleccionada por Id
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="taskId"></param>
     /// <param name="taskDto"></param>
     /// <returns></returns>
     [HttpPut("{taskId:int}")] // PUT /api/tareas/1
-    public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
+    public IActionResult Update(int taskId, [FromBody] UpdateTaskDto taskDto)
     {
-        _taskManagerService.UpdateTask(id, taskDto, UserConnectedHelper.GetConnectedUser(User));
+        _taskManagerService.UpdateTask(taskId, taskDto, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
     /// <summary>
     /// Elimina una tarea seleccionada por ID
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="taskId"></param>
     /// <returns></returns>
     [HttpDelete("{taskId:int}")] // DELETE /api/tareas/1
     // [Authorize(Roles = "Admin")]
-    public IActionResult Delete(int id)
+    public IActionResult Delete(int taskId)
     {
-        _taskManagerService.DeleteTask(id, UserConnectedHelper.GetConnectedUser(User));
+        _taskManagerService.DeleteTask(taskId, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
 
@@ -211,8 +211,16 @@ public class TasksController : ControllerBase
         _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-    // [HttpGet("/tasks/linkable?{excludeTaskId:int}")]
-    // public IActionResult 
+     /// <summary>
+    /// Marca una tarea seleccionada como completada por su ID
+    /// </summary>
+    [HttpPut("{taskId:int}/complete")] // PUT /api/tasks/1/complete
+    public IActionResult CompleteTask(int taskId)
+    {
+        // Asegúrate de tener este método implementado en tu servicio de aplicación
+        _taskManagerService.CompleteTask(taskId, UserConnectedHelper.GetConnectedUser(User)); 
+        return NoContent();
+    }
 
 
 }

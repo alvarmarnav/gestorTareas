@@ -71,7 +71,7 @@ public static class DtoManager
                 Title = st.Title,
                 UserId = st.UserId,
                 TaskDescription = st.TaskDescription,
-                Priority = (int)st.Priority,
+                Priority = st.Priority,
                 Status = (int)st.Status,
                 DueTime = st.DueTime,
                 CancelReason = st.CancelReason
@@ -113,7 +113,7 @@ public static class DtoManager
                         Title = st.Title,
                         UserId = st.UserId,
                         TaskDescription = st.TaskDescription,
-                        Priority = (TaskPriority?)st.Priority,
+                        Priority = st.Priority??TaskPriority.Normal,
                         DueTime = st.DueTime,
                         ParentCompositeTaskId = st.ParentCompositeTaskId,
                     }).ToList(),
