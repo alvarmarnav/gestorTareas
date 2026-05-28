@@ -117,7 +117,32 @@ string? search = null)
 
     public bool ExistsCircularRelation(int taskId, int dependsOnTaskId)
     {
-        return _context.LinkedTasks.Any(lt => lt.TaskId == dependsOnTaskId && lt.DependsOnTaskId == taskId);
+        var visited = new HashSet<int>();
+        var stack = new Stack<int>();
+
+        stack.Push(dependsOnTaskId);
+
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+
+            if (current == taskId)
+                return true;
+
+            if (!visited.Add(current))
+                continue;
+
+            var next = _context.LinkedTasks.Where(lt => lt.TaskId == current)
+                .Select(lt => lt.DependsOnTaskId)
+                .ToList();
+
+            foreach (var nextId in next)
+                stack.Push(nextId);
+        }
+
+        return false;
+
+        // return _context.LinkedTasks.Any(lt => lt.TaskId == dependsOnTaskId && lt.DependsOnTaskId == taskId);
     }
     public bool ExistsLinkedRelation(int taskId, int dependsOnTaskId)
     {
@@ -165,6 +190,6 @@ string? search = null)
 
     public TaskCollaborator? GetAllTaskCollaborators(int taskId, int currentUserId)
     {
-        return _context.TaskCollaborators.FirstOrDefault(tc=>tc.UserId==currentUserId && tc.TaskId==taskId);
+        return _context.TaskCollaborators.FirstOrDefault(tc => tc.UserId == currentUserId && tc.TaskId == taskId);
     }
 }

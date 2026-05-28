@@ -19,7 +19,7 @@ public abstract class TaskDTO
     public string Title { get; set; } = default!;
     public int UserId{get;set;}
     public string? TaskDescription { get; set; } = default!;
-    public int? Priority { get; set; }
+    public TaskPriority? Priority { get; set; }
     public int? Status { get; set; }
     public DateTime? DueTime { get; set; }
     public string? CancelReason {get;set;}

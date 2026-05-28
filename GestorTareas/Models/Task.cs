@@ -45,38 +45,34 @@ public abstract class Task : IIdentificable
                 field = value.Trim();
         }
     }
-    public TaskPriority? Priority
+    private TaskPriority _priority = TaskPriority.Normal;
+    public TaskPriority Priority
     {
-        get; set
+        get => _priority;
+        set
         {
-            if (value is not null && !Enum.IsDefined(typeof(TaskPriority), value))
+            if (!Enum.IsDefined(typeof(TaskPriority), value))
                 throw new ArgumentException("La prioridad NO es válida.");
-            else if (value is null)
-                field = TaskPriority.Normal;
-            else
-                field = value;
+            
+            _priority = value;
         }
     }
     // // private TaskStatus _status;
-    //TODO: Atento a corregir la accesibilidad
-    public TaskStatus? Status
+    private TaskStatus _status = TaskStatus.Pending;
+    public TaskStatus Status
     {
-        get;set
+        get => _status;
+        set
         {
-            if (value is not null && !Enum.IsDefined(typeof(TaskStatus), value))
+            if (!Enum.IsDefined(typeof(TaskStatus), value))
             {
                 throw new ArgumentException("El estado no es válido.");
-            }
-            else if (value is null)
-            {
-                value = TaskStatus.Pending;
             }
             else if (field == TaskStatus.Completed && (value == TaskStatus.InProgress || value == TaskStatus.Pending))
             {
                 throw new ArgumentException("No se puede modificar el estado de una tarea ya completada.");
             }
-            field = (TaskStatus)value;
-            field = (TaskStatus)value;
+            _status=(TaskStatus)value;
         }
     } = TaskStatus.Pending;
     public DateTime? CreatedAt { get; set; }
@@ -120,7 +116,7 @@ public abstract class Task : IIdentificable
         string title,
         int userId,
         string? taskDescription = null,
-        TaskPriority? priority = TaskPriority.Normal,
+        TaskPriority priority = TaskPriority.Normal,
         TaskStatus? status = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null)

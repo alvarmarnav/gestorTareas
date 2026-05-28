@@ -504,7 +504,7 @@ public class TaskManagerService
         // if (!colTask.TaskCollaborators.Any(m => m.UserId == selectedUser.Id))
         //     throw new ArgumentException($"El usuario con ID({selectedUser.Id}) NO está en el equipo.");
 
-var taskCollaborator = colTask.TaskCollaborators.FirstOrDefault(tc => tc.UserId ==removeTaskCollaboratorDto.UserId)?? throw new KeyNotFoundException($"El usuario con ID({removeTaskCollaboratorDto.UserId}) NO está en el equipo.");
+var taskCollaborator = colTask.TaskCollaborators.FirstOrDefault(tc => tc.UserId == removeTaskCollaboratorDto.UserId)?? throw new KeyNotFoundException($"El usuario con ID({removeTaskCollaboratorDto.UserId}) NO está en el equipo.");
 
         
         _repository.RemoveTaskCollaborator(colTask, taskCollaborator);

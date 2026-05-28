@@ -52,18 +52,7 @@ public class TasksController : ControllerBase
     {
         return Ok(_taskManagerService.GetAllTaskOwnUser(UserConnectedHelper.GetConnectedUser(User)));
     }
-    /// <summary>
-    /// Obtiene la tarea seleccioinada por ID.
-    /// </summary>
-    /// <returns>Tarea seleccionada con ID.</returns>
-    [HttpGet("{taskId:int}")] // GET /api/tareas/1
-    public IActionResult GetById(int taskId)
-    {
-        var task = _taskManagerService.GetTaskById(taskId, UserConnectedHelper.GetConnectedUser(User));
-        if (task == null) return NotFound();
-
-        return Ok(task);
-    }
+    
     /// <summary>
     /// Obtiene DTO todas las tareas.
     /// </summary>
@@ -78,9 +67,21 @@ public class TasksController : ControllerBase
         return Ok(result);
     }
     /// <summary>
+    /// Obtiene la tarea seleccioinada por ID.
+    /// </summary>
+    /// <returns>Tarea seleccionada con ID.</returns>
+    [HttpGet("{taskId:int}")] // GET /api/tareas/1
+    public IActionResult GetById(int taskId)
+    {
+        var task = _taskManagerService.GetTaskById(taskId, UserConnectedHelper.GetConnectedUser(User));
+        if (task == null) return NotFound();
+
+        return Ok(task);
+    }
+    /// <summary>
     /// Crea una nueva tarea
     /// </summary>
-    [HttpPost] // POST /api/tareas
+    [HttpPost("simple")] // POST /api/tareas
     [ProducesResponseType(typeof(TaskDTO),
     StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -95,7 +96,7 @@ public class TasksController : ControllerBase
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    [HttpPost("/tasks/recurring")]
+    [HttpPost("recurring")]
     public IActionResult CreateRecurringTask([FromBody] CreateRecurringTaskDto dto)
     {
         var task = _taskManagerService.CreateRecurringTask(dto, UserConnectedHelper.GetConnectedUser(User));
@@ -106,7 +107,7 @@ public class TasksController : ControllerBase
     /// </summary>
     /// <param name="compDto"></param>
     /// <returns></returns>
-    [HttpPost("tasks/composite")]
+    [HttpPost("composite")]
     [ProducesResponseType(typeof(TaskDTO),
     StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -122,7 +123,7 @@ public class TasksController : ControllerBase
     /// </summary>
     /// <param name="collDto"></param>
     /// <returns></returns>
-    [HttpPost("tasks/collaborative")]
+    [HttpPost("collaborative")]
     [ProducesResponseType(typeof(TaskDTO),
     StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -138,7 +139,7 @@ public class TasksController : ControllerBase
     /// <param name="compositeTaskId"></param>
     /// <param name="subtaskDto"></param>
     /// <returns></returns>
-    [HttpPost("/tasks/{compositeTaskId:int}/subtasks")]
+    [HttpPost("{compositeTaskId:int}/subtasks")]
     [ProducesResponseType(typeof(TaskDTO),
         StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -155,7 +156,7 @@ public class TasksController : ControllerBase
     /// <param name="dto"></param>
     /// <returns></returns>
     [Authorize]
-    [HttpPost("tasks/{taskId:int}/linkedRelation")]
+    [HttpPost("{taskId:int}/linkedRelation")]
     public IActionResult AddLinkedTaskRelation(int taskId, [FromBody] CreateLinkedTaskRelationDto dto)
     {
         var linkedTaskRelation = _taskManagerService.AddLinkedTask(taskId, dto.DependsOnTaskId, dto.LinkedTaskOrder, UserConnectedHelper.GetConnectedUser(User));
@@ -167,25 +168,19 @@ public class TasksController : ControllerBase
     /// <param name="taskId"></param>
     /// <param name="taskCollaboratorDto"></param>
     /// <returns></returns>
-    [HttpPut("/tasks/{taskId:int}/collaborators")]
+    [HttpPost("{taskId:int}/collaborators")]
     public IActionResult AddTaskCollaborator(int taskId, [FromBody] CreateTaskCollaboratorDto taskCollaboratorDto)
     {
         _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-
-
-
-
-    
-
     /// <summary>
     /// Actualiza la Tarea seleccionada por Id
     /// </summary>
     /// <param name="id"></param>
     /// <param name="taskDto"></param>
     /// <returns></returns>
-    [HttpPut("{id}")] // PUT /api/tareas/1
+    [HttpPut("{taskId:int}")] // PUT /api/tareas/1
     public IActionResult Update(int id, [FromBody] UpdateTaskDto taskDto)
     {
         _taskManagerService.UpdateTask(id, taskDto, UserConnectedHelper.GetConnectedUser(User));
@@ -196,7 +191,7 @@ public class TasksController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete("{id}")] // DELETE /api/tareas/1
+    [HttpDelete("{taskId:int}")] // DELETE /api/tareas/1
     // [Authorize(Roles = "Admin")]
     public IActionResult Delete(int id)
     {
@@ -210,7 +205,7 @@ public class TasksController : ControllerBase
     /// <param name="taskId"></param>
     /// <param name="taskCollaboratorDto"></param>
     /// <returns></returns>
-    [HttpPut("/tasks/{taskId:int}/collaborators/{userId:int}")]
+    [HttpDelete("{taskId:int}/collaborators/{userId:int}")]
     public IActionResult RemoveTaskCollaborator(int taskId, [FromBody] RemoveTaskCollaboratorDto taskCollaboratorDto)
     {
         _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));

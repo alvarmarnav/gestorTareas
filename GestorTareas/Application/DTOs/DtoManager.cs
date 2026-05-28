@@ -23,7 +23,7 @@ public static class DtoManager
                 Title = sub.Title,
                 UserId = sub.UserId,
                 TaskDescription = sub.TaskDescription,
-                Priority = (int)sub.Priority,
+                Priority = sub.Priority,
                 Status = (int)sub.Status,
                 DueTime = sub.DueTime,
                 CancelReason = sub.CancelReason,
@@ -60,7 +60,7 @@ public static class DtoManager
                 RecurrenceRule = rt.RecurrenceRule,
                 RecurringTasksCount = rt.RecurringTasksCount,
                 TaskDescription = rt.TaskDescription,
-                Priority = (int)rt.Priority,
+                Priority = rt.Priority,
                 Status = (int)rt.Status,
                 CancelReason = rt.CancelReason
             },
