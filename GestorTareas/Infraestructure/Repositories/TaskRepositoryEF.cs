@@ -43,7 +43,6 @@ public class TaskRepositoryEF : ITaskRepository
 
     public Task? GetTaskById(int id) => _context.Tasks
     .Include(t => t.User)
-    .Include(t => t.UsersList)
     .Include(t => t.Dependencies)
     .Include(t => t.RequiredByOtherTask)
     .FirstOrDefault(t => t.Id == id);
@@ -167,6 +166,13 @@ string? search = null)
         .Include(ct => ct.User)
         .FirstOrDefault(ct => ct.Id == collTaskId);
     }
+    public CompositeTask? GetCompositeTaskById(int taskId)
+    {
+        return _context.CompositeTasks
+        .Include(ct => ct.User)
+        .Include(ct=>ct.SubTaskList)
+        .FirstOrDefault(ct => ct.Id == taskId);
+    }
     public bool UserHasCollaboratorRole(int taskId, int userId, CollaboratorRole role)
     {
         return _context.TaskCollaborators.Any(tc =>
@@ -197,5 +203,16 @@ string? search = null)
     {
         _context.Tasks.Update(taskToComplete);
         _context.SaveChanges();
+    }
+
+    public Task? GetTaskByIdWithRelations(int taskId)
+    {
+        return _context.Tasks
+         .Include(t => t.User)
+         .Include(t => t.Dependencies)
+         .ThenInclude(d => d.DependsOnTask)
+         .Include(t => t.RequiredByOtherTask)
+         .FirstOrDefault(t => t.Id == taskId);
+
     }
 }

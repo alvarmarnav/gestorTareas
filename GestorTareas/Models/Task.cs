@@ -45,6 +45,7 @@ public abstract class Task : IIdentificable
                 field = value.Trim();
         }
     }
+    public TaskType TaskType{get;set;}=TaskType.SimpleTask;
     private TaskPriority _priority = TaskPriority.Normal;
     public TaskPriority Priority
     {
@@ -61,7 +62,7 @@ public abstract class Task : IIdentificable
     private TaskStatus _status = TaskStatus.Pending;
     public TaskStatus Status
     {
-        get => _status;
+        get => field;
         set
         {
             if (!Enum.IsDefined(typeof(TaskStatus), value))
@@ -103,8 +104,6 @@ public abstract class Task : IIdentificable
     // public TaskType taskType {get;set;}
     public int UserId { get; set; }
     public User? User { get; set; }
-
-    public List<User> UsersList { get; set; } = new(10);
     public ICollection<LinkedTask> Dependencies { get; set; }
     public ICollection<LinkedTask> RequiredByOtherTask { get; set; }
 
@@ -116,6 +115,7 @@ public abstract class Task : IIdentificable
         string title,
         int userId,
         string? taskDescription = null,
+        TaskType taskType =TaskType.SimpleTask,
         TaskPriority priority = TaskPriority.Normal,
         TaskStatus? status = TaskStatus.Pending,
         DateTime? dueTime = null,
@@ -124,6 +124,7 @@ public abstract class Task : IIdentificable
         Title = title.Trim();
         UserId = userId;
         TaskDescription = taskDescription?.Trim() ?? "Sin descripción.";
+        TaskType=taskType;
         Priority = priority;
         Status = TaskStatus.Pending;
         CreatedAt = DateTime.UtcNow;

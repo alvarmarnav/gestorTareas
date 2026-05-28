@@ -14,6 +14,7 @@ public class CreateSubTaskDto
     // public int UserId{get;set;}
     [MaxLength(300, ErrorMessage = "Longitud máxima de 300 caracteres.")]
     public string? TaskDescription { get; set; } = string.Empty;
+    public TaskType TaskType{get;set;}=TaskType.SubTask;
     public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
     public DateTime? DueTime { get; set; } = null;
     // public int ParentCompositeTaskId{get;set;}

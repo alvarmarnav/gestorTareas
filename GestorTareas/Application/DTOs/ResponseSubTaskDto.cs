@@ -9,5 +9,5 @@ public class ResponseSubTaskDto : TaskDTO
 {
         public int ParentCompositeTaskId { get; set; }
         public ResponseCompositeTaskDto ParentCompositeTask { get; set; }
-
+        public TaskType TaskType{get;set;}
 }

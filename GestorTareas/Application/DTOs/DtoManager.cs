@@ -23,6 +23,7 @@ public static class DtoManager
                 Title = sub.Title,
                 UserId = sub.UserId,
                 TaskDescription = sub.TaskDescription,
+                TaskType = sub.TaskType,
                 Priority = sub.Priority,
                 Status = (int)sub.Status,
                 DueTime = sub.DueTime,
@@ -35,6 +36,7 @@ public static class DtoManager
                 Title = ct.Title,
                 UserId = ct.UserId,
                 TaskDescription = ct.TaskDescription,
+                TaskType = ct.TaskType,
                 Priority = ct.Priority,
                 Status = (int?)ct.Status,
                 DueTime = ct.DueTime,
@@ -46,6 +48,7 @@ public static class DtoManager
                 Title = colt.Title,
                 UserId = colt.UserId,
                 TaskDescription = colt.TaskDescription,
+                TaskType = colt.TaskType,
                 Priority = colt.Priority,
                 Status = (int?)colt.Status,
                 DueTime = colt.DueTime,
@@ -60,6 +63,7 @@ public static class DtoManager
                 RecurrenceRule = rt.RecurrenceRule,
                 RecurringTasksCount = rt.RecurringTasksCount,
                 TaskDescription = rt.TaskDescription,
+                TaskType = rt.TaskType,
                 Priority = rt.Priority,
                 Status = (int)rt.Status,
                 CancelReason = rt.CancelReason
@@ -71,6 +75,7 @@ public static class DtoManager
                 Title = st.Title,
                 UserId = st.UserId,
                 TaskDescription = st.TaskDescription,
+                TaskType = st.TaskType,
                 Priority = st.Priority,
                 Status = (int)st.Status,
                 DueTime = st.DueTime,
@@ -90,6 +95,7 @@ public static class DtoManager
                 sub.UserId,
                 sub.ParentCompositeTaskId,
                 sub.TaskDescription!,
+                sub.TaskType,
                 (TaskPriority)sub.Priority,
                 (TaskStatus)sub.Status,
                 sub.DueTime,
@@ -101,6 +107,7 @@ public static class DtoManager
                     ct.Title!,
                     ct.UserId,
                     ct.TaskDescription!,
+                    ct.TaskType,
                     (TaskPriority)ct.Priority,
                     (Enums.TaskStatus)ct.Status,
                     ct.DueTime,
@@ -113,7 +120,8 @@ public static class DtoManager
                         Title = st.Title,
                         UserId = st.UserId,
                         TaskDescription = st.TaskDescription,
-                        Priority = st.Priority??TaskPriority.Normal,
+                        TaskType = st.TaskType,
+                        Priority = st.Priority ?? TaskPriority.Normal,
                         DueTime = st.DueTime,
                         ParentCompositeTaskId = st.ParentCompositeTaskId,
                     }).ToList(),
@@ -125,6 +133,7 @@ public static class DtoManager
                 rt.DueTime,
                 rt.RecurrenceRule,
                 rt.TaskDescription!,
+                rt.TaskType,
                 (TaskPriority)rt.Priority,
                 (Enums.TaskStatus)rt.Status,
                 rt.CancelReason
@@ -138,6 +147,7 @@ public static class DtoManager
                 st.Title!,
                 st.UserId,
                 st.TaskDescription!,
+                st.TaskType,
                 (TaskPriority)st.Priority,
                 (Enums.TaskStatus)st.Status,
                 st.DueTime,
@@ -153,6 +163,11 @@ public static class DtoManager
 
     private static List<TaskCollaboratorDto>? ConvertTaskCollaboratorsToDto(List<TaskCollaborator>? collaborators)
     {
-        return collaborators?.Select(collaborator => new TaskCollaboratorDto()).ToList();
+        return collaborators?.Select(collaborator => new TaskCollaboratorDto
+        {
+            UserId = collaborator.UserId,
+            TaskId = collaborator.TaskId,
+            CollaboratorRole = collaborator.CollaboratorRole,
+        }).ToList() ?? new List<TaskCollaboratorDto>(10);
     }
 }

@@ -37,21 +37,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u=>u.UpdatedAt)
         .HasDefaultValue(null);
 
-        builder
-        .HasMany(u => u.TasksList)
-        .WithMany( t => t.UsersList)
-        .UsingEntity<Dictionary<string, object>>(
-            "UserTasks",
-            j => j
-                .HasOne<Models.Task>()
-                .WithMany()
-                .HasForeignKey("tasksListId")
-                .OnDelete(DeleteBehavior.NoAction),
-            j => j
-                .HasOne<User>()
-                .WithMany()
-                .HasForeignKey("UsersListId")
-                .OnDelete(DeleteBehavior.NoAction)
-        );
+        
     }
 }

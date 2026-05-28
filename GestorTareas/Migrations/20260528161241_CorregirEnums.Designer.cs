@@ -4,6 +4,7 @@ using GestorTareas.Infraestructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestorTareas.Migrations
 {
     [DbContext(typeof(GestorTareasContext))]
-    partial class GestorTareasContextModelSnapshot : ModelSnapshot
+    [Migration("20260528161241_CorregirEnums")]
+    partial class CorregirEnums
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,14 +98,9 @@ namespace GestorTareas.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Tasks", (string)null);
 
@@ -182,6 +180,21 @@ namespace GestorTareas.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("UserTasks", b =>
+                {
+                    b.Property<int>("UsersListId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("tasksListId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UsersListId", "tasksListId");
+
+                    b.HasIndex("tasksListId");
+
+                    b.ToTable("UserTasks");
+                });
+
             modelBuilder.Entity("GestorTareas.Models.CollaborativeTask", b =>
                 {
                     b.HasBaseType("GestorTareas.Models.Task");
@@ -257,10 +270,6 @@ namespace GestorTareas.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GestorTareas.Models.User", null)
-                        .WithMany("TasksList")
-                        .HasForeignKey("UserId1");
-
                     b.Navigation("User");
                 });
 
@@ -281,6 +290,21 @@ namespace GestorTareas.Migrations
                     b.Navigation("Task");
 
                     b.Navigation("UserTask");
+                });
+
+            modelBuilder.Entity("UserTasks", b =>
+                {
+                    b.HasOne("GestorTareas.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersListId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("GestorTareas.Models.Task", null)
+                        .WithMany()
+                        .HasForeignKey("tasksListId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GestorTareas.Models.CollaborativeTask", b =>
@@ -341,11 +365,6 @@ namespace GestorTareas.Migrations
                     b.Navigation("Dependencies");
 
                     b.Navigation("RequiredByOtherTask");
-                });
-
-            modelBuilder.Entity("GestorTareas.Models.User", b =>
-                {
-                    b.Navigation("TasksList");
                 });
 
             modelBuilder.Entity("GestorTareas.Models.CollaborativeTask", b =>

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using GestorTareas.Enums;
 
-namespace GestorTareas;
+namespace GestorTareas.Application.DTOs;
 
 public class CreateRecurringTaskDto
 {
@@ -13,11 +13,12 @@ public class CreateRecurringTaskDto
     [MaxLength(300)]
     public string? TaskDescription { get; set; }
 
-    public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
-
-    [Required(ErrorMessage = "La fecha de vencimiento es obligatoria para una tarea recurrente.")]
+    public TaskPriority Priority { get; set; } = TaskPriority.Normal;
+    public TaskType TaskType{get;set;}=TaskType.RecurringTask;
     public DateTime DueTime { get; set; }
 
     [Range(1, 365, ErrorMessage = "La recurrencia debe estar entre 1 y 365 días.")]
     public int RecurrenceRule { get; set; }
+    public DateTime RepeatUntilDate{get;set;}
+    public int MaxOcurrences{get;set;}=20;
 }

@@ -71,5 +71,11 @@ public class AuthService
             Expires = expiracion
         };
     }
+
+    internal bool CheckEmail(string email)
+    {
+        var exists = _userRepository.GetUserByEmail(email) is not null;
+        return exists;
+    }
 }
 

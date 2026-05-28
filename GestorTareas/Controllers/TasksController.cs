@@ -97,10 +97,10 @@ public class TasksController : ControllerBase
     /// <param name="dto"></param>
     /// <returns></returns>
     [HttpPost("recurring")]
-    public IActionResult CreateRecurringTask([FromBody] CreateRecurringTaskDto dto)
+    public ActionResult <List<ResponseRecurringTaskDto>> CreateRecurringTask([FromBody] CreateRecurringTaskDto dto)
     {
-        var task = _taskManagerService.CreateRecurringTask(dto, UserConnectedHelper.GetConnectedUser(User));
-        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, dto);
+        var response = _taskManagerService.CreateRecurringTask(dto, UserConnectedHelper.GetConnectedUser(User));
+        return Created("recurring",response);
     }
     /// <summary>
     /// Crear nueva tarea Composite
@@ -206,9 +206,9 @@ public class TasksController : ControllerBase
     /// <param name="taskCollaboratorDto"></param>
     /// <returns></returns>
     [HttpDelete("{taskId:int}/collaborators/{userId:int}")]
-    public IActionResult RemoveTaskCollaborator(int taskId, [FromBody] RemoveTaskCollaboratorDto taskCollaboratorDto)
+    public IActionResult RemoveTaskCollaborator(int taskId, int userId)
     {
-        _taskManagerService.RemoveTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
+        _taskManagerService.RemoveTaskCollaborator(taskId, userId, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
      /// <summary>
@@ -221,6 +221,5 @@ public class TasksController : ControllerBase
         _taskManagerService.CompleteTask(taskId, UserConnectedHelper.GetConnectedUser(User)); 
         return NoContent();
     }
-
 
 }

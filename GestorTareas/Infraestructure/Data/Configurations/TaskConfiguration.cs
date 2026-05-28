@@ -21,8 +21,12 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
         builder.Property(t => t.TaskDescription)
         .HasMaxLength(300)
         .HasDefaultValue(null);
+        builder.Property(t => t.TaskType)
+        .IsRequired()
+    .HasConversion<int>();
         builder.Property(t => t.Priority)
-        .HasDefaultValue(Enums.TaskPriority.Normal);
+        .IsRequired()
+    .HasConversion<int>();
         builder.Property(t => t.Status)
         .HasDefaultValue(Enums.TaskStatus.Pending);
         builder.Property(t => t.CreatedAt)

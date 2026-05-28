@@ -18,6 +18,7 @@ public class CompositeTask : Task
         string title,
         int userId,
         string? taskDescription = null,
+        TaskType taskType = TaskType.CompositeTask,
         TaskPriority taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
@@ -26,6 +27,7 @@ public class CompositeTask : Task
             title,
             userId,
             taskDescription,
+            taskType,
             taskPriority,
             taskStatus,
             dueTime,
@@ -39,6 +41,7 @@ public class CompositeTask : Task
         int userId,
         CompositeTaskType compositeTaskType,
         string subTaskDescription,
+        TaskType subTaskType,
         TaskPriority subTaskPriority,
         TaskStatus subTaskStatus,
         DateTime? dueTime)
@@ -53,6 +56,7 @@ public class CompositeTask : Task
             userId,
             this.Id,
             subTaskDescription,
+            subTaskType,
             subTaskPriority,
             subTaskStatus,
             dueTime);
@@ -62,25 +66,12 @@ public class CompositeTask : Task
     public decimal CalculateProgress()
     {
         int totalTasks = SubTaskList.Count;
-        if(totalTasks==0)
-        return 0;
+        if (totalTasks == 0)
+            return 0;
 
         int completedTasks = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
-        return (decimal)completedTasks /totalTasks * 100;
+        return (decimal)completedTasks / totalTasks * 100;
     }
-    public void ChangeStatus(TaskStatus newStatus)
-    {
-        if (!Enum.IsDefined(typeof(TaskStatus), newStatus))
-            throw new ArgumentException("El estado no es válido");
-
-        if (newStatus == TaskStatus.Completed)
-        {
-            if (this.CalculateProgress() != 100)
-                throw new ArgumentException("No se puede completar la Tarea padre sin tener todas las subtareas completadas.");
-        }
-        base.Status = newStatus;
-    }
-
     public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
 
 }

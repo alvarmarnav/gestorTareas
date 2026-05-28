@@ -33,4 +33,13 @@ public class AuthController : ControllerBase
             return Unauthorized("Credenciales incorrectas");
         return Ok(result);
     }
+    [HttpGet("check-email")]
+    public IActionResult CheckEmail([FromQuery] string email)
+    {
+        if(string.IsNullOrWhiteSpace(email))
+        return BadRequest(false);
+
+        var emailExists = _authService.CheckEmail(email);
+        return Ok(!emailExists);
+    }
 }

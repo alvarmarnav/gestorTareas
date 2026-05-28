@@ -4,6 +4,7 @@ using GestorTareas.Enums;
 using GestorTareas.Models;
 
 namespace GestorTareas.Application.DTOs;
+
 public class CreateCompositeTaskDto
 {
     [Required(ErrorMessage = "El título es obligatorio.")]
@@ -12,10 +13,10 @@ public class CreateCompositeTaskDto
 
     [MaxLength(300, ErrorMessage = "Longitud máxima de 300 caracteres.")]
     public string? TaskDescription { get; set; }
-
+    public TaskType TaskType { get; set; } = TaskType.CompositeTask;
     public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
 
     public DateTime? DueTime { get; set; }
     // public List<SubTask> SubTaskList {get;set;} = new List<SubTask>(30);
-    
+
 }

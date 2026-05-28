@@ -16,6 +16,6 @@ public class DbSeeder
     public async System.Threading.Tasks.Task SeedAsync()
     {
         await _usersSeeder.SeedAsync();
-        await _taskSeeder.SeedAsync();
+        // await _taskSeeder.SeedAsync();
     }
 }

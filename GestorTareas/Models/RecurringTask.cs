@@ -33,6 +33,7 @@ public class RecurringTask : Task
         DateTime? dueTime=null,
         int recurrenceRule = 7,
         string? taskDescription = null,
+        TaskType taskType =TaskType.RecurringTask,
         TaskPriority taskPriority = TaskPriority.Normal,
         TaskStatus? taskStatus = TaskStatus.Pending,
         string? cancelReason = null
@@ -40,6 +41,7 @@ public class RecurringTask : Task
             title,
             userId,
             taskDescription,
+            taskType,
             taskPriority,
             taskStatus,
             dueTime ?? DateTime.UtcNow.AddMicroseconds(50),

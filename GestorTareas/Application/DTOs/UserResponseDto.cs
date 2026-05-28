@@ -1,6 +1,6 @@
 using System;
 
-namespace GestorTareas;
+namespace GestorTareas.Application.DTOs;
 
 public class UserResponseDto
 {
