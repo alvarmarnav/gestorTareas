@@ -79,6 +79,10 @@ public class CompositeTask : Task
     public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
 
     public bool CanBeCompleted()
-        => SubTaskList.Count == 0 || SubTaskList.All(t => t.Status == TaskStatus.Completed);
+    {
+        if(SubTaskList == null || SubTaskList.Count ==0)
+            throw new InvalidOperationException("Las tareas compuestas deben tener al menos 1 subtarea para poder completarse.");
+        return SubTaskList.All(t => t.Status == TaskStatus.Completed);
+    }
 
 }

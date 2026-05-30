@@ -219,13 +219,36 @@ string? search = null)
     //TODO: Revisar
     public Task? GetTaskByIdWithRelations(int taskId)
     {
-        return _context.Tasks
+        var task = _context.Tasks
          .Include(t => t.User)
          .Include(t => t.Dependencies)
          .ThenInclude(d => d.DependsOnTask)
          .Include(t => t.RequiredByOtherTask)
          .FirstOrDefault(t => t.Id == taskId);
 
+        if (task is CompositeTask)
+        {
+            return _context.CompositeTasks
+                .Include(t => t.User)
+                .Include(t => t.SubTaskList)
+                .Include(t => t.Dependencies)
+                    .ThenInclude(d => d.DependsOnTask)
+                .Include(t => t.RequiredByOtherTask)
+                .FirstOrDefault(t => t.Id == taskId);
+        }
+
+        if (task is CollaborativeTask)
+        {
+            return _context.CollaborativeTasks
+                .Include(t => t.User)
+                .Include(t => t.TaskCollaborators)
+                    .ThenInclude(tc => tc.UserTask)
+                .Include(t => t.Dependencies)
+                    .ThenInclude(d => d.DependsOnTask)
+                .Include(t => t.RequiredByOtherTask)
+                .FirstOrDefault(t => t.Id == taskId);
+        }
+        return task;
     }
 
     public List<Task> GetAllTaskLinked(int taskId)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestorTareas.Migrations
 {
     [DbContext(typeof(GestorTareasContext))]
-    [Migration("20260528233558_CorreccionesModelo")]
-    partial class CorreccionesModelo
+    [Migration("20260530110850_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,14 +98,9 @@ namespace GestorTareas.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Tasks", (string)null);
 
@@ -121,7 +116,9 @@ namespace GestorTareas.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("AddedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<int>("CollaboratorRole")
                         .HasColumnType("int");
@@ -255,14 +252,10 @@ namespace GestorTareas.Migrations
             modelBuilder.Entity("GestorTareas.Models.Task", b =>
                 {
                     b.HasOne("GestorTareas.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GestorTareas.Models.User", null)
                         .WithMany("TasksList")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -272,13 +265,13 @@ namespace GestorTareas.Migrations
                     b.HasOne("GestorTareas.Models.CollaborativeTask", "Task")
                         .WithMany("TaskCollaborators")
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GestorTareas.Models.User", "UserTask")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Task");

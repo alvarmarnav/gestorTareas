@@ -39,8 +39,9 @@ namespace GestorTareas.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     TaskDescription = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
-                    Priority = table.Column<int>(type: "int", nullable: true, defaultValue: 1),
-                    Status = table.Column<int>(type: "int", nullable: true, defaultValue: 0),
+                    TaskType = table.Column<int>(type: "int", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DueTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -55,7 +56,7 @@ namespace GestorTareas.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -99,7 +100,7 @@ namespace GestorTareas.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaskId = table.Column<int>(type: "int", nullable: false),
-                    DependsOnTaskId = table.Column<int>(type: "int", nullable: true),
+                    DependsOnTaskId = table.Column<int>(type: "int", nullable: false),
                     LinkedTaskOrder = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -156,35 +157,13 @@ namespace GestorTareas.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTasks",
-                columns: table => new
-                {
-                    UsersListId = table.Column<int>(type: "int", nullable: false),
-                    tasksListId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserTasks", x => new { x.UsersListId, x.tasksListId });
-                    table.ForeignKey(
-                        name: "FK_UserTasks_Tasks_tasksListId",
-                        column: x => x.tasksListId,
-                        principalTable: "Tasks",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserTasks_Users_UsersListId",
-                        column: x => x.UsersListId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TaskCollaborators",
                 columns: table => new
                 {
                     TaskId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CollaboratorRole = table.Column<int>(type: "int", nullable: false),
-                    AddedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    AddedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -193,12 +172,14 @@ namespace GestorTareas.Migrations
                         name: "FK_TaskCollaborators_CollaborativeTasks_TaskId",
                         column: x => x.TaskId,
                         principalTable: "CollaborativeTasks",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TaskCollaborators_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -231,9 +212,10 @@ namespace GestorTareas.Migrations
                 column: "DependsOnTaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LinkedTasks_TaskId",
+                name: "IX_LinkedTasks_TaskId_DependsOnTaskId",
                 table: "LinkedTasks",
-                column: "TaskId");
+                columns: new[] { "TaskId", "DependsOnTaskId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SubTask_ParentCompositeTaskId",
@@ -255,11 +237,6 @@ namespace GestorTareas.Migrations
                 table: "Users",
                 column: "UserEmail",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserTasks_tasksListId",
-                table: "UserTasks",
-                column: "tasksListId");
         }
 
         /// <inheritdoc />
@@ -279,9 +256,6 @@ namespace GestorTareas.Migrations
 
             migrationBuilder.DropTable(
                 name: "TaskCollaborators");
-
-            migrationBuilder.DropTable(
-                name: "UserTasks");
 
             migrationBuilder.DropTable(
                 name: "CompositeTasks");
