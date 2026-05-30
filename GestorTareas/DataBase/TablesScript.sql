@@ -5,7 +5,7 @@ USE GestorTareas;
 CREATE TABLE Users
 (
     Id INT IDENTITY(1,1) PRIMARY KEY,
-    UserName NVARCHAR(50) NOT NULL,
+    UserName NVARCHAR(30) NOT NULL,
     UserLastName NVARCHAR(80) NOT NULL,
     UserEmail NVARCHAR(100) NOT NULL,
     IsActive BIT NOT NULL DEFAULT 1,

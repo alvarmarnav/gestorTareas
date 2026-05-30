@@ -26,6 +26,6 @@ public void Configure(EntityTypeBuilder<Models.LinkedTask> builder)
             .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(lt => new { lt.TaskId, lt.DependsOnTaskId })
-    .IsUnique();
+            .IsUnique();
     }
 }

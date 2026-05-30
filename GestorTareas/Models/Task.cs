@@ -28,8 +28,8 @@ public abstract class Task : IIdentificable
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("El título no puede estar vacío");
-            if (value.Length > 50)
-                throw new ArgumentException("El título no puede contener más de 50 caracteres");
+            if (value.Length > 30)
+                throw new ArgumentException("El título no puede contener más de 30 caracteres");
             field = value.Trim();
         }
     }
@@ -38,14 +38,14 @@ public abstract class Task : IIdentificable
         get; set
         {
             if (string.IsNullOrWhiteSpace(value))
-                field = "Sin descripcion.";
+                field = null;
             else if (value.Length > 300)
                 throw new ArgumentException("LA descripción no puede ser superior a 300 caracteres.");
             else
                 field = value.Trim();
         }
     }
-    public TaskType TaskType{get;set;}=TaskType.SimpleTask;
+    public TaskType TaskType { get; set; } = TaskType.SimpleTask;
     private TaskPriority _priority = TaskPriority.Normal;
     public TaskPriority Priority
     {
@@ -54,58 +54,55 @@ public abstract class Task : IIdentificable
         {
             if (!Enum.IsDefined(typeof(TaskPriority), value))
                 throw new ArgumentException("La prioridad NO es válida.");
-            
+
             _priority = value;
         }
     }
-    // // private TaskStatus _status;
-    private TaskStatus _status = TaskStatus.Pending;
+
+    private TaskStatus _status =TaskStatus.Pending;
     public TaskStatus Status
     {
-        get => field;
+        get => _status;
         set
         {
             if (!Enum.IsDefined(typeof(TaskStatus), value))
-            {
                 throw new ArgumentException("El estado no es válido.");
-            }
-            else if (field == TaskStatus.Completed && (value == TaskStatus.InProgress || value == TaskStatus.Pending))
-            {
-                throw new ArgumentException("No se puede modificar el estado de una tarea ya completada.");
-            }
-            _status=(TaskStatus)value;
+            _status = value;
         }
-    } = TaskStatus.Pending;
-    public DateTime? CreatedAt { get; set; }
+    }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    private DateTime? _updatedAt;
     public DateTime? UpdatedAt
     {
-        get; set
+        get => _updatedAt;
+        set
         {
-            if (value is null || value < CreatedAt)
+            if (value.HasValue && value < CreatedAt)
                 throw new ArgumentException("La fecha actualización NO puede ser menor a la fecha de creación.");
-            field = value;
+            _updatedAt = value;
         }
     }
 
-    public DateTime? DueTime {get;set;} = DateTime.UtcNow;
+    public DateTime? DueTime { get; set; } = null;
+    private string? _cancelReason = null;
     public string? CancelReason
     {
-        get; set
+        get => _cancelReason;
+        set
         {
             if (string.IsNullOrEmpty(value))
                 value = "Motivo Cancelación Sin Determinar";//TODO: comprobar esta asignacion
             if (value.Length > 250)
                 throw new ArgumentException("La longitud del valor no puede ser mayor de 250 caracteres.");
-            field = value;
+            _cancelReason = value;
         }
-    } = "Tarea NO cancelada.";
+    }
 
-    // public TaskType taskType {get;set;}
     public int UserId { get; set; }
     public User? User { get; set; }
-    public ICollection<LinkedTask> Dependencies { get; set; }
-    public ICollection<LinkedTask> RequiredByOtherTask { get; set; }
+    public ICollection<LinkedTask> Dependencies { get; set; } = new List<LinkedTask>(10);
+    public ICollection<LinkedTask> RequiredByOtherTask { get; set; } = new List<LinkedTask>(10);
 
     // Constructor vacio para trabajar la serialización
     // con polimorfismo
@@ -115,18 +112,18 @@ public abstract class Task : IIdentificable
         string title,
         int userId,
         string? taskDescription = null,
-        TaskType taskType =TaskType.SimpleTask,
+        TaskType taskType = TaskType.SimpleTask,
         TaskPriority priority = TaskPriority.Normal,
-        TaskStatus? status = TaskStatus.Pending,
+        TaskStatus status = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null)
     {
         Title = title.Trim();
         UserId = userId;
         TaskDescription = taskDescription?.Trim() ?? "Sin descripción.";
-        TaskType=taskType;
+        TaskType = taskType;
         Priority = priority;
-        Status = TaskStatus.Pending;
+        Status = status;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
         DueTime = dueTime;
@@ -140,51 +137,65 @@ public abstract class Task : IIdentificable
         if (newTitle.Length > 30)
             throw new ArgumentException("Máx 30 caracteres");
         Title = newTitle.Trim();
+        AddUpdatedDate();
+    }
+
+    protected void AddUpdatedDate()
+    {
+        this.UpdatedAt=DateTime.UtcNow;
     }
 
     public void UpdateTaskDescription(string newTaskDescription)
     {
         if (string.IsNullOrWhiteSpace(newTaskDescription))
             newTaskDescription = "Sin descripcion.";
-        if (newTaskDescription.Length > 250)
-            throw new ArgumentException("LA descripción no puede ser superior a 250 caracteres.");
+        if (newTaskDescription.Length > 300)
+            throw new ArgumentException("LA descripción no puede ser superior a 300 caracteres.");
         this.TaskDescription = newTaskDescription;
+        AddUpdatedDate();
     }
     public void ChangePriority(TaskPriority newTaskPriority)
     {
         this.Priority = newTaskPriority;
+        AddUpdatedDate();
     }
     public void UpdateDueTime(DateTime newDueTime)
     {
+        ValidateDueTime(newDueTime, CreatedAt);
+        DueTime = newDueTime;
+        AddUpdatedDate();
+    }
+
+    private void ValidateDueTime(DateTime? newDueTime, DateTime? createdAt=null)
+    {
+        if (!newDueTime.HasValue)
+            return;
         if (newDueTime > DateTime.UtcNow.AddYears(2))
             throw new ArgumentException("La fecha de fin de tarea es mayor a 2 años, No es una fecha válida.");
         if (newDueTime <= DateTime.UtcNow.AddMinutes(1))
             throw new ArgumentException("La fecha introducida para su vencimiento no puede ser anterior a la actual.");
-        if (CreatedAt is not null && newDueTime < CreatedAt)
+        if (createdAt.HasValue && newDueTime < createdAt.Value)
             throw new ArgumentException("La fecha de vencimiento introducida no puede ser inferiior a la de creación.");
-
-        DueTime = newDueTime;
-        UpdatedAt = DateTime.UtcNow;
     }
+
     public bool CompleteTask()
     {
         if (Status != TaskStatus.Completed && Status != TaskStatus.Cancelled)
         {
             Status = TaskStatus.Completed;
             UpdatedAt = DateTime.UtcNow;
+            AddUpdatedDate();
             return true;
         }
+        AddUpdatedDate();
         return false;
     }
-    public bool ReopenTask()
+    public void ReopenTask()
     {
-        if (this.Status != TaskStatus.InProgress)
-        {
-            this.Status = TaskStatus.InProgress;
-            this.UpdatedAt = DateTime.UtcNow;
-            return true;
-        }
-        return false;
+        if (this.Status == TaskStatus.InProgress)
+            return;
+        this.Status = TaskStatus.InProgress;
+        AddUpdatedDate();
     }
     public void CancelTask(string cancelReason)
     {
@@ -192,7 +203,7 @@ public abstract class Task : IIdentificable
         {
             this.CancelReason = cancelReason ?? "No se aporta motivo.";
             this.Status = TaskStatus.Cancelled;
-            this.UpdatedAt = DateTime.UtcNow;
+            AddUpdatedDate();
         }
         else
         {
@@ -204,7 +215,7 @@ public abstract class Task : IIdentificable
         if (this.Status == TaskStatus.Pending)
         {
             this.Status = TaskStatus.InProgress;
-            this.UpdatedAt = DateTime.UtcNow;
+            AddUpdatedDate();
         }
         else
         {
@@ -223,19 +234,19 @@ public abstract class Task : IIdentificable
     }
     public int CalculateOverDueDays()
     {
-        if(this.DueTime is null)
-                    throw new InvalidOperationException("No existe fecha de fin establecida.");
-        if(this.DueTime.Value >= DateTime.UtcNow)
-        return 0;
+        if (!this.DueTime.HasValue)
+            throw new InvalidOperationException("No existe fecha de fin establecida.");
+        if (this.DueTime.Value.Date >= DateTime.UtcNow.Date)
+            return 0;
 
-        return (DateTime.UtcNow.Date - this.DueTime.Value).Days;
+        return (DateTime.UtcNow.Date - this.DueTime.Value.Date).Days;
     }
     public int CalculateRemainingDays()
     {
-        if (this.DueTime is null)
+        if (!this.DueTime.HasValue)
             throw new InvalidOperationException("No existe fecha de fin establecida.");
 
-        return (this.DueTime.Value.Date - DateTime.UtcNow.Date).Days;
+        return Math.Max(0,(this.DueTime.Value.Date - DateTime.UtcNow.Date).Days);
     }
     public abstract string ResumeTask();
 

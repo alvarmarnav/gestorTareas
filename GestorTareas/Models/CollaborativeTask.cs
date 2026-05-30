@@ -8,9 +8,8 @@ namespace GestorTareas.Models;
 
 public class CollaborativeTask : GestorTareas.Models.Task
 {
-    public List<TaskCollaborator> TaskCollaborators { get; set; } = new List<TaskCollaborator>(20);
-    
-    //TODO: Incluir en la logica esta CLASE
+    public const int MaxCollaborators = 20;
+    public List<TaskCollaborator> TaskCollaborators { get; set; } = new List<TaskCollaborator>(MaxCollaborators);
     public CollaborativeTask() : base() { }
     public CollaborativeTask(
         string title,
@@ -18,10 +17,9 @@ public class CollaborativeTask : GestorTareas.Models.Task
         string? taskDescription = null,
         TaskType taskType = TaskType.CollaborativeTask,
         TaskPriority taskPriority = TaskPriority.Normal,
-        TaskStatus? taskStatus = TaskStatus.Pending,
+        TaskStatus taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null
-        // List<User> teamMembers,
         ) : base(
             title,
             userId,
@@ -32,39 +30,51 @@ public class CollaborativeTask : GestorTareas.Models.Task
             dueTime,
             cancelReason)
     {
-        TaskCollaborators = new List<TaskCollaborator>(20);
-
-        TaskCollaborators.Add(new TaskCollaborator
-        {
-            TaskId = this.Id,
-            UserId = this.UserId,
-            CollaboratorRole = CollaboratorRole.TaskAdministrator,
-        });
+        TaskCollaborators =
+        [
+            new TaskCollaborator
+            {
+                TaskId = this.Id,
+                UserId = this.UserId,
+                CollaboratorRole = CollaboratorRole.TaskAdministrator,
+            },
+        ];
     }
-
-    // public override string ResumeTask()
-    // {
-    //         return $"Tarea con Subtareas\nTitulo: {this.Title}\nDescripción: {this.Description}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
-    // }
     public override string ResumeTask() => $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
 
-
-    public void AddMTaskCollaborator(TaskCollaborator tcollaborator)
+    public void AddTaskCollaborator(int userId, CollaboratorRole collaboratorRole)
     {
-        if (TaskCollaborators.Any(tc => tc.UserId == tcollaborator.UserId))
-            throw new Exception($"El usuario con ID{tcollaborator.UserId} ya es collaborador.");
-            
-        this.TaskCollaborators.Add(tcollaborator);
-    }
+        if (userId <= 0) throw new ArgumentException("El id del colaborador no es válido.");
+        if (this.TaskCollaborators.Count >= MaxCollaborators) throw new InvalidOperationException($"No se pueden añadir más colaboradores a esta tarea, se ha alcanzado el máximo({MaxCollaborators})");
 
-    public void RemoveMember(int userId)
-    {
-        if (userId > 0)
+        if (TaskCollaborators.Any(tc => tc.UserId == userId))
+            throw new Exception($"El usuario con ID{userId} ya está en el equipo de colaboradores.");
+
+        this.TaskCollaborators.Add(new TaskCollaborator
         {
-            var userSelected = this.GetTaskCollaboratorById(userId);
-            TaskCollaborators.Remove(userSelected);
-        }
+            TaskId = this.Id,
+            Task = this,
+            UserId = userId,
+            CollaboratorRole = collaboratorRole,
+            AddedAt = DateTime.UtcNow,
+        });
+        AddUpdatedDate();
     }
+
+    public void RemoveCollaborator(int userId)
+    {
+
+        var userSelected = TaskCollaborators.FirstOrDefault(tc => tc.UserId == userId) ?? throw new KeyNotFoundException($"No existe ningun usuario con el ID: {userId}");
+        if (this.UserId == userSelected.UserId) throw new InvalidOperationException($"No se puede eliminar al propietario de la tarea.");
+        TaskCollaborators.Remove(userSelected);
+        AddUpdatedDate();
+    }
+
+    public bool HasCollaborator(int userId)
+    => TaskCollaborators.Any(tc => tc.UserId == userId);
+
+    public bool HasTaskAdministrator(int userId)
+        => TaskCollaborators.Any(tc => tc.UserId == userId && tc.CollaboratorRole == CollaboratorRole.TaskAdministrator);
 
     public List<TaskCollaborator> GetTaskCollaborators()
     {

@@ -6,10 +6,10 @@ namespace GestorTareas.Application.DTOs;
 public class RegistrationDto
 {
      [Required(ErrorMessage ="El nombre de usuario es obligatorio.")]
-    [MaxLength(50,ErrorMessage = "Longitud máxima de 50 caracteres.")]
+    [MaxLength(30,ErrorMessage = "Longitud máxima de 30 caracteres.")]
     public string UserName{get;set;} = string.Empty;
     [Required(ErrorMessage ="El apellido de usuario es obligatorio.")]
-    [MaxLength(50,ErrorMessage = "Longitud máxima de 50 caracteres.")]
+    [MaxLength(30,ErrorMessage = "Longitud máxima de 30 caracteres.")]
     public string UserLastName { get; set;}=string.Empty;
     [Required,EmailAddress(ErrorMessage ="Email con formato incorrecto.")]
     public string UserEmail{get;set;} = string.Empty;

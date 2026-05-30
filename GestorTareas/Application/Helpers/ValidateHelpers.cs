@@ -29,8 +29,8 @@ private static void ValidateTaskCreationData(string title, DateTime? dueTime)
     if (string.IsNullOrWhiteSpace(title))
         throw new ArgumentException("El título es obligatorio.");
 
-    if (title.Length > 50)
-        throw new ArgumentException("El título no puede superar los 50 caracteres.");
+    if (title.Length > 30)
+        throw new ArgumentException("El título no puede superar los 30 caracteres.");
 
     if (dueTime.HasValue && dueTime.Value <= DateTime.UtcNow)
         throw new ArgumentException("La fecha de vencimiento debe ser futura.");

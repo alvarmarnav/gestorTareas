@@ -21,7 +21,7 @@ public class SubTask : Task
         string? subTaskDescription = null,
         TaskType subTaskType=TaskType.SubTask,
         TaskPriority subTaskPriority = TaskPriority.Normal,
-        TaskStatus? subTaskStatus = TaskStatus.Pending,
+        TaskStatus subTaskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null
         ) : base(
@@ -35,7 +35,6 @@ public class SubTask : Task
             cancelReason)
     {
         ParentCompositeTaskId = parentCompositeTaskId;
-        // ParentCompositeTask = 
     }
     public override string ResumeTask() => $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
 

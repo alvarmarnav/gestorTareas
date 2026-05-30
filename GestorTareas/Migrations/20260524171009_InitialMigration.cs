@@ -17,7 +17,7 @@ namespace GestorTareas.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     UserLastName = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     UserEmail = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
@@ -37,7 +37,7 @@ namespace GestorTareas.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     TaskDescription = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
                     Priority = table.Column<int>(type: "int", nullable: true, defaultValue: 1),
                     Status = table.Column<int>(type: "int", nullable: true, defaultValue: 0),

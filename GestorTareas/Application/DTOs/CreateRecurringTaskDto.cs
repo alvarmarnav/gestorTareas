@@ -7,18 +7,21 @@ namespace GestorTareas.Application.DTOs;
 public class CreateRecurringTaskDto
 {
     [Required(ErrorMessage = "El título es obligatorio.")]
-    [MaxLength(50)]
+    [MaxLength(30, ErrorMessage = "El título no puede tener más de 30 caracteres.")]
     public string Title { get; set; } = string.Empty;
 
-    [MaxLength(300)]
+    [MaxLength(300, ErrorMessage = "La descripción no puede tener más de 300 caracteres.")]
     public string? TaskDescription { get; set; }
 
     public TaskPriority Priority { get; set; } = TaskPriority.Normal;
-    public TaskType TaskType{get;set;}=TaskType.RecurringTask;
+    public TaskType TaskType { get; set; } = TaskType.RecurringTask;
+    [Required]
     public DateTime DueTime { get; set; }
 
     [Range(1, 365, ErrorMessage = "La recurrencia debe estar entre 1 y 365 días.")]
     public int RecurrenceRule { get; set; }
-    public DateTime RepeatUntilDate{get;set;}
-    public int MaxOcurrences{get;set;}=20;
+    [Required]
+    public DateTime RepeatUntilDate { get; set; }
+    [Range(1, 100)]
+    public int MaxOcurrences { get; set; } = 20;
 }

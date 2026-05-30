@@ -11,7 +11,7 @@ namespace GestorTareas.Models;
 public class CompositeTask : Task
 {
     public List<SubTask> SubTaskList { get; set; } = new List<SubTask>();
-    private const int _MAX_ITEMS = 30;
+    public const int MaxSubTasks = 30;
     [JsonConstructor]
     public CompositeTask() : base() { }
     public CompositeTask(
@@ -20,7 +20,7 @@ public class CompositeTask : Task
         string? taskDescription = null,
         TaskType taskType = TaskType.CompositeTask,
         TaskPriority taskPriority = TaskPriority.Normal,
-        TaskStatus? taskStatus = TaskStatus.Pending,
+        TaskStatus taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null
         ) : base(
@@ -33,7 +33,7 @@ public class CompositeTask : Task
             dueTime,
             cancelReason)
     {
-        SubTaskList = new List<SubTask>(_MAX_ITEMS);
+        SubTaskList = new List<SubTask>(MaxSubTasks);
     }
 
     public void AddSubTask(
@@ -48,8 +48,11 @@ public class CompositeTask : Task
     {
 
         //Validar no exceder n MAX SubTask permitidas
-        if (SubTaskList.Count >= _MAX_ITEMS)
+        if (SubTaskList.Count >= MaxSubTasks)
             throw new ArgumentOutOfRangeException("Se ha intentado añadir un número de tareas superior al admitido.");
+
+        if (userId != UserId)
+            throw new InvalidOperationException("La subtarea tiene que pertenecer al mismo usuario que la tarea padre.");
 
         SubTask subTask = new SubTask(
             subTaskTitle,
@@ -62,6 +65,7 @@ public class CompositeTask : Task
             dueTime);
 
         SubTaskList.Add(subTask);
+        AddUpdatedDate();
     }
     public decimal CalculateProgress()
     {
@@ -69,9 +73,12 @@ public class CompositeTask : Task
         if (totalTasks == 0)
             return 0;
 
-        int completedTasks = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
-        return (decimal)completedTasks / totalTasks * 100;
+        var completedTasks = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
+        return Math.Round((decimal)completedTasks / totalTasks * 100,2);
     }
     public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
+
+    public bool CanBeCompleted()
+        => SubTaskList.Count == 0 || SubTaskList.All(t => t.Status == TaskStatus.Completed);
 
 }

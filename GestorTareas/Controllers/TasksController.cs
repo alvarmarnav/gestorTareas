@@ -52,7 +52,7 @@ public class TasksController : ControllerBase
     {
         return Ok(_taskManagerService.GetAllTaskOwnUser(UserConnectedHelper.GetConnectedUser(User)));
     }
-    
+
     /// <summary>
     /// Obtiene DTO todas las tareas.
     /// </summary>
@@ -60,10 +60,10 @@ public class TasksController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(PaginationResponseDto<ResponseTaskDto>), 200)]
     public IActionResult GetAll(
-        [FromQuery] int pageNumber = 1,
+        [FromQuery] int actualPage = 1,
         [FromQuery] int itemsPerPage = 10)
     {
-        var result = _taskManagerService.GetPagination(pageNumber, itemsPerPage, UserConnectedHelper.GetConnectedUser(User));
+        var result = _taskManagerService.GetPagination(actualPage, itemsPerPage, UserConnectedHelper.GetConnectedUser(User));
         return Ok(result);
     }
     /// <summary>
@@ -89,7 +89,7 @@ public class TasksController : ControllerBase
     public IActionResult Create([FromBody] CreateSimpleTaskDto dto)
     {
         var task = _taskManagerService.CreateTask(dto, UserConnectedHelper.GetConnectedUser(User));
-        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, dto);
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, task);
     }
     /// <summary>
     /// Crear nueva tarea Recurrente
@@ -97,10 +97,10 @@ public class TasksController : ControllerBase
     /// <param name="dto"></param>
     /// <returns></returns>
     [HttpPost("recurring")]
-    public ActionResult <List<ResponseRecurringTaskDto>> CreateRecurringTask([FromBody] CreateRecurringTaskDto dto)
+    public ActionResult<List<ResponseRecurringTaskDto>> CreateRecurringTask([FromBody] CreateRecurringTaskDto dto)
     {
         var response = _taskManagerService.CreateRecurringTask(dto, UserConnectedHelper.GetConnectedUser(User));
-        return Created("recurring",response);
+        return Created(string.Empty, response);
     }
     /// <summary>
     /// Crear nueva tarea Composite
@@ -116,9 +116,9 @@ public class TasksController : ControllerBase
     {
         var task = _taskManagerService.CreateCompositeTask(compDto, UserConnectedHelper.GetConnectedUser(User));
 
-        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, compDto);
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, task);
     }
-      /// <summary>
+    /// <summary>
     /// Crear CollaborativeTask
     /// </summary>
     /// <param name="collDto"></param>
@@ -131,7 +131,7 @@ public class TasksController : ControllerBase
     public IActionResult CreateCollaborativeTask([FromBody] CreateCollaborativeTaskDto collDto)
     {
         var task = _taskManagerService.CreateCollaborativeTask(collDto, UserConnectedHelper.GetConnectedUser(User));
-        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, collDto);
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, task);
     }
     /// <summary>
     /// Añadir una subtask
@@ -147,7 +147,7 @@ public class TasksController : ControllerBase
     public IActionResult AddSubtask(int compositeTaskId, [FromBody] CreateSubTaskDto subtaskDto)
     {
         var task = _taskManagerService.CreateSubTask(compositeTaskId, subtaskDto, UserConnectedHelper.GetConnectedUser(User));
-        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, subtaskDto);
+        return CreatedAtAction(nameof(GetById), new { taskId = task.Id }, task);
     }
     /// <summary>
     /// Crear Nueva Dependencia de LinkedTask
@@ -198,12 +198,23 @@ public class TasksController : ControllerBase
         _taskManagerService.DeleteTask(taskId, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-
+    /// <summary>
+    /// Ruta para eliminar relaciones de linkedTask
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <param name="linkedTaskId"></param>
+    /// <returns></returns>
+    [HttpDelete("{taskId:int}/linkedRelation/{linkedTaskId:int}")]
+    public IActionResult DeleteLinkedRelation(int taskId, int linkedTaskId)
+    {
+        _taskManagerService.DeleteLinkedRelation(taskId, linkedTaskId, UserConnectedHelper.GetConnectedUser(User));
+        return NoContent();
+    }
     /// <summary>
     /// Eliminar usuario de una CollaborativeTask
     /// </summary>
     /// <param name="taskId"></param>
-    /// <param name="taskCollaboratorDto"></param>
+    /// <param name="userId"></param>
     /// <returns></returns>
     [HttpDelete("{taskId:int}/collaborators/{userId:int}")]
     public IActionResult RemoveTaskCollaborator(int taskId, int userId)
@@ -211,15 +222,19 @@ public class TasksController : ControllerBase
         _taskManagerService.RemoveTaskCollaborator(taskId, userId, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-     /// <summary>
+    /// <summary>
     /// Marca una tarea seleccionada como completada por su ID
     /// </summary>
     [HttpPut("{taskId:int}/complete")] // PUT /api/tasks/1/complete
     public IActionResult CompleteTask(int taskId)
     {
         // Asegúrate de tener este método implementado en tu servicio de aplicación
-        _taskManagerService.CompleteTask(taskId, UserConnectedHelper.GetConnectedUser(User)); 
+        _taskManagerService.CompleteTask(taskId, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-
+[HttpGet("{taskId:int}/linkable")]
+public IActionResult GetLinkableTasksById(int taskId)
+    {
+        return  Ok(_taskManagerService.GetLinkableTaskById(taskId, UserConnectedHelper.GetConnectedUser(User)));
+    }
 }

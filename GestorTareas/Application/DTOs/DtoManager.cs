@@ -52,7 +52,7 @@ public static class DtoManager
                 Priority = colt.Priority,
                 Status = (int?)colt.Status,
                 DueTime = colt.DueTime,
-                TaskCollaborators = ConvertTaskCollaboratorsToDto(colt.TaskCollaborators)
+                TaskCollaborators = colt.TaskCollaborators.Select(ConvertToTaskCollaboratorDto).ToList()
             },
             RecurringTask rt => new ResponseRecurringTaskDto
             {
@@ -83,6 +83,16 @@ public static class DtoManager
             },
 
             _ => throw new NotSupportedException("Tipo de tarea no soportado")
+        };
+    }
+
+    private static TaskCollaboratorDto ConvertToTaskCollaboratorDto(TaskCollaborator collaborator)
+    {
+        return new TaskCollaboratorDto
+        {
+            UserId= collaborator.UserId,
+            TaskId = collaborator.TaskId,
+            CollaboratorRole = collaborator.CollaboratorRole,
         };
     }
 
@@ -132,6 +142,7 @@ public static class DtoManager
                 rt.UserId,
                 rt.DueTime,
                 rt.RecurrenceRule,
+                rt.RecurringTasksCount,
                 rt.TaskDescription!,
                 rt.TaskType,
                 (TaskPriority)rt.Priority,
@@ -170,4 +181,6 @@ public static class DtoManager
             CollaboratorRole = collaborator.CollaboratorRole,
         }).ToList() ?? new List<TaskCollaboratorDto>(10);
     }
+
+    
 }

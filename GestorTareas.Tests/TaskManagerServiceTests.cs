@@ -203,7 +203,7 @@ public class TaskManagerServiceTests
             "New Title",
             "NEw taskdescription",
             Enums.TaskPriority.Critical,
-            Enums.TaskStatus.InProgress,
+            // Enums.TaskStatus.InProgress,
             DateTime.UtcNow.AddDays(30),
             null,
             null,

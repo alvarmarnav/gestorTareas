@@ -19,10 +19,20 @@ public class RecurringTask : Task
                 throw new ArgumentException("Valor no válido para la recurrencia.");
             field = value;
         }
-    }
+    } = 7;
 
-    private const int _MAX_INSTANCES = 15;
-    public int RecurringTasksCount { get; set; } = 0;
+    public const int MaxInstances = 100;
+    public int RecurringTasksCount
+    {
+        get; set
+        {
+            if (value < 0 || value > MaxInstances)
+                throw new ArgumentException($"El número de ocurrencias debe estar entre 0 y {MaxInstances}.");
+
+            field = value;
+
+        }
+    }
 
     // ESTO ES LO QUE FALTA:
     [JsonConstructor]
@@ -30,12 +40,13 @@ public class RecurringTask : Task
     public RecurringTask(
         string title,
         int userId,
-        DateTime? dueTime=null,
+        DateTime? dueTime = null,
         int recurrenceRule = 7,
+        int recurringTasksCount = 0,
         string? taskDescription = null,
-        TaskType taskType =TaskType.RecurringTask,
+        TaskType taskType = TaskType.RecurringTask,
         TaskPriority taskPriority = TaskPriority.Normal,
-        TaskStatus? taskStatus = TaskStatus.Pending,
+        TaskStatus taskStatus = TaskStatus.Pending,
         string? cancelReason = null
         ) : base(
             title,
@@ -49,30 +60,28 @@ public class RecurringTask : Task
             )
     {
         RecurrenceRule = recurrenceRule;
-        if(RecurringTasksCount<=0 )
-            RecurringTasksCount = 0;
-        else{
-            RecurringTasksCount = RecurringTasksCount;
-        }
+        RecurringTasksCount = RecurringTasksCount;
     }
 
     public RecurringTask GenerateNewInstance(
         DateTime dueTime)
     {
-        if (RecurringTasksCount >= _MAX_INSTANCES)
+        if (RecurringTasksCount >= MaxInstances)
             throw new InvalidOperationException("No se admiten más instancias.");
 
+        var nextDueTime = dueTime.AddDays(RecurrenceRule);
         RecurringTasksCount++;
 
         return new RecurringTask(
-            title:this.Title,
-            userId:this.UserId,
-            dueTime: dueTime.AddDays(RecurrenceRule),
-            recurrenceRule:this.RecurrenceRule,
-            taskDescription:this.TaskDescription,
-            taskPriority:this.Priority,
-            taskStatus:TaskStatus.Pending,
-            cancelReason:CancelReason
+            title: this.Title,
+            userId: this.UserId,
+            dueTime: nextDueTime,
+            recurrenceRule: this.RecurrenceRule,
+            recurringTasksCount: this.RecurringTasksCount++,
+            taskDescription: this.TaskDescription,
+            taskPriority: this.Priority,
+            taskStatus: TaskStatus.Pending,
+            cancelReason: CancelReason
             );
     }
 

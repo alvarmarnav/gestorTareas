@@ -30,14 +30,17 @@ public class LinkedTask
             throw new ArgumentException("Id de la tarea de la que depende no válido.");
         if (linkedTaskOrder <= 0)
             throw new ArgumentException("Posición de la tarea no válida.");
-        TaskId=taskId;
-        DependsOnTaskId=dependsOnTaskId;
-        LinkedTaskOrder=linkedTaskOrder;
+        if (taskId == dependsOnTaskId)
+            throw new ArgumentException("Una tarea NO puede depender de sí misma.");
+        TaskId = taskId;
+        DependsOnTaskId = dependsOnTaskId;
+        LinkedTaskOrder = linkedTaskOrder;
 
     }
-    // public void UpdateLinkedTaskOrder(int newOrder) { }
-    public void CompleteLinkedTask(int linkedTaskId)
+    public void EnsureCanCompleteLinkedTask(int linkedTaskId)
     {
+        if (Task is null || DependsOnTask is null)
+            throw new InvalidOperationException("La relación no está cargada correctamente.");
         if (linkedTaskId <= 0 || linkedTaskId != Id)
             throw new ArgumentException("El identificador no es válido o bien No existe la tarea.");
         if (Task.Status == TaskStatus.Completed)
@@ -45,7 +48,6 @@ public class LinkedTask
         if (DependsOnTask.Status != TaskStatus.Completed)
             throw new InvalidOperationException($"Existen tareas previas SIN Completar.");
 
-        Task.Status = TaskStatus.Completed;
     }
 
     public bool CanStartLinkedTask(LinkedTask lTask)

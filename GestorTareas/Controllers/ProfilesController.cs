@@ -16,7 +16,7 @@ public class ProfilesController : ControllerBase
     private readonly UserManagerService _userManagerService;
     public ProfilesController(UserManagerService userManagerService) => _userManagerService = userManagerService;
 
-    [HttpGet("{userId}")]
+    [HttpGet("me")]
     public IActionResult GetProfileDto()
     {
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -25,7 +25,7 @@ public class ProfilesController : ControllerBase
         return Ok(_userManagerService.GetUserById(userId));
     }
 
-    [HttpPut("{userId}")]
+    [HttpPut("me")]
     public IActionResult UpdateProfile([FromBody] UpdateUserDto userDto)
     {
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

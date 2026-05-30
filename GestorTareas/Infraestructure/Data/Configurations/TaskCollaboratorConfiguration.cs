@@ -13,17 +13,25 @@ public class TaskCollaboratorConfiguration : IEntityTypeConfiguration<Models.Tas
 
         // Clave compuesta
         builder.HasKey(tc => new { tc.TaskId, tc.UserId });
+        
+        builder.Property(tc => tc.CollaboratorRole)
+            .HasConversion<int>()
+            .IsRequired();
+            
+        builder.Property(tc => tc.AddedAt)
+        .HasDefaultValueSql("GETUTCDATE()")
+        .IsRequired();
 
         // Relación con la tarea colaborativa
         builder.HasOne(tc => tc.Task)
-               .WithMany(t => t.TaskCollaborators)
-               .HasForeignKey(tc => tc.TaskId)
-               .OnDelete(DeleteBehavior.NoAction);
+        .WithMany(t => t.TaskCollaborators)
+        .HasForeignKey(tc => tc.TaskId)
+        .OnDelete(DeleteBehavior.Cascade);
 
         // Relación con el usuario
         builder.HasOne(tc => tc.UserTask)
-               .WithMany()
-               .HasForeignKey(tc => tc.UserId)
-               .OnDelete(DeleteBehavior.NoAction);
+        .WithMany()
+        .HasForeignKey(tc => tc.UserId)
+        .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -19,7 +19,7 @@ public class SimpleTask : Task
         string? taskDescription = null,
         TaskType taskType =TaskType.SimpleTask,
         TaskPriority taskPriority = TaskPriority.Normal,
-        TaskStatus? taskStatus = TaskStatus.Pending,
+        TaskStatus taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null) : base(
             title,

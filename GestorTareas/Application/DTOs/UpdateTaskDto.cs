@@ -8,12 +8,12 @@ namespace GestorTareas.Application.DTOs;
 
 public class UpdateTaskDto
 {
-    [MaxLength(50,ErrorMessage ="Longitud máxima permitida de 50 caracteres.")]
+    [MaxLength(30,ErrorMessage ="Longitud máxima permitida de 30 caracteres.")]
     public string? Title { get; set; } = null;
     [MaxLength(300,ErrorMessage ="Longitud máxima permitida de 300 caracteres.")]
     public string? TaskDescription { get; set; } = null;
     public TaskPriority? Priority { get; set; } = null;
-    public TaskStatus? Status { get; set; } = null;
+    // public TaskStatus? Status { get; set; } = null;
     public DateTime? DueTime { get; set; } = null;
     [Range(0,100,ErrorMessage ="La posición no puede ser negativa.")]
     public int? LinkedTaskOrder { get; set; } = null;
@@ -24,7 +24,7 @@ public class UpdateTaskDto
         string? title,
         string? taskDescription,
         TaskPriority? priority,
-        TaskStatus? status,
+        // TaskStatus? status,
         DateTime? dueTime,
         int? linkedTaskOrder,
         int? recurrenceRule,
@@ -34,7 +34,7 @@ public class UpdateTaskDto
         Title = title;
         TaskDescription = taskDescription;
         Priority = priority;
-        Status = status;
+        // Status = status;
         DueTime = dueTime;
         LinkedTaskOrder = linkedTaskOrder;
         RecurrenceRule = recurrenceRule;

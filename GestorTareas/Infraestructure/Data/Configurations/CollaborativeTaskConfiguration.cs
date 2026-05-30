@@ -21,9 +21,11 @@ public class CollaborativeTaskConfiguration : IEntityTypeConfiguration<Models.Co
         // .WithMany()
         // .UsingEntity(j => j
         // .ToTable("CollaborativeTaskTeamMembers"));
-        builder.HasMany(ct => ct.TaskCollaborators)
-        .WithOne(tc => tc.Task)
-        .HasForeignKey(tc => tc.TaskId)
-        .OnDelete(DeleteBehavior.NoAction);
+
+        
+        // builder.HasMany(ct => ct.TaskCollaborators)
+        // .WithOne(tc => tc.Task)
+        // .HasForeignKey(tc => tc.TaskId)
+        // .OnDelete(DeleteBehavior.NoAction);
     }
 }
