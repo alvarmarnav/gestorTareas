@@ -290,6 +290,6 @@ string? search = null)
 
     public void RemoveTaskCollaborator(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
     {
-        throw new NotImplementedException();
+        _context.TaskCollaborators.Remove(tcollaborator);
     }
 }
