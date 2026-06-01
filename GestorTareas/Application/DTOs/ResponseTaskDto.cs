@@ -13,7 +13,7 @@ public class ResponseTaskDto
     public int UserId { get; set; }
     public string TaskDescription { get; set; } = string.Empty;
     public TaskType TaskType{get;set;}=TaskType.SimpleTask;
-    public TaskPriority TaskPriority { get; set; }
+    public Priority TaskPriority { get; set; }
     public TaskStatus TaskStatus { get; set; }
     public DateTime? DueTime { get; set; }
     public string? CancelReason { get; set; }

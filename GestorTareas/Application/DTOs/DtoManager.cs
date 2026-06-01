@@ -24,8 +24,8 @@ public static class DtoManager
                 UserId = sub.UserId,
                 TaskDescription = sub.TaskDescription,
                 TaskType = sub.TaskType,
-                Priority = sub.Priority,
-                Status = (int)sub.Status,
+                TaskPriority = sub.TaskPriority,
+                TaskStatus = (int)sub.TaskStatus,
                 DueTime = sub.DueTime,
                 CancelReason = sub.CancelReason,
                 ParentCompositeTaskId = sub.ParentCompositeTaskId
@@ -37,10 +37,12 @@ public static class DtoManager
                 UserId = ct.UserId,
                 TaskDescription = ct.TaskDescription,
                 TaskType = ct.TaskType,
-                Priority = ct.Priority,
-                Status = (int?)ct.Status,
+                TaskPriority = ct.TaskPriority,
+                TaskStatus = (int?)ct.TaskStatus,
                 DueTime = ct.DueTime,
-                // SubTasksList = ct.SubTaskList,
+                SubTasksList = ct.SubTaskList
+                .Select(st => (ResponseSubTaskDto)TaskToDto(st))
+                .ToList()
             },
             CollaborativeTask colt => new ResponseCollaborativeTaskDto
             {
@@ -49,8 +51,8 @@ public static class DtoManager
                 UserId = colt.UserId,
                 TaskDescription = colt.TaskDescription,
                 TaskType = colt.TaskType,
-                Priority = colt.Priority,
-                Status = (int?)colt.Status,
+                TaskPriority = colt.TaskPriority,
+                TaskStatus = (int?)colt.TaskStatus,
                 DueTime = colt.DueTime,
                 TaskCollaborators = colt.TaskCollaborators.Select(ConvertToTaskCollaboratorDto).ToList()
             },
@@ -62,10 +64,11 @@ public static class DtoManager
                 DueTime = rt.DueTime,
                 RecurrenceRule = rt.RecurrenceRule,
                 RecurringTasksCount = rt.RecurringTasksCount,
+                RecurringSeriesId = rt.RecurringSeriesId,
                 TaskDescription = rt.TaskDescription,
                 TaskType = rt.TaskType,
-                Priority = rt.Priority,
-                Status = (int)rt.Status,
+                TaskPriority = rt.TaskPriority,
+                TaskStatus = (int)rt.TaskStatus,
                 CancelReason = rt.CancelReason
             },
 
@@ -76,8 +79,8 @@ public static class DtoManager
                 UserId = st.UserId,
                 TaskDescription = st.TaskDescription,
                 TaskType = st.TaskType,
-                Priority = st.Priority,
-                Status = (int)st.Status,
+                TaskPriority = st.TaskPriority,
+                TaskStatus = (int)st.TaskStatus,
                 DueTime = st.DueTime,
                 CancelReason = st.CancelReason
             },
@@ -90,7 +93,7 @@ public static class DtoManager
     {
         return new TaskCollaboratorDto
         {
-            UserId= collaborator.UserId,
+            UserId = collaborator.UserId,
             TaskId = collaborator.TaskId,
             CollaboratorRole = collaborator.CollaboratorRole,
         };
@@ -106,8 +109,8 @@ public static class DtoManager
                 sub.ParentCompositeTaskId,
                 sub.TaskDescription!,
                 sub.TaskType,
-                (TaskPriority)sub.Priority,
-                (TaskStatus)sub.Status,
+                (Priority)sub.TaskPriority,
+                (TaskStatus)sub.TaskStatus,
                 sub.DueTime,
                 sub.CancelReason
             )
@@ -118,8 +121,8 @@ public static class DtoManager
                     ct.UserId,
                     ct.TaskDescription!,
                     ct.TaskType,
-                    (TaskPriority)ct.Priority,
-                    (Enums.TaskStatus)ct.Status,
+                    (Priority)ct.TaskPriority,
+                    (Enums.TaskStatus)ct.TaskStatus,
                     ct.DueTime,
                     ct.CancelReason
                 )
@@ -131,7 +134,7 @@ public static class DtoManager
                         UserId = st.UserId,
                         TaskDescription = st.TaskDescription,
                         TaskType = st.TaskType,
-                        Priority = st.Priority ?? TaskPriority.Normal,
+                        TaskPriority = st.TaskPriority ?? Priority.Normal,
                         DueTime = st.DueTime,
                         ParentCompositeTaskId = st.ParentCompositeTaskId,
                     }).ToList(),
@@ -143,10 +146,11 @@ public static class DtoManager
                 rt.DueTime,
                 rt.RecurrenceRule,
                 rt.RecurringTasksCount,
+                rt.RecurringSeriesId,
                 rt.TaskDescription!,
                 rt.TaskType,
-                (TaskPriority)rt.Priority,
-                (Enums.TaskStatus)rt.Status,
+                (Priority)rt.TaskPriority,
+                (Enums.TaskStatus)rt.TaskStatus,
                 rt.CancelReason
             )
             {
@@ -159,8 +163,8 @@ public static class DtoManager
                 st.UserId,
                 st.TaskDescription!,
                 st.TaskType,
-                (TaskPriority)st.Priority,
-                (Enums.TaskStatus)st.Status,
+                (Enums.Priority)st.TaskPriority,
+                (Enums.TaskStatus)st.TaskStatus,
                 st.DueTime,
                 st.CancelReason
             )
@@ -182,5 +186,5 @@ public static class DtoManager
         }).ToList() ?? new List<TaskCollaboratorDto>(10);
     }
 
-    
+
 }

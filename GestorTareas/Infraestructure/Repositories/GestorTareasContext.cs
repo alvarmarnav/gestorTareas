@@ -13,11 +13,14 @@ public class GestorTareasContext : DbContext
     public DbSet<Task> Tasks { get; set; }
     public DbSet<SimpleTask> SimpleTasks { get; set; }
     public DbSet<CompositeTask> CompositeTasks { get; set; }
-    public DbSet<SubTask> SubTasks { get; set; }
-    public DbSet<LinkedTask> LinkedTasks { get; set; }
-    public DbSet<RecurringTask> RecurringTasks { get; set; }
-    public DbSet<CollaborativeTask> CollaborativeTasks{get;set;}
-    public DbSet<TaskCollaborator> TaskCollaborators{get;set;}
+    // public DbSet<SubTask> SubTasks { get; set; }
+    public DbSet<SubTask> SubTasks => Set<SubTask>();
+    // public DbSet<LinkedTask> LinkedTasks { get; set; }
+    public DbSet<LinkedTask> LinkedTasks => Set<LinkedTask>();
+    // public DbSet<RecurringTask> RecurringTasks { get; set; }
+    public DbSet<RecurringTask> RecurringTasks => Set<RecurringTask>();
+    public DbSet<CollaborativeTask> CollaborativeTasks { get; set; }
+    public DbSet<TaskCollaborator> TaskCollaborators { get; set; }
     public GestorTareasContext(DbContextOptions<GestorTareasContext> options) : base(options)
     {
 

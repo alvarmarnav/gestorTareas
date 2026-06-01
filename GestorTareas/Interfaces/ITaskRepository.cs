@@ -27,4 +27,8 @@ string? search = null);
     List<Task>? GetAllTaskLinked(int taskId);
     void DeleteLinkedRelation(int taskId, int linkedTaskId);
     bool AlreadyExistsCollaborator(int taskId, int userId);
+    RecurringTask? GetRecurringTaskById(int taskId);
+    List<RecurringTask> GetRecurringTasksBySeriesId(Guid recurringSeriesId);
+    List<SubTask> GetSubTasksByCompositeTaskId(int compositeTaskId);
+    List<LinkedTask> GetLinkedRelationsByTaskId(int taskId);
 };

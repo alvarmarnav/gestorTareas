@@ -24,10 +24,10 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
         builder.Property(t => t.TaskType)
         .IsRequired()
     .HasConversion<int>();
-        builder.Property(t => t.Priority)
+        builder.Property(t => t.TaskPriority)
         .IsRequired()
     .HasConversion<int>();
-        builder.Property(t => t.Status)
+        builder.Property(t => t.TaskStatus)
         .HasDefaultValue(Enums.TaskStatus.Pending);
         builder.Property(t => t.CreatedAt)
         .HasDefaultValueSql("GETDATE()")

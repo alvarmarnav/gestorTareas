@@ -13,7 +13,7 @@ public class CreateRecurringTaskDto
     [MaxLength(300, ErrorMessage = "La descripción no puede tener más de 300 caracteres.")]
     public string? TaskDescription { get; set; }
 
-    public TaskPriority Priority { get; set; } = TaskPriority.Normal;
+    public Priority TaskPriority { get; set; } = Priority.Normal;
     public TaskType TaskType { get; set; } = TaskType.RecurringTask;
     [Required]
     public DateTime DueTime { get; set; }
@@ -21,7 +21,8 @@ public class CreateRecurringTaskDto
     [Range(1, 365, ErrorMessage = "La recurrencia debe estar entre 1 y 365 días.")]
     public int RecurrenceRule { get; set; }
     [Required]
+    // [Required(ErrorMessage = "La fecha final de repetición es obligatoria.")]
     public DateTime RepeatUntilDate { get; set; }
-    [Range(1, 100)]
+    [Range(1, 100,ErrorMessage ="El número de ocurrencias máximo debe estar entre 1 y 100.")]
     public int MaxOcurrences { get; set; } = 20;
 }

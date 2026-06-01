@@ -19,7 +19,7 @@ public class CompositeTask : Task
         int userId,
         string? taskDescription = null,
         TaskType taskType = TaskType.CompositeTask,
-        TaskPriority taskPriority = TaskPriority.Normal,
+        Priority taskPriority = Priority.Normal,
         TaskStatus taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null
@@ -42,7 +42,7 @@ public class CompositeTask : Task
         CompositeTaskType compositeTaskType,
         string subTaskDescription,
         TaskType subTaskType,
-        TaskPriority subTaskPriority,
+        Priority subTaskPriority,
         TaskStatus subTaskStatus,
         DateTime? dueTime)
     {
@@ -73,16 +73,16 @@ public class CompositeTask : Task
         if (totalTasks == 0)
             return 0;
 
-        var completedTasks = SubTaskList.Count(t => t.Status == TaskStatus.Completed);
+        var completedTasks = SubTaskList.Count(t => t.TaskStatus == TaskStatus.Completed);
         return Math.Round((decimal)completedTasks / totalTasks * 100,2);
     }
-    public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
+    public override string ResumeTask() => $"Tarea con Subtareas\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {TaskPriority}\nEstado: {TaskStatus}\nFecha Limite: {DueTime}\nNumero Subtareas: {SubTaskList.Count}";
 
     public bool CanBeCompleted()
     {
         if(SubTaskList == null || SubTaskList.Count ==0)
             throw new InvalidOperationException("Las tareas compuestas deben tener al menos 1 subtarea para poder completarse.");
-        return SubTaskList.All(t => t.Status == TaskStatus.Completed);
+        return SubTaskList.All(t => t.TaskStatus == TaskStatus.Completed);
     }
 
 }

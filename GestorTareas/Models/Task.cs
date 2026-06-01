@@ -46,13 +46,13 @@ public abstract class Task : IIdentificable
         }
     }
     public TaskType TaskType { get; set; } = TaskType.SimpleTask;
-    private TaskPriority _priority = TaskPriority.Normal;
-    public TaskPriority Priority
+    private Priority _priority = Priority.Normal;
+    public Priority TaskPriority
     {
         get => _priority;
         set
         {
-            if (!Enum.IsDefined(typeof(TaskPriority), value))
+            if (!Enum.IsDefined(typeof(Priority), value))
                 throw new ArgumentException("La prioridad NO es válida.");
 
             _priority = value;
@@ -60,7 +60,7 @@ public abstract class Task : IIdentificable
     }
 
     private TaskStatus _status =TaskStatus.Pending;
-    public TaskStatus Status
+    public TaskStatus TaskStatus
     {
         get => _status;
         set
@@ -113,8 +113,8 @@ public abstract class Task : IIdentificable
         int userId,
         string? taskDescription = null,
         TaskType taskType = TaskType.SimpleTask,
-        TaskPriority priority = TaskPriority.Normal,
-        TaskStatus status = TaskStatus.Pending,
+        Priority taskPriority = Priority.Normal,
+        TaskStatus taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null)
     {
@@ -122,12 +122,12 @@ public abstract class Task : IIdentificable
         UserId = userId;
         TaskDescription = taskDescription?.Trim() ?? "Sin descripción.";
         TaskType = taskType;
-        Priority = priority;
-        Status = status;
+        TaskPriority = taskPriority;
+        TaskStatus = taskStatus;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
         DueTime = dueTime;
-        CancelReason = cancelReason ?? $"Tarea no cancelada. Estado: {this.Status.ToString()}";
+        CancelReason = cancelReason ?? $"Tarea no cancelada. Estado: {this.TaskStatus.ToString()}";
     }
 
     public void RenameTask(string newTitle)
@@ -154,9 +154,9 @@ public abstract class Task : IIdentificable
         this.TaskDescription = newTaskDescription;
         AddUpdatedDate();
     }
-    public void ChangePriority(TaskPriority newTaskPriority)
+    public void ChangePriority(Priority newTaskPriority)
     {
-        this.Priority = newTaskPriority;
+        this.TaskPriority = newTaskPriority;
         AddUpdatedDate();
     }
     public void UpdateDueTime(DateTime newDueTime)
@@ -180,9 +180,9 @@ public abstract class Task : IIdentificable
 
     public bool CompleteTask()
     {
-        if (Status != TaskStatus.Completed && Status != TaskStatus.Cancelled)
+        if (TaskStatus != TaskStatus.Completed && TaskStatus != TaskStatus.Cancelled)
         {
-            Status = TaskStatus.Completed;
+            TaskStatus = TaskStatus.Completed;
             UpdatedAt = DateTime.UtcNow;
             AddUpdatedDate();
             return true;
@@ -192,34 +192,34 @@ public abstract class Task : IIdentificable
     }
     public void ReopenTask()
     {
-        if (this.Status == TaskStatus.InProgress)
+        if (this.TaskStatus == TaskStatus.InProgress)
             return;
-        this.Status = TaskStatus.InProgress;
+        this.TaskStatus = TaskStatus.InProgress;
         AddUpdatedDate();
     }
     public void CancelTask(string cancelReason)
     {
-        if (this.Status != TaskStatus.Completed && this.Status != TaskStatus.Cancelled)
+        if (this.TaskStatus != TaskStatus.Completed && this.TaskStatus != TaskStatus.Cancelled)
         {
             this.CancelReason = cancelReason ?? "No se aporta motivo.";
-            this.Status = TaskStatus.Cancelled;
+            this.TaskStatus = TaskStatus.Cancelled;
             AddUpdatedDate();
         }
         else
         {
-            throw new Exception($"La tarea no se pudo Cancelar porque la tarea estaba {this.Status}");
+            throw new Exception($"La tarea no se pudo Cancelar porque la tarea estaba {this.TaskStatus}");
         }
     }
     public void StartTask()
     {
-        if (this.Status == TaskStatus.Pending)
+        if (this.TaskStatus == TaskStatus.Pending)
         {
-            this.Status = TaskStatus.InProgress;
+            this.TaskStatus = TaskStatus.InProgress;
             AddUpdatedDate();
         }
         else
         {
-            throw new Exception($"La Tareas no se pudo iniciar porque la tarea está {this.Status}");
+            throw new Exception($"La Tareas no se pudo iniciar porque la tarea está {this.TaskStatus}");
         }
     }
     public bool IsOverdue()
@@ -227,7 +227,7 @@ public abstract class Task : IIdentificable
         if (this.DueTime is null)
             return false;
 
-        if (this.Status == TaskStatus.Completed || this.Status == TaskStatus.Cancelled)
+        if (this.TaskStatus == TaskStatus.Completed || this.TaskStatus == TaskStatus.Cancelled)
             return false;
 
         return DateTime.UtcNow > this.DueTime;

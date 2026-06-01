@@ -115,15 +115,15 @@ public class TaskManagerServiceTests
         IsAdmin = isAdmin
     };
 
-    private static SimpleTask Simple(int id, int ownerId, Enums.TaskStatus status = Enums.TaskStatus.Pending) => new()
+    private static SimpleTask Simple(int id, int ownerId, Enums.TaskStatus taskStatus = Enums.TaskStatus.Pending) => new()
     {
         Id = id,
         UserId = ownerId,
         Title = $"Simple {id}",
         TaskDescription = "Descripción de prueba",
         TaskType = TaskType.SimpleTask,
-        Priority = TaskPriority.Normal,
-        Status = status,
+        TaskPriority = Priority.Normal,
+        TaskStatus = taskStatus,
         DueTime = DateTime.UtcNow.AddDays(10)
     };
 
@@ -134,21 +134,21 @@ public class TaskManagerServiceTests
         Title = $"Compuesta {id}",
         TaskDescription = "Tarea compuesta de prueba",
         TaskType = TaskType.CompositeTask,
-        Priority = TaskPriority.Normal,
-        Status = Enums.TaskStatus.Pending,
+        TaskPriority = Priority.Normal,
+        TaskStatus = Enums.TaskStatus.Pending,
         DueTime = DateTime.UtcNow.AddDays(10),
         SubTaskList = subTasks.ToList()
     };
 
-    private static SubTask SubTask(int id, int ownerId, int parentId, TaskStatus status) => new()
+    private static SubTask SubTask(int id, int ownerId, int parentId, TaskStatus taskStatus) => new()
     {
         Id = id,
         UserId = ownerId,
         Title = $"Subtarea {id}",
         TaskDescription = "Subtarea de prueba",
         TaskType = TaskType.SubTask,
-        Priority = TaskPriority.Normal,
-        Status = status,
+        TaskPriority = Priority.Normal,
+        TaskStatus = taskStatus,
         DueTime = DateTime.UtcNow.AddDays(5),
         ParentCompositeTaskId = parentId
     };
@@ -162,8 +162,8 @@ public class TaskManagerServiceTests
             Title = $"Colaborativa {id}",
             TaskDescription = "Tarea colaborativa de prueba",
             TaskType = TaskType.CollaborativeTask,
-            Priority = TaskPriority.Normal,
-            Status = TaskStatus.Pending,
+            TaskPriority = Priority.Normal,
+            TaskStatus = TaskStatus.Pending,
             DueTime = DateTime.UtcNow.AddDays(10),
             TaskCollaborators = collaborators.ToList()
         };
@@ -189,19 +189,19 @@ public class TaskManagerServiceTests
     {
         Title = title,
         TaskDescription = "Descripción subtarea",
-        Priority = TaskPriority.Normal,
+        TaskPriority = Priority.Normal,
         DueTime = DateTime.UtcNow.AddDays(3)
     };
 
     private static UpdateTaskDto UpdateDto(
         string? title = null,
         string? description = null,
-        TaskPriority? priority = null,
+        Priority? taskPriority = null,
         DateTime? dueTime = null,
         int? recurrenceRule = null) => new(
             title,
             description,
-            priority,
+            taskPriority,
             dueTime,
             linkedTaskOrder: null,
             recurrenceRule: recurrenceRule,
@@ -216,7 +216,7 @@ public class TaskManagerServiceTests
         {
             Title = "Tarea SImple 1",
             TaskDescription = "Descripción pruebas tarea simple 1",
-            Priority = Enums.TaskPriority.Low,
+            TaskPriority = Enums.Priority.Low,
             DueTime = DateTime.UtcNow.AddDays(15)
         };
 
@@ -241,7 +241,7 @@ public class TaskManagerServiceTests
         _mockRepository.Verify(i => i.CreateTask(It.Is<SimpleTask>(t =>
             t.Title == "Tarea SImple 1" &&
             t.UserId == _taskOwnerA.CurrentUserId &&
-            t.Priority == TaskPriority.Low)), Times.Once);
+            t.TaskPriority == Priority.Low)), Times.Once);
     }
 
     [Test]
@@ -251,7 +251,7 @@ public class TaskManagerServiceTests
         {
             Title = "Tarea SImple Fecha Oasada",
             TaskDescription = "Descripción pruebas tarea simple pasada",
-            Priority = Enums.TaskPriority.High,
+            TaskPriority = Enums.Priority.High,
             DueTime = DateTime.UtcNow.AddDays(-15)
         };
 
@@ -266,7 +266,7 @@ public class TaskManagerServiceTests
         {
             Title = "Tarea SImple Fecha Muy Muy Lejana",
             TaskDescription = "Descripción pruebas tarea simple muy  muy lejana",
-            Priority = Enums.TaskPriority.High,
+            TaskPriority = Enums.Priority.High,
             DueTime = DateTime.UtcNow.AddYears(3).AddDays(30)
         };
 
@@ -291,7 +291,7 @@ public class TaskManagerServiceTests
         {
             Title = "Tarea SImple Sin User Válido",
             TaskDescription = "Descripción pruebas tarea simple usuario no válido",
-            Priority = Enums.TaskPriority.High,
+            TaskPriority = Enums.Priority.High,
             DueTime = DateTime.UtcNow.AddDays(30)
         };
 
@@ -576,8 +576,8 @@ public class TaskManagerServiceTests
     public void CompleteCompositeTask_WithSubTasksNotCompleted_ThrowsInvalidOperationException()
     {
         var parentTask = Composite(id: 3, ownerId: _taskOwnerA.CurrentUserId,
-            SubTask(id: 4, ownerId: _taskOwnerA.CurrentUserId, parentId: 3, status: TaskStatus.Pending),
-            SubTask(id: 5, ownerId: _taskOwnerA.CurrentUserId, parentId: 3, status: TaskStatus.Completed));
+            SubTask(id: 4, ownerId: _taskOwnerA.CurrentUserId, parentId: 3, taskStatus: TaskStatus.Pending),
+            SubTask(id: 5, ownerId: _taskOwnerA.CurrentUserId, parentId: 3, taskStatus: TaskStatus.Completed));
 
         _mockRepository.Setup(r => r.GetTaskByIdWithRelations(parentTask.Id)).Returns(parentTask);
 
@@ -601,14 +601,14 @@ public class TaskManagerServiceTests
     public void CompleteCompositeTask_WhenAllSubTasksCompletedOk_CompleteOk()
     {
         var parentTask = Composite(id: 3, ownerId: _taskOwnerA.CurrentUserId,
-            SubTask(id: 4, ownerId: _taskOwnerA.CurrentUserId, parentId: 3, status: TaskStatus.Completed),
-            SubTask(id: 5, ownerId: _taskOwnerA.CurrentUserId, parentId: 3, status: TaskStatus.Completed));
+            SubTask(id: 4, ownerId: _taskOwnerA.CurrentUserId, parentId: 3, taskStatus: TaskStatus.Completed),
+            SubTask(id: 5, ownerId: _taskOwnerA.CurrentUserId, parentId: 3, taskStatus: TaskStatus.Completed));
 
         _mockRepository.Setup(r => r.GetTaskByIdWithRelations(parentTask.Id)).Returns(parentTask);
 
         Assert.DoesNotThrow(() => _taskService.CompleteTask(parentTask.Id, _taskOwnerA));
 
-        Assert.That(parentTask.Status, Is.EqualTo(TaskStatus.Completed));
+        Assert.That(parentTask.TaskStatus, Is.EqualTo(TaskStatus.Completed));
         _mockRepository.Verify(r => r.UpdateTask(parentTask), Times.Once);
     }
 
@@ -707,7 +707,7 @@ public class TaskManagerServiceTests
     [Test]
     public void CompleteLinkedTask_WhenDependencyPending_ThrowsInvalidOperationException()
     {
-        var dependsTask = Simple(id: 11, ownerId: _taskOwnerA.CurrentUserId, status: TaskStatus.Pending);
+        var dependsTask = Simple(id: 11, ownerId: _taskOwnerA.CurrentUserId, taskStatus: TaskStatus.Pending);
         var taskA = Simple(id: 10, ownerId: _taskOwnerA.CurrentUserId);
         taskA.Dependencies.Add(new LinkedTask
         {
@@ -729,7 +729,7 @@ public class TaskManagerServiceTests
     [Test]
     public void CompleteLinkedTask_WhenDependencyCompleted_CompletesAndPersists()
     {
-        var dependsTask = Simple(id: 11, ownerId: _taskOwnerA.CurrentUserId, status: TaskStatus.Completed);
+        var dependsTask = Simple(id: 11, ownerId: _taskOwnerA.CurrentUserId, taskStatus: TaskStatus.Completed);
         var taskA = Simple(id: 10, ownerId: _taskOwnerA.CurrentUserId);
         taskA.Dependencies.Add(new LinkedTask
         {
@@ -745,7 +745,7 @@ public class TaskManagerServiceTests
 
         Assert.DoesNotThrow(() => _taskService.CompleteTask(taskA.Id, _taskOwnerA));
 
-        Assert.That(taskA.Status, Is.EqualTo(TaskStatus.Completed));
+        Assert.That(taskA.TaskStatus, Is.EqualTo(TaskStatus.Completed));
         _mockRepository.Verify(r => r.UpdateTask(taskA), Times.Once);
     }
 
@@ -759,7 +759,7 @@ public class TaskManagerServiceTests
         {
             Title = "Recurrencia semanal",
             TaskDescription = "Iteracion semanal de pruebas",
-            Priority = TaskPriority.Normal,
+            TaskPriority = Priority.Normal,
             TaskType = TaskType.RecurringTask,
             DueTime = startDate,
             RecurrenceRule = 7,

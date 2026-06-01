@@ -43,21 +43,21 @@ public class LinkedTask
             throw new InvalidOperationException("La relación no está cargada correctamente.");
         if (linkedTaskId <= 0 || linkedTaskId != Id)
             throw new ArgumentException("El identificador no es válido o bien No existe la tarea.");
-        if (Task.Status == TaskStatus.Completed)
+        if (Task.TaskStatus == TaskStatus.Completed)
             throw new ArgumentException("Tarea YA Completada anteriormente.");
-        if (DependsOnTask.Status != TaskStatus.Completed)
+        if (DependsOnTask.TaskStatus != TaskStatus.Completed)
             throw new InvalidOperationException($"Existen tareas previas SIN Completar.");
 
     }
 
     public bool CanStartLinkedTask(LinkedTask lTask)
     {
-        if (lTask.DependsOnTask is null || lTask.DependsOnTask.Status != TaskStatus.Completed)
+        if (lTask.DependsOnTask is null || lTask.DependsOnTask.TaskStatus != TaskStatus.Completed)
             return false;
         else
             return true;
     }
 
-    // public override string ResumeTask() => $"Tarea Enlazada Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Limite: {DueTime}\nOrden: {LinkedTaskOrder}";
+    // public override string ResumeTask() => $"Tarea Enlazada Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {TaskStatus}\nFecha Limite: {DueTime}\nOrden: {LinkedTaskOrder}";
 
 }

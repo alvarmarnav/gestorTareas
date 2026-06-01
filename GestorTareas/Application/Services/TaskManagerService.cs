@@ -40,8 +40,8 @@ public class TaskManagerService
             Id = t.Id,
             Title = t.Title,
             TaskDescription = t.TaskDescription,
-            TaskPriority = (TaskPriority)t.Priority,
-            TaskStatus = (TaskStatus)t.Status,
+            TaskPriority = (Priority)t.TaskPriority,
+            TaskStatus = (TaskStatus)t.TaskStatus,
             DueTime = t.DueTime,
             CancelReason = t.CancelReason
         }).ToList();
@@ -59,8 +59,8 @@ public class TaskManagerService
             Id = t.Id,
             Title = t.Title,
             TaskDescription = t.TaskDescription,
-            TaskPriority = (TaskPriority)t.Priority,
-            TaskStatus = (TaskStatus)t.Status,
+            TaskPriority = (Priority)t.TaskPriority,
+            TaskStatus = (TaskStatus)t.TaskStatus,
             DueTime = t.DueTime,
             CancelReason = t.CancelReason
         }).ToList(); ;
@@ -68,15 +68,15 @@ public class TaskManagerService
     public List<ResponseTaskDto> GetAllTaskOwnUser(CurrentUserDto currentUserDto)
     {
         var validUser = EnsureActiveUser(currentUserDto);
-        
+
         return _repository.GetAllTasksByUser(currentUserDto.CurrentUserId)
         .Select(t => new ResponseTaskDto
         {
             Id = t.Id,
             Title = t.Title,
             TaskDescription = t.TaskDescription,
-            TaskPriority = (TaskPriority)t.Priority,
-            TaskStatus = (TaskStatus)t.Status,
+            TaskPriority = (Priority)t.TaskPriority,
+            TaskStatus = (TaskStatus)t.TaskStatus,
             DueTime = t.DueTime,
             CancelReason = t.CancelReason
         }).ToList(); ;
@@ -90,8 +90,8 @@ public class TaskManagerService
             Id = t.Id,
             Title = t.Title,
             TaskDescription = t.TaskDescription,
-            TaskPriority = (TaskPriority)t.Priority,
-            TaskStatus = (TaskStatus)t.Status,
+            TaskPriority = (Priority)t.TaskPriority,
+            TaskStatus = (TaskStatus)t.TaskStatus,
             DueTime = t.DueTime,
             CancelReason = t.CancelReason
         }).ToList();
@@ -108,8 +108,8 @@ public class TaskManagerService
             Title = task.Title,
             UserId = task.UserId,
             TaskDescription = task.TaskDescription,
-            TaskPriority = (TaskPriority)task.Priority,
-            TaskStatus = (Enums.TaskStatus)task.Status,
+            TaskPriority = (Priority)task.TaskPriority,
+            TaskStatus = (Enums.TaskStatus)task.TaskStatus,
             DueTime = task.DueTime,
             CancelReason = task.CancelReason
         };
@@ -124,7 +124,7 @@ public class TaskManagerService
     //         Title = dto.Title,
     //         UserId = userDto.CurrentUserId,
     //         TaskDescription = dto.TaskDescription,
-    //         Priority = dto.Priority,
+    //         TaskPriority = dto.TaskPriority,
     //         DueTime = dto.DueTime,
     //     };
 
@@ -151,7 +151,7 @@ public class TaskManagerService
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
             TaskDescription = dto.TaskDescription,
-            Priority = dto.Priority ?? TaskPriority.Normal,
+            TaskPriority = dto.TaskPriority ?? Priority.Normal,
             DueTime = dto.DueTime,
         };
 
@@ -172,13 +172,19 @@ public class TaskManagerService
     {
 
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
-        var ocurrences = new List<ResponseRecurringTaskDto>();
+        EnsureActiveUser(userDto);
+        ValidateDueTime(dto.DueTime);
+
+        if (dto.RepeatUntilDate == default) throw new ArgumentException("La fecha final de las repeticiones es obligatoria.");
+        if (dto.RepeatUntilDate < dto.DueTime) throw new ArgumentException("La fecha final debe ser posterior a la inicial.");
+        if (dto.RecurrenceRule <= 0 || dto.RecurrenceRule > 365) throw new ArgumentException("El valor de itaración debe estar entre 1 y 365 días.");
+        if (dto.MaxOcurrences <= 0 || dto.MaxOcurrences > 100) throw new ArgumentException("Número de ocurrencias no válido.");
+
+        var responseOcurrences = new List<ResponseRecurringTaskDto>();
         var dueTime = dto.DueTime;
         var count = 0;
+        var seriesId = Guid.NewGuid();
 
-        // if (dto.DueTime is null) throw new ArgumentException("La fecha inicial es obligatoria.");
-        if (dto.RepeatUntilDate < dto.DueTime) throw new ArgumentException("La fecha final debe ser posterior a la inicial.");
-        if (dto.MaxOcurrences <= 0 || dto.MaxOcurrences > 100) throw new ArgumentException("Número de ocurrencias no válido.");
 
         while (dueTime <= dto.RepeatUntilDate && count < dto.MaxOcurrences)
         {
@@ -187,18 +193,20 @@ public class TaskManagerService
                 Title = dto.Title,
                 UserId = userDto.CurrentUserId,
                 TaskDescription = dto.TaskDescription,
-                Priority = dto.Priority,
-                TaskType = dto.TaskType,
+                TaskPriority = dto.TaskPriority,
+                TaskType = TaskType.RecurringTask,
                 DueTime = dueTime,
                 RecurrenceRule = (int)dto.RecurrenceRule,
                 RecurringTasksCount = count,
+                RecurringSeriesId = seriesId,
             };
             var createdTask = _repository.CreateTask(taskOcurrence);
-            ocurrences.Add((ResponseRecurringTaskDto)DtoManager.TaskToDto(createdTask));
+            responseOcurrences.Add((ResponseRecurringTaskDto)DtoManager.TaskToDto(createdTask));
             dueTime = dueTime.AddDays(dto.RecurrenceRule);
             count++;
         }
-        return ocurrences;
+        if (responseOcurrences.Count == 0) throw new InvalidOperationException("No existe ninguna iteración recurrente.");
+        return responseOcurrences;
     }
 
     public TaskDTO CreateCollaborativeTask(CreateCollaborativeTaskDto dto, CurrentUserDto userDto)
@@ -212,7 +220,7 @@ public class TaskManagerService
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
             TaskDescription = dto.TaskDescription,
-            Priority = dto.Priority ?? TaskPriority.Normal,
+            TaskPriority = dto.TaskPriority ?? Priority.Normal,
             DueTime = dto.DueTime ?? null,
             TaskType = TaskType.CollaborativeTask,
             TaskCollaborators = new List<TaskCollaborator>
@@ -249,7 +257,7 @@ public class TaskManagerService
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
             TaskDescription = dto.TaskDescription,
-            Priority = dto.Priority ?? TaskPriority.Normal,
+            TaskPriority = dto.TaskPriority ?? Priority.Normal,
             DueTime = dto.DueTime,
             TaskType = TaskType.CompositeTask,
         };
@@ -273,36 +281,31 @@ public class TaskManagerService
     {
 
         if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
-
+        EnsureActiveUser(userDto);
         var compositeTask = _repository.GetTaskById(compositeTaskId) ?? throw new KeyNotFoundException($"No existe Tarea Compuesta con ID: {compositeTaskId}.");
+        ValidateCanEditTask(compositeTask, userDto);
         if (compositeTask is not CompositeTask parent) throw new InvalidOperationException("La tarea a la que se quiere vincular la SubTarea NO es del tipo correcto.");
 
         if (compositeTask.UserId != userDto.CurrentUserId) throw new InvalidOperationException("LA tarea no te pertenece y no puedes añadirle subtareas.");
+        if (parent.SubTaskList.Count >= CompositeTask.MaxSubTasks) throw new InvalidOperationException($"No se pueden añadir más de {CompositeTask.MaxSubTasks} subtareas.");
+        if (dto.DueTime.HasValue)
+        {
+            ValidateDueTime(dto.DueTime);
+            if (compositeTask.DueTime.HasValue && dto.DueTime.Value > compositeTask.DueTime.Value) throw new ArgumentException("La subtarea no puede tener una fecha fin posterior a la tarea compuesta.");
+        }
 
         var newTask = new SubTask
         {
             Title = dto.Title,
             UserId = userDto.CurrentUserId,
             TaskDescription = dto.TaskDescription,
-            Priority = dto.Priority ?? TaskPriority.Normal,
+            TaskPriority = dto.TaskPriority ?? Priority.Normal,
             DueTime = dto.DueTime,
             ParentCompositeTaskId = compositeTaskId,
             TaskType = TaskType.SubTask,
         };
 
-        if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
-        {
-            throw new ArgumentException("La fecha de vencimiento debe ser futura.");
-        }
-        else if (newTask.DueTime.HasValue && newTask.DueTime.Value > DateTime.UtcNow.AddYears(2))
-        {
-            throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
-        }
-
         var createdTask = _repository.CreateTask(newTask);
-
-        // _repository.UpdateCompositeTask(compositeTaskId, (SubTask)createdTask);
-
         return DtoManager.TaskToDto(createdTask);
     }
     public ResponseLinkedTaskDto AddLinkedTask(int taskId, int dependsOnTaskId, int linkedTaskOrder, CurrentUserDto currentUserDto)
@@ -408,8 +411,8 @@ public class TaskManagerService
 
         updateTask.Title = taskDto.Title ?? updateTask.Title;
         updateTask.TaskDescription = taskDto.TaskDescription ?? updateTask.TaskDescription;
-        updateTask.Priority = taskDto.Priority ?? updateTask.Priority;
-        // updateTask.Status = taskDto.Status ?? updateTask.Status;
+        updateTask.TaskPriority = taskDto.TaskPriority ?? updateTask.TaskPriority;
+        // updateTask.TaskStatus = taskDto.TaskStatus ?? updateTask.TaskStatus;
         updateTask.DueTime = taskDto.DueTime ?? updateTask.DueTime;
 
         _repository.UpdateTask(updateTask);
@@ -433,8 +436,8 @@ public class TaskManagerService
             Title = t.Title,
             TaskDescription = t.TaskDescription,
             TaskType = t.TaskType,
-            TaskPriority = (TaskPriority)t.Priority,
-            TaskStatus = (TaskStatus)t.Status,
+            TaskPriority = (Priority)t.TaskPriority,
+            TaskStatus = (TaskStatus)t.TaskStatus,
             DueTime = t.DueTime,
             CancelReason = t.CancelReason
         })
@@ -511,7 +514,7 @@ public class TaskManagerService
         if (taskToComplete is CompositeTask composite && !composite.CanBeCompleted())
             throw new InvalidOperationException("No se puede completar una tarea compuesta con subtareas pendientes.");
 
-        if (taskToComplete.Dependencies.Any(d => d.DependsOnTask.Status != TaskStatus.Completed))
+        if (taskToComplete.Dependencies.Any(d => d.DependsOnTask.TaskStatus != TaskStatus.Completed))
             throw new InvalidOperationException("No se puede completar la tarea porque tiene dependencias pendientes.");
 
         taskToComplete.CompleteTask();
@@ -557,8 +560,8 @@ public class TaskManagerService
                 UserId = t.UserId,
                 TaskDescription = t.TaskDescription,
                 TaskType = t.TaskType,
-                TaskPriority = t.Priority,
-                TaskStatus = t.Status,
+                TaskPriority = t.TaskPriority,
+                TaskStatus = t.TaskStatus,
                 DueTime = t.DueTime,
                 CancelReason = t.CancelReason,
             });
@@ -595,5 +598,102 @@ public class TaskManagerService
 
         return user;
     }
+    private static void ValidateDueTime(DateTime? dueTime)
+    {
+        if (!dueTime.HasValue || dueTime.Value == default) throw new ArgumentException("La fecha de vencimiento es obligatoria.");
 
+        if (dueTime.Value <= DateTime.UtcNow) throw new ArgumentException("La fecha de vencimiento debe ser futura.");
+
+        if (dueTime.Value > DateTime.UtcNow.AddYears(2)) throw new ArgumentException("La fecha de vencimiento no debe ser mayor a 2 años.");
+    }
+    public TasksRelationsDto GetTaskRelations(int taskId, CurrentUserDto currentUserDto)
+    {
+        var task = _repository.GetTaskByIdWithRelations(taskId) ?? throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {taskId}.");
+
+        ValidateCanEditTask(task, currentUserDto);
+
+        var dto = new TasksRelationsDto
+        {
+            TaskId = task.Id,
+            TaskType = task.TaskType
+        };
+
+        if (task is CompositeTask)
+        {
+            dto.SubTasks = _repository.GetSubTasksByCompositeTaskId(task.Id)
+                .Select(st => (ResponseSubTaskDto)DtoManager.TaskToDto(st))
+                .ToList();
+        }
+
+        if (task is RecurringTask recurring)
+        {
+            dto.RecurringIterations = _repository.GetRecurringTasksBySeriesId(recurring.RecurringSeriesId)
+                .Select(rt => (ResponseRecurringTaskDto)DtoManager.TaskToDto(rt))
+                .ToList();
+        }
+
+        dto.LinkedRelations = _repository.GetLinkedRelationsByTaskId(task.Id)
+            .Select(ToLinkedRelationDto)
+            .ToList();
+
+        return dto;
+    }
+    public List<ResponseSubTaskDto> GetSubTasks(int compositeTaskId, CurrentUserDto currentUserDto)
+    {
+        var compositeTask = _repository.GetCompositeTaskById(compositeTaskId) ?? throw new KeyNotFoundException($"No existe ninguna tarea compuesta con el ID: {compositeTaskId}.");
+
+        ValidateCanEditTask(compositeTask, currentUserDto);
+
+        return _repository.GetSubTasksByCompositeTaskId(compositeTaskId)
+            .Select(st => (ResponseSubTaskDto)DtoManager.TaskToDto(st))
+            .ToList();
+    }
+    public List<ResponseRecurringTaskDto> GetRecurringIterations(int recurringTaskId, CurrentUserDto currentUserDto)
+    {
+        var recurringTask = _repository.GetRecurringTaskById(recurringTaskId) ?? throw new KeyNotFoundException($"No existe ninguna tarea recurrente con el ID: {recurringTaskId}.");
+
+        ValidateCanEditTask(recurringTask, currentUserDto);
+
+        return _repository.GetRecurringTasksBySeriesId(recurringTask.RecurringSeriesId)
+            .Select(rt => (ResponseRecurringTaskDto)DtoManager.TaskToDto(rt))
+            .ToList();
+    }
+    public List<ResponseLinkedTaskDto> GetLinkedRelations(int taskId, CurrentUserDto currentUserDto)
+    {
+        var task = _repository.GetTaskByIdWithRelations(taskId) ?? throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {taskId}.");
+
+        ValidateCanEditTask(task, currentUserDto);
+
+        return _repository.GetLinkedRelationsByTaskId(taskId)
+            .Select(ToLinkedRelationDto)
+            .ToList();
+    }
+    private static ResponseLinkedTaskDto ToLinkedRelationDto(LinkedTask relation)
+    {
+        return new ResponseLinkedTaskDto
+        {
+            Id = relation.Id,
+            TaskId = relation.TaskId,
+            DependsOnTaskId = relation.DependsOnTaskId,
+            LinkedTaskOrder = relation.LinkedTaskOrder ?? 0,
+            Task = relation.Task is null ? null : ToResponseTaskDto(relation.Task),
+            DependsOnTask = relation.DependsOnTask is null ? null : ToResponseTaskDto(relation.DependsOnTask)
+        };
+    }
+
+    private static ResponseTaskDto ToResponseTaskDto(Task task)
+    {
+        return new ResponseTaskDto
+        {
+            Id = task.Id,
+            Title = task.Title,
+            UserId = task.UserId,
+            TaskDescription = task.TaskDescription ?? string.Empty,
+            TaskType = task.TaskType,
+            TaskPriority = task.TaskPriority,
+            TaskStatus = task.TaskStatus,
+            DueTime = task.DueTime,
+            CancelReason = task.CancelReason
+        };
+    }
 }

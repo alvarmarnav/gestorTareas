@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using GestorTareas.Enums;
 using GestorTareas.Models;
+using Priority = GestorTareas.Enums.Priority;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Application.DTOs;
@@ -15,7 +16,7 @@ public class CreateSubTaskDto
     [MaxLength(300, ErrorMessage = "Longitud máxima de 300 caracteres.")]
     public string? TaskDescription { get; set; } = string.Empty;
     public TaskType TaskType{get;set;}=TaskType.SubTask;
-    public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
+    public Priority? TaskPriority { get; set; } = GestorTareas.Enums.Priority.Normal;
     public DateTime? DueTime { get; set; } = null;
-    // public int ParentCompositeTaskId{get;set;}
+    
 }

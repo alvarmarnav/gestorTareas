@@ -4,7 +4,7 @@ using GestorTareas.Application.Services;
 using GestorTareas.Enums;
 using GestorTareas.Interfaces;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
-using TaskPriority = GestorTareas.Enums.TaskPriority;
+using Priority = GestorTareas.Enums.Priority;
 namespace GestorTareas.Models;
 
 public class SubTask : Task
@@ -20,7 +20,7 @@ public class SubTask : Task
         int parentCompositeTaskId,
         string? subTaskDescription = null,
         TaskType subTaskType=TaskType.SubTask,
-        TaskPriority subTaskPriority = TaskPriority.Normal,
+        Priority subTaskPriority = Priority.Normal,
         TaskStatus subTaskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null
@@ -36,6 +36,6 @@ public class SubTask : Task
     {
         ParentCompositeTaskId = parentCompositeTaskId;
     }
-    public override string ResumeTask() => $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
+    public override string ResumeTask() => $"SubTarea Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {TaskPriority}\nEstado: {TaskStatus}";
 
 }

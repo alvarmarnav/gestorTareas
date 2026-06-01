@@ -89,7 +89,7 @@ Controllers/
  UsersController.cs
 Enums/
  CompositeTaskType.cs
- TaskPriority.cs
+ Priority.cs
  TaskStatus.cs
  TaskType.cs
 Infraestructure/Data/Configurations/

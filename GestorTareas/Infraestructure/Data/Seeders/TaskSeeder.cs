@@ -32,8 +32,8 @@ public class TaskSeeder
                 Title = "Preparar informe",
                 UserId = admin.Id,
                 TaskDescription = "Revisar métricas y generar informe.",
-                Priority = TaskPriority.High,
-                Status = GestorTareas.Enums.TaskStatus.InProgress,
+                TaskPriority = Priority.High,
+                TaskStatus = GestorTareas.Enums.TaskStatus.InProgress,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 DueTime = DateTime.UtcNow.AddDays(2)
@@ -44,8 +44,8 @@ public class TaskSeeder
                 Title = "Documentación API",
                 UserId = admin.Id,
                 TaskDescription = "Añadir ejemplos Swagger.",
-                Priority = TaskPriority.High,
-                Status = GestorTareas.Enums.TaskStatus.Pending,
+                TaskPriority = Priority.High,
+                TaskStatus = GestorTareas.Enums.TaskStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 DueTime = DateTime.UtcNow.AddDays(5)
@@ -56,8 +56,8 @@ public class TaskSeeder
                 Title = "Bug crítico",
                 UserId = user2?.Id ?? admin.Id,
                 TaskDescription = "Error JWT autenticación.",
-                Priority = TaskPriority.High,
-                Status = GestorTareas.Enums.TaskStatus.InProgress,
+                TaskPriority = Priority.High,
+                TaskStatus = GestorTareas.Enums.TaskStatus.InProgress,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 DueTime = DateTime.UtcNow.AddDays(1)

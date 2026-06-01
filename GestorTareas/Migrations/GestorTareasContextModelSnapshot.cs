@@ -69,17 +69,17 @@ namespace GestorTareas.Migrations
                     b.Property<DateTime?>("DueTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.Property<string>("TaskDescription")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("TaskPriority")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("TaskType")
                         .HasColumnType("int");
@@ -199,6 +199,9 @@ namespace GestorTareas.Migrations
 
                     b.Property<int>("RecurrenceRule")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("RecurringSeriesId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("RecurringTasksCount")
                         .ValueGeneratedOnAdd()

@@ -16,7 +16,7 @@ public class CollaborativeTask : GestorTareas.Models.Task
         int userId,
         string? taskDescription = null,
         TaskType taskType = TaskType.CollaborativeTask,
-        TaskPriority taskPriority = TaskPriority.Normal,
+        Priority taskPriority = Priority.Normal,
         TaskStatus taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null
@@ -40,7 +40,7 @@ public class CollaborativeTask : GestorTareas.Models.Task
             },
         ];
     }
-    public override string ResumeTask() => $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}";
+    public override string ResumeTask() => $"Tarea Colaborativa\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {TaskPriority}\nEstado: {TaskStatus}";
 
     public void AddTaskCollaborator(int userId, CollaboratorRole collaboratorRole)
     {

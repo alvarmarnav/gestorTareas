@@ -1,6 +1,6 @@
 namespace GestorTareas.Enums;
 
-public enum TaskPriority
+public enum Priority
 {
         Low,
         Normal,

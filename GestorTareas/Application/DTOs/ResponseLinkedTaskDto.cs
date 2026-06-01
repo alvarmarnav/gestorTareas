@@ -9,5 +9,7 @@ public class ResponseLinkedTaskDto : TaskDTO
         public int TaskId { get; set; }
         public int DependsOnTaskId { get; set; }
         public int LinkedTaskOrder { get; set; }
+        public ResponseTaskDto? Task { get; set; }
+        public ResponseTaskDto? DependsOnTask { get; set; }
 
 }

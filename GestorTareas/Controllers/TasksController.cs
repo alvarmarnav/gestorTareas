@@ -232,9 +232,54 @@ public class TasksController : ControllerBase
         _taskManagerService.CompleteTask(taskId, UserConnectedHelper.GetConnectedUser(User));
         return NoContent();
     }
-[HttpGet("{taskId:int}/linkable")]
-public IActionResult GetLinkableTasksById(int taskId)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <returns></returns>
+    [HttpGet("{taskId:int}/linkable")]
+    public IActionResult GetLinkableTasksById(int taskId)
     {
-        return  Ok(_taskManagerService.GetLinkableTaskById(taskId, UserConnectedHelper.GetConnectedUser(User)));
+        return Ok(_taskManagerService.GetLinkableTaskById(taskId, UserConnectedHelper.GetConnectedUser(User)));
+    }
+    /// <summary>
+    /// Obtener las relaciones entre tareas
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <returns></returns>
+    [HttpGet("{taskId:int}/relations")]
+    public IActionResult GetTaskRelations(int taskId)
+    {
+        return Ok(_taskManagerService.GetTaskRelations(taskId, UserConnectedHelper.GetConnectedUser(User)));
+    }
+    /// <summary>
+    /// Obtener subtareas
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <returns></returns>
+    [HttpGet("{taskId:int}/subtasks")]
+    public IActionResult GetSubTasks(int taskId)
+    {
+        return Ok(_taskManagerService.GetSubTasks(taskId, UserConnectedHelper.GetConnectedUser(User)));
+    }
+    /// <summary>
+    /// Obtener la lista de recurringTasks
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <returns></returns>
+    [HttpGet("{taskId:int}/recurrences")]
+    public IActionResult GetRecurringIterations(int taskId)
+    {
+        return Ok(_taskManagerService.GetRecurringIterations(taskId, UserConnectedHelper.GetConnectedUser(User)));
+    }
+    /// <summary>
+    /// Obtener las tareas vinculadas
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <returns></returns>
+    [HttpGet("{taskId:int}/linked")]
+    public IActionResult GetLinkedRelations(int taskId)
+    {
+        return Ok(_taskManagerService.GetLinkedRelations(taskId, UserConnectedHelper.GetConnectedUser(User)));
     }
 }

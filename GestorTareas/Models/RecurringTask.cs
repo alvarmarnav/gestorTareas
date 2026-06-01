@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using GestorTareas.Application.Services;
 using GestorTareas.Enums;
 using GestorTareas.Interfaces;
-using TaskPriority = GestorTareas.Enums.TaskPriority;
+using Priority = GestorTareas.Enums.Priority;
 using TaskStatus = GestorTareas.Enums.TaskStatus;
 
 namespace GestorTareas.Models;
@@ -33,8 +33,8 @@ public class RecurringTask : Task
 
         }
     }
+    public Guid RecurringSeriesId { get; set; } = Guid.NewGuid();
 
-    // ESTO ES LO QUE FALTA:
     [JsonConstructor]
     public RecurringTask() : base() { }
     public RecurringTask(
@@ -43,9 +43,10 @@ public class RecurringTask : Task
         DateTime? dueTime = null,
         int recurrenceRule = 7,
         int recurringTasksCount = 0,
+        Guid? recurringSeriesId = null,
         string? taskDescription = null,
         TaskType taskType = TaskType.RecurringTask,
-        TaskPriority taskPriority = TaskPriority.Normal,
+        Priority taskPriority = Priority.Normal,
         TaskStatus taskStatus = TaskStatus.Pending,
         string? cancelReason = null
         ) : base(
@@ -61,6 +62,7 @@ public class RecurringTask : Task
     {
         RecurrenceRule = recurrenceRule;
         RecurringTasksCount = RecurringTasksCount;
+        RecurringSeriesId = recurringSeriesId ?? Guid.NewGuid();
     }
 
     public RecurringTask GenerateNewInstance(
@@ -69,22 +71,23 @@ public class RecurringTask : Task
         if (RecurringTasksCount >= MaxInstances)
             throw new InvalidOperationException("No se admiten más instancias.");
 
+        var nextItem = RecurringTasksCount++;
         var nextDueTime = dueTime.AddDays(RecurrenceRule);
-        RecurringTasksCount++;
-
+        
         return new RecurringTask(
             title: this.Title,
             userId: this.UserId,
             dueTime: nextDueTime,
-            recurrenceRule: this.RecurrenceRule,
-            recurringTasksCount: this.RecurringTasksCount++,
+            recurrenceRule: RecurrenceRule,
+            recurringTasksCount: nextItem,
+            recurringSeriesId: RecurringSeriesId, 
             taskDescription: this.TaskDescription,
-            taskPriority: this.Priority,
+            taskPriority: this.TaskPriority,
             taskStatus: TaskStatus.Pending,
             cancelReason: CancelReason
             );
     }
 
-    public override string ResumeTask() => $"Tarea Recurrente\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {Status}\nFecha Fin: {DueTime}\nRegla Recurrencia: {RecurrenceRule}";
+    public override string ResumeTask() => $"Tarea Recurrente\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {TaskPriority}\nEstado: {TaskStatus}\nFecha Fin: {DueTime}\nRegla Recurrencia: {RecurrenceRule}";
 
 }

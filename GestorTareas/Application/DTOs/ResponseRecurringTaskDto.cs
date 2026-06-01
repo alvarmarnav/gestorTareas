@@ -7,4 +7,5 @@ public class ResponseRecurringTaskDto : TaskDTO
 {
     public int RecurrenceRule { get; set; }
     public int RecurringTasksCount {get; set;}
+    public Guid RecurringSeriesId { get; set; }
 }

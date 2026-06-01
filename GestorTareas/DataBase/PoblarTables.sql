@@ -8,7 +8,7 @@ INSERT INTO SimpleTasks(Title, TaskDescription, DueTime)
 VALUES ('Bajar la basuras', 'Bajars a la calle a ultima hora.','2026-06-30');
 GO
 -- -- Insertar una TareaSimple
--- INSERT INTO COMPOSITETASKS (Title, Description, Priority,DueTime)
+-- INSERT INTO COMPOSITETASKS (Title, Description, TaskPriority,DueTime)
 -- VALUES ('Bajar la basura', 'Bajar a la calle a ultima hora.', 'Normal','2026-06-30');
 GO
 -- Insertar una TareaSimple

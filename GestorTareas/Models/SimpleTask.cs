@@ -18,7 +18,7 @@ public class SimpleTask : Task
         int userId,
         string? taskDescription = null,
         TaskType taskType =TaskType.SimpleTask,
-        TaskPriority taskPriority = TaskPriority.Normal,
+        Priority taskPriority = Priority.Normal,
         TaskStatus taskStatus = TaskStatus.Pending,
         DateTime? dueTime = null,
         string? cancelReason = null) : base(
@@ -31,5 +31,5 @@ public class SimpleTask : Task
             dueTime,
             cancelReason){}
 
-    public override string ResumeTask() => $"Tarea Simple\nTitulo: {Title}\nDescripción: {this.TaskDescription}\nPrioridad: {this.Priority}\nEstado: {this.Status}";
+    public override string ResumeTask() => $"Tarea Simple\nTitulo: {Title}\nDescripción: {this.TaskDescription}\nPrioridad: {this.TaskPriority}\nEstado: {this.TaskStatus}";
 }

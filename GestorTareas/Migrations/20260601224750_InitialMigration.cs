@@ -40,8 +40,8 @@ namespace GestorTareas.Migrations
                     Title = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     TaskDescription = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
                     TaskType = table.Column<int>(type: "int", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    TaskPriority = table.Column<int>(type: "int", nullable: false),
+                    TaskStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DueTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -126,7 +126,8 @@ namespace GestorTareas.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
                     RecurrenceRule = table.Column<int>(type: "int", nullable: false),
-                    RecurringTasksCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
+                    RecurringTasksCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    RecurringSeriesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {

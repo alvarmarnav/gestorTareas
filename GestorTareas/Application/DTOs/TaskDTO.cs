@@ -20,8 +20,8 @@ public abstract class TaskDTO
     public int UserId{get;set;}
     public string? TaskDescription { get; set; } = default!;
     public TaskType TaskType{get;set;}=TaskType.SimpleTask;
-    public TaskPriority? Priority { get; set; }
-    public int? Status { get; set; }
+    public Priority? TaskPriority { get; set; }
+    public int? TaskStatus { get; set; }
     public DateTime? DueTime { get; set; }
     public string? CancelReason {get;set;}
     public int? LinkedTaskOrder{get;set;}

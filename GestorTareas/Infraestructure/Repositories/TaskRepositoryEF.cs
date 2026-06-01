@@ -92,7 +92,7 @@ string? search = null)
         //TODO:REVISAR ESTA CONDICION
         // Aplicar filtros solo si se han especificado
         if (onlyCompletedTask.HasValue && onlyCompletedTask.Value == true)
-            query = query.Where(t => t.Status == Enums.TaskStatus.Completed);
+            query = query.Where(t => t.TaskStatus == Enums.TaskStatus.Completed);
 
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(t => t.Title.Contains(search));
@@ -287,9 +287,44 @@ string? search = null)
     {
         return _context.TaskCollaborators.Any(tc => tc.TaskId == taskId && tc.UserId == userId);
     }
-
     public void RemoveTaskCollaborator(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
     {
         _context.TaskCollaborators.Remove(tcollaborator);
+        _context.SaveChanges();
     }
+    public RecurringTask? GetRecurringTaskById(int taskId)
+    {
+        return _context.RecurringTasks
+            .Include(t => t.User)
+            .Include(t => t.Dependencies)
+                .ThenInclude(d => d.DependsOnTask)
+            .Include(t => t.RequiredByOtherTask)
+            .FirstOrDefault(t => t.Id == taskId);
+    }
+    public List<RecurringTask> GetRecurringTasksBySeriesId(Guid recurringSeriesId)
+    {
+        return _context.RecurringTasks
+            .Where(t => t.RecurringSeriesId == recurringSeriesId)
+            .OrderBy(t => t.RecurringTasksCount)
+            .ThenBy(t => t.DueTime)
+            .ToList();
+    }
+    public List<SubTask> GetSubTasksByCompositeTaskId(int compositeTaskId)
+    {
+        return _context.SubTasks
+            .Where(st => st.ParentCompositeTaskId == compositeTaskId)
+            .OrderBy(st => st.CreatedAt)
+            .ToList();
+    }
+    public List<LinkedTask> GetLinkedRelationsByTaskId(int taskId)
+    {
+        return _context.LinkedTasks
+            .Include(lt => lt.Task)
+            .Include(lt => lt.DependsOnTask)
+            .Where(lt => lt.TaskId == taskId || lt.DependsOnTaskId == taskId)
+            .OrderBy(lt => lt.LinkedTaskOrder)
+            .ThenBy(lt => lt.Id)
+            .ToList();
+    }
+
 }

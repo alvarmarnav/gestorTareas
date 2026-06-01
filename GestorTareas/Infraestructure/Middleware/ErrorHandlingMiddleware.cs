@@ -47,11 +47,11 @@ public class ErrorHandlingMiddleware
         }
     }
     private static async Task EscribirError(
-    HttpContext context, int status, string title, string detail)
+    HttpContext context, int taskStatus, string title, string detail)
     {
-        context.Response.StatusCode = status;
+        context.Response.StatusCode = taskStatus;
         context.Response.ContentType = "application/problem+json";
-        var problem = new ProblemDetails { Status = status, Title = title, Detail = detail };
+        var problem = new ProblemDetails { Status = taskStatus, Title = title, Detail = detail };
         await context.Response.WriteAsJsonAsync(problem);
     }
 }

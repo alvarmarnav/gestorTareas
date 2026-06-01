@@ -15,6 +15,6 @@ public class CreateCollaborativeTaskDto
     [MaxLength(300, ErrorMessage = "Longitud máxima de 300 caracteres.")]
     public string? TaskDescription { get; set; } = string.Empty;
     public TaskType TaskType{get;set;}=TaskType.CollaborativeTask;
-    public TaskPriority? Priority { get; set; } = TaskPriority.Normal;
+    public Priority? TaskPriority { get; set; } = GestorTareas.Enums.Priority.Normal;
     public DateTime? DueTime { get; set; } = null;
 }
