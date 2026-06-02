@@ -13,11 +13,8 @@ public class GestorTareasContext : DbContext
     public DbSet<Task> Tasks { get; set; }
     public DbSet<SimpleTask> SimpleTasks { get; set; }
     public DbSet<CompositeTask> CompositeTasks { get; set; }
-    // public DbSet<SubTask> SubTasks { get; set; }
     public DbSet<SubTask> SubTasks => Set<SubTask>();
-    // public DbSet<LinkedTask> LinkedTasks { get; set; }
     public DbSet<LinkedTask> LinkedTasks => Set<LinkedTask>();
-    // public DbSet<RecurringTask> RecurringTasks { get; set; }
     public DbSet<RecurringTask> RecurringTasks => Set<RecurringTask>();
     public DbSet<CollaborativeTask> CollaborativeTasks { get; set; }
     public DbSet<TaskCollaborator> TaskCollaborators { get; set; }
@@ -28,18 +25,7 @@ public class GestorTareasContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // => optionsBuilder
-        // .UseAsyncSeeding(async(context, _, CancellationToken)=>
-        // {
-        //     var existsUserAdmin = await context.Set<User>().AnyAsync(u => u.UserName =="admin");
-
-        //     if (!existsUserAdmin)
-        //     {
-        //         context.Set<User>().Add(new User());
-        //         await context.SaveChangesAsync();
-        //     }
-        // }
-        // );
+        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

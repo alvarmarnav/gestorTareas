@@ -92,7 +92,7 @@ public abstract class Task : IIdentificable
         set
         {
             if (string.IsNullOrEmpty(value))
-                value = "Motivo Cancelación Sin Determinar";//TODO: comprobar esta asignacion
+                value = "Motivo Cancelación Sin Determinar";
             if (value.Length > 250)
                 throw new ArgumentException("La longitud del valor no puede ser mayor de 250 caracteres.");
             _cancelReason = value;

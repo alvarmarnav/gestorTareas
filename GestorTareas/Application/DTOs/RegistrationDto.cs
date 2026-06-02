@@ -15,8 +15,5 @@ public class RegistrationDto
     public string UserEmail{get;set;} = string.Empty;
     [Required,MinLength(8,ErrorMessage ="Longitud mínima de 8 caracteres.")]
     public string UserPassword{get;set;}=string.Empty;
-    // public bool IsActive { get; set; } = true;
-    // public bool IsAdmin { get; set; }= false;
-    // public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    // public DateTime? UpdatedAt { get; set; } = null;
+    
 }

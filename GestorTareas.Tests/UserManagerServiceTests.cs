@@ -42,7 +42,6 @@ public class UserManagerServiceTests
             .Setup(r => r.GetUserById(activeUserIsAdmin.Id))
             .Returns(activeUserIsAdmin);
 
-        // Act
         Assert.Throws<ArgumentException>(()=>
         _userManagerService.AddUser(userDto,activeUserIsAdmin.Id));
 
@@ -53,7 +52,7 @@ public class UserManagerServiceTests
     [Test]
     public void AddUser_WhenActiveUserIsAdmin_AddsUserWithDtoValues()
     {
-        // Arrange
+        
         var activeUserIsAdmin = ActiveUser(_usersList[0]);
         var userDto = NewUserDto(_userListToTest[1]);
 
@@ -61,10 +60,10 @@ public class UserManagerServiceTests
             .Setup(r => r.GetUserById(activeUserIsAdmin.Id))
             .Returns(activeUserIsAdmin);
 
-        // Act
+       
         var result = _userManagerService.AddUser(userDto, activeUserIsAdmin.Id);
 
-        // Assert
+        
         Assert.Multiple(() =>
         {
             Assert.That(result.UserName, Is.EqualTo(userDto.UserName));
@@ -86,7 +85,7 @@ public class UserManagerServiceTests
     [Test]
     public void AddUser_WhenActiveUserIsNotAdmin_ForcesNewUserAsNotAdmin()
     {
-        // Arrange
+        
         var activeUser = ActiveUser(_userListToTest[3]);
         var userDto = NewUserDto(_userListToTest[2]);
 
@@ -94,10 +93,10 @@ public class UserManagerServiceTests
             .Setup(r => r.GetUserById(activeUser.Id))
             .Returns(activeUser);
 
-        // Act
+        
         var result = _userManagerService.AddUser(userDto, activeUser.Id);
 
-        // Assert
+        
         Assert.That(result.IsAdmin, Is.False);
 
         _mockRepository.Verify(r => r.AddUser(It.Is<User>(u =>
@@ -110,14 +109,14 @@ public class UserManagerServiceTests
     [Test]
     public void AddUser_WhenActiveUserDoesNotExist_ThrowsKeyNotFoundException()
     {
-        // Arrange
+        
         var userDto = NewUserDto(_userListToTest[2]);
 
         _mockRepository
             .Setup(r => r.GetUserById(666))
             .Returns((User?)null);
 
-        // Act + Assert
+        
         Assert.Throws<KeyNotFoundException>(() =>
             _userManagerService.AddUser(userDto, 666));
 
@@ -129,7 +128,7 @@ public class UserManagerServiceTests
     [Test]
     public void GetAllUsers_WhenUsersExist_ReturnsUserDtos()
     {
-        // Arrange
+        
         var users = new List<User>
         {
             ActiveUser(_userListToTest[0]),
@@ -140,10 +139,10 @@ public class UserManagerServiceTests
             .Setup(r => r.GetAllUsers())
             .Returns(users);
 
-        // Act
+        
         var result = _userManagerService.GetAllUsers();
 
-        // Assert
+        
         Assert.Multiple(() =>
         {
             Assert.That(result, Has.Count.EqualTo(2));
@@ -155,17 +154,17 @@ public class UserManagerServiceTests
     [Test]
     public void GetUserById_WhenUserExists_ReturnsUserDto()
     {
-        // Arrange
+        
         var user = ActiveUser(_userListToTest[1]);
 
         _mockRepository
             .Setup(r => r.GetUserById(user.Id))
             .Returns(user);
 
-        // Act
+        
         var result = _userManagerService.GetUserById(user.Id);
 
-        // Assert
+       
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.Not.Null);
@@ -177,12 +176,12 @@ public class UserManagerServiceTests
     [Test]
     public void GetUserById_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
     {
-        // Arrange
+        
         _mockRepository
             .Setup(r => r.GetUserById(999))
             .Returns((User?)null);
 
-        // Act + Assert
+        
         Assert.Throws<KeyNotFoundException>(() =>
             _userManagerService.GetUserById(999));
     }
@@ -190,14 +189,14 @@ public class UserManagerServiceTests
     [Test]
     public void UpdateUser_WhenUserExists_UpdatesUser()
     {
-        // Arrange
+       
         var user = ActiveUser(_userListToTest[2]);
 
         _mockRepository
             .Setup(r => r.GetUserById(user.Id))
             .Returns(user);
 
-        // Act
+       
         _userManagerService.UpdateUser(
             user.Id,
             "Nombre actualizado",
@@ -205,7 +204,6 @@ public class UserManagerServiceTests
             "actualizado@test.com"
         );
 
-        // Assert
         Assert.Multiple(() =>
         {
             Assert.That(user.UserName, Is.EqualTo("Nombre actualizado"));
@@ -221,25 +219,21 @@ public class UserManagerServiceTests
     [Test]
     public void DeleteUser_WhenUserExists_DeletesUser()
     {
-        // Arrange
+       
         var user = ActiveUser(_userListToTest[3]);
 
         _mockRepository
             .Setup(r => r.GetUserById(user.Id))
             .Returns(user);
 
-        // Act
+        
         _userManagerService.DeleteUser(user.Id);
 
-        // Assert
+        
         _mockRepository.Verify(r =>
             r.DeleteUser(user),
             Times.Once);
     }
-
-    // -------------------------
-    // Helpers
-    // -------------------------
 
     private static User ActiveUser(User user)
     {

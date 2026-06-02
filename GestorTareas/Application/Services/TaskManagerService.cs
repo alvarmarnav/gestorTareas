@@ -114,33 +114,7 @@ public class TaskManagerService
             CancelReason = task.CancelReason
         };
     }
-    // public TaskDTO CreateTask(CreateSimpleTaskDto dto, TaskType taskType, CurrentUserDto userDto)
-    // {
-
-    //     if (userDto is null) throw new UnauthorizedAccessException("Usuario No autorizado.");
-
-    //     var newTask = new SimpleTask
-    //     {
-    //         Title = dto.Title,
-    //         UserId = userDto.CurrentUserId,
-    //         TaskDescription = dto.TaskDescription,
-    //         TaskPriority = dto.TaskPriority,
-    //         DueTime = dto.DueTime,
-    //     };
-
-    //     if (newTask.DueTime.HasValue && newTask.DueTime.Value <= DateTime.UtcNow)
-    //     {
-    //         throw new ArgumentException("La fecha de vencimiento debe ser futura.");
-    //     }
-    //     else if (newTask.DueTime.HasValue && newTask.DueTime.Value > DateTime.UtcNow.AddYears(2))
-    //     {
-    //         throw new ArgumentException("La fecha de vencimiento No debe ser mayor a 2 años.");
-    //     }
-
-    //     var createdTask = _repository.CreateTask(newTask);
-
-    //     return DtoManager.TaskToDto(createdTask);
-    // }
+    
     public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
     {
 
@@ -325,11 +299,6 @@ public class TaskManagerService
         if (dependsOnTask is null)
             throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {dependsOnTaskId}.");
 
-        // if (dependsOnTask.UserId != currentUserDto.CurrentUserId)
-        //     throw new UnauthorizedAccessException("Acceso no autorizado.");
-
-        // if (taskTarget.UserId != dependsOnTask.UserId)
-        //     throw new InvalidOperationException("No es posible añadir relación entre tareas de distinto usuario.");
 
         ValidateCanEditTask(taskTarget, currentUserDto);
         ValidateCanEditTask(dependsOnTask, currentUserDto);
@@ -386,16 +355,13 @@ public class TaskManagerService
         _repository.DeleteTask(task);
     }
     public void UpdateTask(int id, UpdateTaskDto taskDto, CurrentUserDto currentUserDto)
-    {//TODO: observar esta exception
+    {
         var updateTask = _repository.GetTaskById(id) ?? throw new Exception();
         var userActive = EnsureActiveUser(currentUserDto);
         ValidateCanEditTask(updateTask, currentUserDto);
         switch (updateTask)
         {
 
-            // case LinkedTask linked:
-            //     linked.LinkedTaskOrder = taskDto.LinkedTaskOrder ?? linked.LinkedTaskOrder;
-            //     break;
             case RecurringTask recurring:
 
                 recurring.RecurrenceRule = taskDto.RecurrenceRule ?? recurring.RecurrenceRule;
@@ -412,7 +378,6 @@ public class TaskManagerService
         updateTask.Title = taskDto.Title ?? updateTask.Title;
         updateTask.TaskDescription = taskDto.TaskDescription ?? updateTask.TaskDescription;
         updateTask.TaskPriority = taskDto.TaskPriority ?? updateTask.TaskPriority;
-        // updateTask.TaskStatus = taskDto.TaskStatus ?? updateTask.TaskStatus;
         updateTask.DueTime = taskDto.DueTime ?? updateTask.DueTime;
 
         _repository.UpdateTask(updateTask);
@@ -578,15 +543,6 @@ public class TaskManagerService
         _repository.DeleteLinkedRelation(taskId, linkedTaskId);
 
     }
-    // public List<ResponseTaskDto> GetLinkedTasksById(int taskId, CurrentUserDto currentUserDto)
-    // {
-    //     var selectedTask = _repository.GetTaskByIdWithRelations(taskId)
-    //         ?? throw new KeyNotFoundException($"No existe ninguna tarea con el ID: {taskId}.");
-
-    //     ValidateCanEditTask(selectedTask, currentUserDto);
-
-    //     return _repository.GetLinkedTasks(taskId).Select(ToResponseTaskDto).ToList();
-    // }
 
     private User EnsureActiveUser(CurrentUserDto currentUserDto)
     {

@@ -13,7 +13,7 @@ public class UpdateTaskDto
     [MaxLength(300,ErrorMessage ="Longitud máxima permitida de 300 caracteres.")]
     public string? TaskDescription { get; set; } = null;
     public Priority? TaskPriority { get; set; } = null;
-    // public TaskStatus? TaskStatus { get; set; } = null;
+    
     public DateTime? DueTime { get; set; } = null;
     [Range(0,100,ErrorMessage ="La posición no puede ser negativa.")]
     public int? LinkedTaskOrder { get; set; } = null;
@@ -24,7 +24,6 @@ public class UpdateTaskDto
         string? title,
         string? taskDescription,
         Priority? taskPriority,
-        // TaskStatus? taskStatus,
         DateTime? dueTime,
         int? linkedTaskOrder,
         int? recurrenceRule,
@@ -34,7 +33,6 @@ public class UpdateTaskDto
         Title = title;
         TaskDescription = taskDescription;
         TaskPriority = taskPriority;
-        // TaskStatus = taskStatus;
         DueTime = dueTime;
         LinkedTaskOrder = linkedTaskOrder;
         RecurrenceRule = recurrenceRule;

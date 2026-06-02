@@ -23,7 +23,6 @@ public class Validator
     {
         if (!Enum.IsDefined(typeEnum, item))
             return false;
-        // throw new ArgumentException("El estado no es válido");
         return true;
     }
 

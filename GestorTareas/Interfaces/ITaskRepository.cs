@@ -18,7 +18,7 @@ string? search = null);
     bool ExistsCircularRelation(int taskId, int dependsOnTaskId);
     bool ExistsLinkedRelation(int taskId, int dependsOnTaskId);
     LinkedTask AddLinkedRelation(LinkedTask linkedTask);
-    // void UpdateCompositeTask(int compositeTaskId, SubTask createdTask);
+    
     TaskCollaborator? GetAllTaskCollaborators(int id, int currentUserId);
     void CompleteTask(Task taskToComplete);
     Task? GetTaskByIdWithRelations(int taskId);

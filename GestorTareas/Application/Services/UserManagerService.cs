@@ -28,7 +28,6 @@ public class UserManagerService
     }
     public UserResponseDto AddUser(CreateUserDto createUserDto, int userActiveId)
     {
-        //TODO:AÑADIDO PARA QUE NO PUEDAN CREARSE USUARIOS ADMIN, SOLO EL ADMIN
         var userActive = _userRepository.GetUserById(userActiveId) ?? throw new KeyNotFoundException($"No existe usuario con el ID: {userActiveId}");
         if (!(bool)userActive.IsAdmin)
             createUserDto.IsAdmin = false;

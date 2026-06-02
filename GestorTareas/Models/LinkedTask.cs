@@ -58,6 +58,4 @@ public class LinkedTask
             return true;
     }
 
-    // public override string ResumeTask() => $"Tarea Enlazada Id: {Id}\nTitulo: {Title}\nDescripción: {TaskDescription}\nPrioridad: {Priority}\nEstado: {TaskStatus}\nFecha Limite: {DueTime}\nOrden: {LinkedTaskOrder}";
-
 }

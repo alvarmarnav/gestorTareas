@@ -95,7 +95,6 @@ public class TaskManager
         }
     }
 
-    //TODO: REVISAR ESTE METODO
     public IEnumerable<Models.Task> GenericTaskSearch(Func<Models.Task, bool> condition)
     {
         ArgumentNullException.ThrowIfNull(condition);

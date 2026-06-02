@@ -29,12 +29,7 @@ public class TaskRepositoryEF : ITaskRepository
     {
         return _context.Tasks.Include(t => t.User).ToList();
     }
-    // public List<Task> GetAllTasks(int userId)
-    // {
-    //     return _context.Tasks.Include(t => t.User)
-    //     .Where(t => t.User.Id == userId).ToList();
-    // }
-
+    
     public List<Task> GetAllTasksByUser(int userId)
     {
         return _context.Tasks.Include(t => t.User)
@@ -89,7 +84,6 @@ string? search = null)
         {
             query = query.Where(t => t.UserId == userId);
         }
-        //TODO:REVISAR ESTA CONDICION
         // Aplicar filtros solo si se han especificado
         if (onlyCompletedTask.HasValue && onlyCompletedTask.Value == true)
             query = query.Where(t => t.TaskStatus == Enums.TaskStatus.Completed);
@@ -113,17 +107,11 @@ string? search = null)
     }
     public void AddTaskCollaborator(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
     {
-        // _context.CollaborativeTasks.Attach(collaborativeTask);
-        // collaborativeTask.AddTaskCollaborator(tcollaborator.UserId,tcollaborator.CollaboratorRole);
-        // _context.SaveChanges();
         _context.TaskCollaborators.Add(tcollaborator);
         _context.SaveChanges();
     }
     public void RemoveCollaborator(CollaborativeTask collaborativeTask, TaskCollaborator tcollaborator)
     {
-        // _context.CollaborativeTasks.Attach(collaborativeTask);
-        // collaborativeTask.RemoveCollaborator(tcollaborator.UserId);
-        // _context.SaveChanges();
         _context.TaskCollaborators.Remove(tcollaborator);
         _context.SaveChanges();
     }
@@ -165,11 +153,7 @@ string? search = null)
         _context.SaveChanges();
         return linkedTask;
     }
-    // public void UpdateCompositeTask(int compositeTaskId, SubTask createdTask)
-    // {
-    //     _context.CompositeTasks.FirstOrDefault(ct => ct.Id == compositeTaskId).SubTaskList.Add(createdTask);
-    //     _context.SaveChanges();
-    // }
+    
     public CollaborativeTask? GetCollaborativeTaskById(int collTaskId)
     {
         return _context.CollaborativeTasks
@@ -216,7 +200,7 @@ string? search = null)
         _context.Tasks.Update(taskToComplete);
         _context.SaveChanges();
     }
-    //TODO: Revisar
+    
     public Task? GetTaskByIdWithRelations(int taskId)
     {
         var task = _context.Tasks

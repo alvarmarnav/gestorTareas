@@ -49,13 +49,6 @@ public class UsersController : ControllerBase
       if (userActiveStr is null) return Unauthorized();
       var userActiveId = int.Parse(userActiveStr);
 
-      // var newUser = _userManagerService.AddUser(
-      //     userDto.UserName,
-      //     userDto.UserLastName,
-      //     userDto.UserEmail,
-      //     userDto.IsActive,
-      //     userDto.IsAdmin//TODO:ATENTO A ESTE PUNTO, SI DEBE SER ACCESIBLE O LIMITAR
-      //     );
       var newUser = _userManagerService.AddUser(userDto, userActiveId);
       return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
 

@@ -17,6 +17,5 @@ public class CreateCompositeTaskDto
     public Priority? TaskPriority { get; set; } = GestorTareas.Enums.Priority.Normal;
 
     public DateTime? DueTime { get; set; }
-    // public List<SubTask> SubTaskList {get;set;} = new List<SubTask>(30);
-
+    
 }

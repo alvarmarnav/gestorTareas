@@ -14,10 +14,7 @@ public class UpdateUserDto
     [Required(ErrorMessage ="El email de usuario es obligatorio.")]
     [EmailAddress]
     public string UserEmail { get; set;}
-    // public bool IsActive { get; set; } = true;
-    // public bool IsAdmin { get; set; }= false;
-    // public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    // public DateTime? UpdatedAt { get; set; } = null;
+    
 
 public UpdateUserDto(
     string userName,

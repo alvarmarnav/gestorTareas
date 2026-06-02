@@ -12,17 +12,6 @@ public class ValidateHelpers
     return currentUserDto.CurrentUserSystemRole == SystemRole.Admin;
 }
 
-// private void ValidateCurrentUser(CurrentUserDto currentUserDto)
-// {
-//     if (currentUserDto is null)
-//         throw new UnauthorizedAccessException("Usuario no autenticado.");
-
-//     var user = _userRepository.GetUserById(currentUserDto.CurrentUserId)
-//         ?? throw new KeyNotFoundException($"No existe ningún usuario con ID: {currentUserDto.CurrentUserId}.");
-
-//     if (user.IsActive != true)
-//         throw new UnauthorizedAccessException("Usuario inactivo.");
-// }
 
 private static void ValidateTaskCreationData(string title, DateTime? dueTime)
 {
@@ -39,17 +28,5 @@ private static void ValidateTaskCreationData(string title, DateTime? dueTime)
         throw new ArgumentException("La fecha de vencimiento no debe ser mayor a 2 años.");
 }
 
-// private void EnsureCanManageTask(Task task, CurrentUserDto currentUserDto)
-// {
-//     if (IsAdmin(currentUserDto))
-//         return;
 
-//     if (task.UserId == currentUserDto.CurrentUserId)
-//         return;
-
-//     if (_repository.UserHasCollaboratorRole(task.Id, currentUserDto.CurrentUserId, CollaboratorRole.TaskAdministrator))
-//         return;
-
-//     throw new UnauthorizedAccessException("No tienes permiso para modificar esta tarea.");
-// }
 }

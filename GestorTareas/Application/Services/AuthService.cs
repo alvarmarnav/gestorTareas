@@ -30,8 +30,6 @@ public class AuthService
             UserName = dto.UserName,
             UserLastName = dto.UserLastName,
             UserEmail = dto.UserEmail,
-            // IsActive = true,
-            // IsAdmin = false,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.UserPassword)
         };
         _userRepository.AddUser(user);

@@ -39,9 +39,6 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
         builder.Property(t => t.CancelReason)
         .HasMaxLength(400)
         .HasDefaultValue(null);
-        // builder.HasOne(t => t.User)
-        // .WithMany()
-        // .HasForeignKey("UserId");
         builder.HasOne(t => t.User)
             .WithMany(u => u.TasksList)
             .HasForeignKey(t => t.UserId)
