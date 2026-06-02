@@ -278,8 +278,6 @@ public class TaskManagerServiceTests
         return task;
     });
 
-        // var result = _taskService.CreateTask(taskDto, _taskOwnerA);
-
         Assert.Throws<ArgumentException>(() => _taskService.CreateTask(taskDto, _taskOwnerA));
 
         _mockRepository.Verify(i => i.CreateTask(It.IsAny<SimpleTask>()), Times.Never);
@@ -359,42 +357,6 @@ public class TaskManagerServiceTests
 
         _mockRepository.Verify(r => r.DeleteTask(It.IsAny<Task>()), Times.Never);
     }
-
-    // CollaborativeTasks
-
-    // [Test]
-    //     public void GetCollaborativeTask_WhenViewerCollaborator_CanRead()
-    //     {
-    //         var newTask = Collaborative(id: 2, ownerId: _taskOwnerA.CurrentUserId,
-    //             Collaborator(_taskOwnerA.CurrentUserId, CollaboratorRole.TaskAdministrator),
-    //             Collaborator(_taskOwnerB.CurrentUserId, CollaboratorRole.Viewer));
-
-    //         _mockRepository.Setup(r => r.GetTaskById(newTask.Id)).Returns(newTask);
-
-    //         var result = _taskService.GetTaskById(newTask.Id, _taskOwnerB);
-
-    //         Assert.Multiple(() =>
-    //         {
-    //             Assert.That(result, Is.Not.Null);
-    //             Assert.That(result!.Id, Is.EqualTo(newTask.Id));
-    //             Assert.That(result.Title, Is.EqualTo(newTask.Title));
-    //         });
-    //     }
-
-    // [Test]
-    // public void UpdateCollaborativeTask_WhenViewerCollaborator_ThrowsUnauthorizedAccessException()
-    // {
-    //     var newTask = Collaborative(id: 2, ownerId: _taskOwnerA.CurrentUserId,
-    //         Collaborator(_taskOwnerA.CurrentUserId, CollaboratorRole.TaskAdministrator),
-    //         Collaborator(_taskOwnerB.CurrentUserId, CollaboratorRole.Viewer));
-
-    //     _mockRepository.Setup(r => r.GetTaskById(newTask.Id)).Returns(newTask);
-
-    //     Assert.Throws<UnauthorizedAccessException>(() =>
-    //         _taskService.UpdateTask(newTask.Id, UpdateDto(title: "Viewer intentando editar"), _taskOwnerB));
-
-    //     _mockRepository.Verify(r => r.UpdateTask(It.IsAny<Task>()), Times.Never);
-    // }
 
     [Test]
     public void UpdateCollaborativeTask_WhithRoleCollaborator_EditOk()
@@ -585,17 +547,6 @@ public class TaskManagerServiceTests
 
         _mockRepository.Verify(r => r.UpdateTask(It.IsAny<Task>()), Times.Never);
     }
-
-    // [Test]
-    // public void CompleteCompositeTask_WithNoLoadedSubTasks_ShouldThrowInvalidOperationException()
-    // {
-    //     var parentTask = Composite(id: 3, ownerId: _taskOwnerA.CurrentUserId);
-    //     _mockRepository.Setup(r => r.GetTaskByIdWithRelations(parentTask.Id)).Returns(parentTask);
-
-    //     Assert.Throws<InvalidOperationException>(() => _taskService.CompleteTask(parentTask.Id, _taskOwnerA));
-
-    //     _mockRepository.Verify(r => r.UpdateTask(It.IsAny<Task>()), Times.Never);
-    // }
 
     [Test]
     public void CompleteCompositeTask_WhenAllSubTasksCompletedOk_CompleteOk()
