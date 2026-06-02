@@ -66,6 +66,15 @@ public class TasksController : ControllerBase
         var result = _taskManagerService.GetPagination(actualPage, itemsPerPage, UserConnectedHelper.GetConnectedUser(User));
         return Ok(result);
     }
+ /// <summary>
+ /// Retornar las tareas con relaciones entre sí -vinculadas-
+ /// </summary>
+ /// <returns></returns>
+    [HttpGet("linked")]
+public IActionResult GetLinkedTasks()
+{
+    return Ok(_taskManagerService.GetLinkedTasks(UserConnectedHelper.GetConnectedUser(User)));
+}
     /// <summary>
     /// Obtiene la tarea seleccioinada por ID.
     /// </summary>

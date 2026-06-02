@@ -31,4 +31,5 @@ string? search = null);
     List<RecurringTask> GetRecurringTasksBySeriesId(Guid recurringSeriesId);
     List<SubTask> GetSubTasksByCompositeTaskId(int compositeTaskId);
     List<LinkedTask> GetLinkedRelationsByTaskId(int taskId);
+    List<Task> GetTasksWithLinkedRelations(int userId, bool includeAllUsers);
 };

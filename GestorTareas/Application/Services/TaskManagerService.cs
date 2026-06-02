@@ -114,7 +114,7 @@ public class TaskManagerService
             CancelReason = task.CancelReason
         };
     }
-    
+
     public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
     {
 
@@ -401,10 +401,18 @@ public class TaskManagerService
             Title = t.Title,
             TaskDescription = t.TaskDescription,
             TaskType = t.TaskType,
-            TaskPriority = (Priority)t.TaskPriority,
-            TaskStatus = (TaskStatus)t.TaskStatus,
+            TaskPriority = t.TaskPriority,
+            TaskStatus = t.TaskStatus,
             DueTime = t.DueTime,
-            CancelReason = t.CancelReason
+            CancelReason = t.CancelReason,
+
+            ParentCompositeTaskId = t is SubTask subTask
+        ? subTask.ParentCompositeTaskId
+        : null,
+
+            ParentCompositeTaskTitle = t is SubTask subTaskWithParent
+        ? _repository.GetTaskById(subTaskWithParent.ParentCompositeTaskId)!.Title
+        : null
         })
         .ToList(),
             ActualPage = actualPage,
@@ -652,4 +660,15 @@ public class TaskManagerService
             CancelReason = task.CancelReason
         };
     }
+    public List<ResponseTaskDto> GetLinkedTasks(CurrentUserDto currentUserDto)
+{
+    var userActive = EnsureActiveUser(currentUserDto);
+
+    var isAdmin = currentUserDto.CurrentUserSystemRole == SystemRole.Admin;
+
+    return _repository
+        .GetTasksWithLinkedRelations(currentUserDto.CurrentUserId, isAdmin)
+        .Select(ToResponseTaskDto)
+        .ToList();
+}
 }

@@ -29,7 +29,7 @@ public class TaskRepositoryEF : ITaskRepository
     {
         return _context.Tasks.Include(t => t.User).ToList();
     }
-    
+
     public List<Task> GetAllTasksByUser(int userId)
     {
         return _context.Tasks.Include(t => t.User)
@@ -153,7 +153,7 @@ string? search = null)
         _context.SaveChanges();
         return linkedTask;
     }
-    
+
     public CollaborativeTask? GetCollaborativeTaskById(int collTaskId)
     {
         return _context.CollaborativeTasks
@@ -200,7 +200,7 @@ string? search = null)
         _context.Tasks.Update(taskToComplete);
         _context.SaveChanges();
     }
-    
+
     public Task? GetTaskByIdWithRelations(int taskId)
     {
         var task = _context.Tasks
@@ -310,5 +310,22 @@ string? search = null)
             .ThenBy(lt => lt.Id)
             .ToList();
     }
+    public List<Task> GetTasksWithLinkedRelations(int userId, bool includeAllUsers)
+    {
+        var query = _context.Tasks
+            .Include(t => t.User)
+            .Include(t => t.Dependencies)
+            .Include(t => t.RequiredByOtherTask)
+            .Where(t => t.Dependencies.Any() || t.RequiredByOtherTask.Any())
+            .AsQueryable();
 
+        if (!includeAllUsers)
+        {
+            query = query.Where(t => t.UserId == userId);
+        }
+
+        return query
+            .OrderBy(t => t.CreatedAt)
+            .ToList();
+    }
 }

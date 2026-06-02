@@ -12,9 +12,11 @@ public class ResponseTaskDto
     public string Title { get; set; } = string.Empty;
     public int UserId { get; set; }
     public string TaskDescription { get; set; } = string.Empty;
-    public TaskType TaskType{get;set;}=TaskType.SimpleTask;
+    public TaskType TaskType { get; set; } = TaskType.SimpleTask;
     public Priority TaskPriority { get; set; }
     public TaskStatus TaskStatus { get; set; }
     public DateTime? DueTime { get; set; }
     public string? CancelReason { get; set; }
+    public int? ParentCompositeTaskId { get; set; }
+    public string? ParentCompositeTaskTitle { get; set; }
 }
