@@ -79,10 +79,14 @@ string? search = null)
         var query = _context.Tasks
         .Include(t => t.User)
         .AsQueryable();
-
+        //Con esto temporalmente seriviria para hacerle llegar al otro usuario colaborador las tareas donde se le añade, aunque lo ideal seria una NOTIFICACION
         if (!(bool)userConsultant.IsAdmin)
         {
-            query = query.Where(t => t.UserId == userId);
+            query = query.Where(t =>
+                t.UserId == userId ||
+                _context.TaskCollaborators.Any(tc =>
+                    tc.TaskId == t.Id &&
+                    tc.UserId == userId));
         }
         // Aplicar filtros solo si se han especificado
         if (onlyCompletedTask.HasValue && onlyCompletedTask.Value == true)
@@ -176,18 +180,35 @@ string? search = null)
             tc.UserId == userId &&
             tc.CollaboratorRole == role);
     }
-    public List<Task> GetLinkableTasks(int userId, int? excludeTaskId = null)
+    public List<Task> GetLinkableTasks(int userId, bool includeAllUsers, int? excludeTaskId = null)
     {
         var query = _context.Tasks
-        .Where(t => t.UserId == userId)
-        .AsQueryable();
+            .Include(t => t.User)
+            .Where(t => t.TaskType == TaskType.SimpleTask)
+            .AsQueryable();
+
+        if (!includeAllUsers)
+        {
+            query = query.Where(t => t.UserId == userId);
+        }
 
         if (excludeTaskId.HasValue)
         {
-            query = query.Where(t => t.Id != excludeTaskId.Value);
+            var baseTaskId = excludeTaskId.Value;
+
+            var alreadyLinkedTaskIds = _context.LinkedTasks
+                .Where(lt => lt.TaskId == baseTaskId || lt.DependsOnTaskId == baseTaskId)
+                .Select(lt => lt.TaskId == baseTaskId ? lt.DependsOnTaskId : lt.TaskId)
+                .ToList();
+
+            query = query.Where(t =>
+                t.Id != baseTaskId &&
+                !alreadyLinkedTaskIds.Contains(t.Id));
         }
 
-        return query.OrderByDescending(t => t.Title).ToList();
+        return query
+            .OrderBy(t => t.Title)
+            .ToList();
     }
 
     public TaskCollaborator? GetAllTaskCollaborators(int taskId, int currentUserId)
@@ -328,4 +349,5 @@ string? search = null)
             .OrderBy(t => t.CreatedAt)
             .ToList();
     }
+
 }

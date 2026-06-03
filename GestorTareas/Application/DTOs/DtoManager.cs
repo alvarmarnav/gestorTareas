@@ -93,6 +93,8 @@ public static class DtoManager
         return new TaskCollaboratorDto
         {
             UserId = collaborator.UserId,
+            UserName = collaborator.UserTask?.UserName,
+            UserEmail = collaborator.UserTask?.UserEmail,
             TaskId = collaborator.TaskId,
             CollaboratorRole = collaborator.CollaboratorRole,
         };
@@ -180,6 +182,8 @@ public static class DtoManager
         return collaborators?.Select(collaborator => new TaskCollaboratorDto
         {
             UserId = collaborator.UserId,
+            UserName = collaborator.UserTask?.UserName,
+            UserEmail = collaborator.UserTask?.UserEmail,
             TaskId = collaborator.TaskId,
             CollaboratorRole = collaborator.CollaboratorRole,
         }).ToList() ?? new List<TaskCollaboratorDto>(10);

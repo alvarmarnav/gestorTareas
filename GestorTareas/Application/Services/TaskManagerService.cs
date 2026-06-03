@@ -98,21 +98,10 @@ public class TaskManagerService
     }
     public ResponseTaskDto? GetTaskById(int id, CurrentUserDto userDto)
     {
-        var task = _repository.GetTaskById(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}.");
+        var task = _repository.GetTaskByIdWithRelations(id) ?? throw new KeyNotFoundException($"No existe la tarea con ID: {id}.");
 
         ValidateCanEditTask(task, userDto);
-
-        return new ResponseTaskDto
-        {
-            Id = task.Id,
-            Title = task.Title,
-            UserId = task.UserId,
-            TaskDescription = task.TaskDescription,
-            TaskPriority = (Priority)task.TaskPriority,
-            TaskStatus = (Enums.TaskStatus)task.TaskStatus,
-            DueTime = task.DueTime,
-            CancelReason = task.CancelReason
-        };
+        return ToResponseTaskDto(task);
     }
 
     public TaskDTO CreateTask(CreateSimpleTaskDto dto, CurrentUserDto userDto)
@@ -303,6 +292,9 @@ public class TaskManagerService
         ValidateCanEditTask(taskTarget, currentUserDto);
         ValidateCanEditTask(dependsOnTask, currentUserDto);
 
+        if (taskTarget.TaskType != TaskType.SimpleTask || dependsOnTask.TaskType != TaskType.SimpleTask)
+            throw new InvalidOperationException("Solo se puede vincular tareas simples ya creadas.");
+
         if (_repository.ExistsCircularRelation(taskId, dependsOnTaskId))
             throw new InvalidOperationException("No es posible añadir esta relacion recursiva.");
 
@@ -395,25 +387,7 @@ public class TaskManagerService
         return new PaginationResponseDto<ResponseTaskDto>
         {
             Data = taskQuery
-        .Select(t => new ResponseTaskDto
-        {
-            Id = t.Id,
-            Title = t.Title,
-            TaskDescription = t.TaskDescription,
-            TaskType = t.TaskType,
-            TaskPriority = t.TaskPriority,
-            TaskStatus = t.TaskStatus,
-            DueTime = t.DueTime,
-            CancelReason = t.CancelReason,
-
-            ParentCompositeTaskId = t is SubTask subTask
-        ? subTask.ParentCompositeTaskId
-        : null,
-
-            ParentCompositeTaskTitle = t is SubTask subTaskWithParent
-        ? _repository.GetTaskById(subTaskWithParent.ParentCompositeTaskId)!.Title
-        : null
-        })
+        .Select(ToResponseTaskDto)
         .ToList(),
             ActualPage = actualPage,
             TotalItems = total,
@@ -514,35 +488,32 @@ public class TaskManagerService
         throw new UnauthorizedAccessException("No está autorizado para realizar esta operación");
     }
 
-    public List<ResponseTaskDto>? GetLinkableTaskById(int taskId, CurrentUserDto currentUserDto)
+    public List<ResponseTaskDto> GetLinkableTaskById(int taskId, CurrentUserDto currentUserDto)
     {
-        var userActive = EnsureActiveUser(currentUserDto);
-        var selectedTask = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
-
-        ValidateCanEditTask(selectedTask, currentUserDto);
-
-        var list = _repository.GetAllTaskLinked(taskId) ?? new List<Models.Task>();
-        var listDtos = new List<ResponseTaskDto>();
-
-        foreach (var t in list)
-        {
-            listDtos.Add(new ResponseTaskDto
-            {
-                Id = t.Id,
-                Title = t.Title,
-                UserId = t.UserId,
-                TaskDescription = t.TaskDescription,
-                TaskType = t.TaskType,
-                TaskPriority = t.TaskPriority,
-                TaskStatus = t.TaskStatus,
-                DueTime = t.DueTime,
-                CancelReason = t.CancelReason,
-            });
-        }
-        return listDtos;
-
+        return GetLinkableTasks(currentUserDto, taskId);
     }
 
+    public List<ResponseTaskDto> GetLinkableTasks(CurrentUserDto currentUserDto, int? excludeTaskId = null)
+    {
+        var userActive = EnsureActiveUser(currentUserDto);
+
+        var includeAllUsers =
+            currentUserDto.CurrentUserSystemRole == SystemRole.Admin ||
+            userActive.IsAdmin == true;
+
+        if (excludeTaskId.HasValue)
+        {
+            var selectedTask = _repository.GetTaskByIdWithRelations(excludeTaskId.Value)
+                ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {excludeTaskId.Value}");
+
+            ValidateCanEditTask(selectedTask, currentUserDto);
+        }
+
+        return _repository
+            .GetLinkableTasks(currentUserDto.CurrentUserId, includeAllUsers, excludeTaskId)
+            .Select(ToResponseTaskDto)
+            .ToList();
+    }
     public void DeleteLinkedRelation(int taskId, int linkedTaskId, CurrentUserDto currentUserDto)
     {
         var taskTarget = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
@@ -632,7 +603,7 @@ public class TaskManagerService
             .Select(ToLinkedRelationDto)
             .ToList();
     }
-    private static ResponseLinkedTaskDto ToLinkedRelationDto(LinkedTask relation)
+    private ResponseLinkedTaskDto ToLinkedRelationDto(LinkedTask relation)
     {
         return new ResponseLinkedTaskDto
         {
@@ -645,13 +616,14 @@ public class TaskManagerService
         };
     }
 
-    private static ResponseTaskDto ToResponseTaskDto(Task task)
+    private ResponseTaskDto ToResponseTaskDto(Task task)
     {
-        return new ResponseTaskDto
+        var dto = new ResponseTaskDto
         {
             Id = task.Id,
             Title = task.Title,
             UserId = task.UserId,
+            UserName = task.User?.UserName,
             TaskDescription = task.TaskDescription ?? string.Empty,
             TaskType = task.TaskType,
             TaskPriority = task.TaskPriority,
@@ -659,16 +631,52 @@ public class TaskManagerService
             DueTime = task.DueTime,
             CancelReason = task.CancelReason
         };
+
+        if (task is CompositeTask composite)
+        {
+            dto.SubTasksList = composite.SubTaskList
+                .Select(ToResponseTaskDto)
+                .ToList();
+        }
+
+        if (task is CollaborativeTask collaborative)
+        {
+            dto.TaskCollaborators = collaborative.TaskCollaborators
+                .Select(tc => new TaskCollaboratorDto
+                {
+                    TaskId = tc.TaskId,
+                    UserId = tc.UserId,
+                    UserName = tc.UserTask?.UserName,
+                    UserEmail = tc.UserTask?.UserEmail,
+                    CollaboratorRole = tc.CollaboratorRole
+                })
+                .ToList();
+        }
+
+        if (task is RecurringTask recurring)
+        {
+            dto.RecurrenceRule = recurring.RecurrenceRule;
+            dto.RecurringTasksCount = recurring.RecurringTasksCount;
+            dto.RecurringSeriesId = recurring.RecurringSeriesId;
+        }
+
+        if (task is SubTask subTask)
+        {
+            dto.ParentCompositeTaskId = subTask.ParentCompositeTaskId;
+            dto.ParentCompositeTaskTitle = subTask.ParentCompositeTask?.Title ?? _repository.GetTaskById(subTask.ParentCompositeTaskId)?.Title;
+        }
+
+        return dto;
     }
     public List<ResponseTaskDto> GetLinkedTasks(CurrentUserDto currentUserDto)
-{
-    var userActive = EnsureActiveUser(currentUserDto);
+    {
+        var userActive = EnsureActiveUser(currentUserDto);
 
-    var isAdmin = currentUserDto.CurrentUserSystemRole == SystemRole.Admin;
+        var isAdmin = currentUserDto.CurrentUserSystemRole == SystemRole.Admin;
 
-    return _repository
-        .GetTasksWithLinkedRelations(currentUserDto.CurrentUserId, isAdmin)
-        .Select(ToResponseTaskDto)
-        .ToList();
-}
+        return _repository
+            .GetTasksWithLinkedRelations(currentUserDto.CurrentUserId, isAdmin)
+            .Select(ToResponseTaskDto)
+            .ToList();
+    }
 }
