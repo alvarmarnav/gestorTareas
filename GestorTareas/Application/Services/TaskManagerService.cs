@@ -339,10 +339,15 @@ public class TaskManagerService
             return;
         }
 
+        if (task is CollaborativeTask collaborativeTaskToDelete &&
+     collaborativeTaskToDelete.TaskCollaborators.Any(tc => tc.UserId != task.UserId))
+            throw new InvalidOperationException("No se puede eliminar la tarea porque tiene colaboradores. Primero elimina los colaboradores de la tarea.");
+
         var hasDependencies = task.Dependencies.Any();
         var isRequiredByOhers = task.RequiredByOtherTask.Any();
 
-        if (hasDependencies || isRequiredByOhers) throw new InvalidOperationException("No es posible eliminar la tarea, está vinculada a otras.");
+        if (hasDependencies || isRequiredByOhers)
+            throw new InvalidOperationException("No se puede eliminar la tarea porque tiene dependencias con otras tareas. Primero elimina la relación.");
 
         _repository.DeleteTask(task);
     }
@@ -516,13 +521,57 @@ public class TaskManagerService
     }
     public void DeleteLinkedRelation(int taskId, int linkedTaskId, CurrentUserDto currentUserDto)
     {
-        var taskTarget = _repository.GetTaskById(taskId) ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
+        var relation = _repository.GetLinkedRelationById(linkedTaskId)
+            ?? throw new KeyNotFoundException("La relación vinculada no existe.");
+
+        if (relation.TaskId != taskId && relation.DependsOnTaskId != taskId)
+            throw new InvalidOperationException("La relación indicada no pertenece a la tarea actual.");
+
+        var taskTarget = _repository.GetTaskByIdWithRelations(taskId)
+            ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
+
         ValidateCanEditTask(taskTarget, currentUserDto);
 
-        _repository.DeleteLinkedRelation(taskId, linkedTaskId);
+        if (relation.DependsOnTask is not null && relation.DependsOnTask.TaskStatus != TaskStatus.Completed)
+            throw new InvalidOperationException("No se puede eliminar el vínculo porque la tarea de la que depende todavía no está completada.");
 
+        _repository.DeleteLinkedRelation(relation);
     }
 
+    public List<UserResponseDto> GetAvailableCollaborators(int taskId, CurrentUserDto currentUserDto)
+    {
+        var userActive = EnsureActiveUser(currentUserDto);
+
+        var selectedTask = _repository.GetTaskById(taskId)
+            ?? throw new KeyNotFoundException($"No existe ninguna Tarea con el ID: {taskId}");
+
+        if (selectedTask is not CollaborativeTask collaborativeTask)
+            throw new ArgumentException($"La tarea seleccionada es del tipo({selectedTask.GetType().Name}) no es del tipo colaborativo.");
+
+        ValidateCanManageCollaborators(collaborativeTask, currentUserDto);
+
+        var currentCollaboratorIds = collaborativeTask.TaskCollaborators
+            .Select(tc => tc.UserId)
+            .ToHashSet();
+
+        return _userRepository.GetAllUsers()
+            .Where(user =>
+                user.IsActive == true &&
+                user.Id != collaborativeTask.UserId &&
+                !currentCollaboratorIds.Contains(user.Id))
+            .OrderBy(user => user.UserName)
+            .ThenBy(user => user.UserLastName)
+            .Select(user => new UserResponseDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                UserLastName = user.UserLastName,
+                UserEmail = user.UserEmail,
+                IsActive = user.IsActive ?? false,
+                IsAdmin = user.IsAdmin ?? false
+            })
+            .ToList();
+    }
     private User EnsureActiveUser(CurrentUserDto currentUserDto)
     {
         var user = _userRepository.GetUserById(currentUserDto.CurrentUserId)
@@ -629,7 +678,8 @@ public class TaskManagerService
             TaskPriority = task.TaskPriority,
             TaskStatus = task.TaskStatus,
             DueTime = task.DueTime,
-            CancelReason = task.CancelReason
+            CancelReason = task.CancelReason,
+            LinkedRelationsCount = (task.Dependencies?.Count ?? 0) + (task.RequiredByOtherTask?.Count ?? 0)
         };
 
         if (task is CompositeTask composite)
@@ -651,6 +701,8 @@ public class TaskManagerService
                     CollaboratorRole = tc.CollaboratorRole
                 })
                 .ToList();
+            dto.CollaboratorsCount = collaborative.TaskCollaborators
+            .Count(tc => tc.UserId != collaborative.UserId);
         }
 
         if (task is RecurringTask recurring)

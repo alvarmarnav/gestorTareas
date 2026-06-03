@@ -181,17 +181,27 @@ public class TasksController : ControllerBase
         return Ok(linkedTaskRelation);
     }
     /// <summary>
-    /// Añadir nuevo usuario a una CollaborativeTask
+    /// 
     /// </summary>
     /// <param name="taskId"></param>
     /// <param name="taskCollaboratorDto"></param>
     /// <returns></returns>
     [HttpPost("{taskId:int}/collaborators")]
-    public IActionResult AddTaskCollaborator(int taskId, [FromBody] CreateTaskCollaboratorDto taskCollaboratorDto)
-    {
-        _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
-        return NoContent();
-    }
+public IActionResult AddTaskCollaborator(int taskId, [FromBody] CreateTaskCollaboratorDto taskCollaboratorDto)
+{
+    _taskManagerService.AddTaskCollaborator(taskId, taskCollaboratorDto, UserConnectedHelper.GetConnectedUser(User));
+    return NoContent();
+}
+/// <summary>
+/// 
+/// </summary>
+/// <param name="taskId"></param>
+/// <returns></returns>
+[HttpGet("{taskId:int}/available-collaborators")]
+public IActionResult GetAvailableCollaborators(int taskId)
+{
+    return Ok(_taskManagerService.GetAvailableCollaborators(taskId, UserConnectedHelper.GetConnectedUser(User)));
+}
     /// <summary>
     /// Actualiza la Tarea seleccionada por Id
     /// </summary>

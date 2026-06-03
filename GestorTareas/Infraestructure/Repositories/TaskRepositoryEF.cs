@@ -78,6 +78,10 @@ string? search = null)
         // Consulta base — todavía no va a SQL  
         var query = _context.Tasks
         .Include(t => t.User)
+        .Include(t => t.Dependencies)
+        .Include(t => t.RequiredByOtherTask)
+        .Include(t => ((CollaborativeTask)t).TaskCollaborators)
+        .ThenInclude(tc => tc.UserTask)
         .AsQueryable();
         //Con esto temporalmente seriviria para hacerle llegar al otro usuario colaborador las tareas donde se le añade, aunque lo ideal seria una NOTIFICACION
         if (!(bool)userConsultant.IsAdmin)
@@ -276,15 +280,17 @@ string? search = null)
         return result;
     }
 
-    public void DeleteLinkedRelation(int taskId, int dependsOnTaskId)
+    public LinkedTask? GetLinkedRelationById(int linkedTaskId)
     {
-        var relation = _context.LinkedTasks
-        .FirstOrDefault(r => r.TaskId == taskId && r.DependsOnTaskId == dependsOnTaskId);
+        return _context.LinkedTasks
+            .Include(r => r.Task)
+            .Include(r => r.DependsOnTask)
+            .FirstOrDefault(r => r.Id == linkedTaskId);
+    }
 
-        if (relation is null)
-            throw new KeyNotFoundException("La relación no existe.");
-
-        _context.LinkedTasks.Remove(relation);
+    public void DeleteLinkedRelation(LinkedTask linkedTask)
+    {
+        _context.LinkedTasks.Remove(linkedTask);
         _context.SaveChanges();
     }
 
