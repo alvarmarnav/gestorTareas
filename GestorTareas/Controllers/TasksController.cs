@@ -24,19 +24,7 @@ public class TasksController : ControllerBase
     private readonly TaskManagerService _taskManagerService;
     public TasksController(TaskManagerService taskManagerService) => _taskManagerService = taskManagerService;
 
-    // [HttpGet] // GET /api/tareas
-    // public IActionResult GetAll()
-    // {
-    //     // var claimUser = System.Security.Claims.ClaimsPrincipal.Current;
-    //     var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    //     if (userIdStr is null) return NotFound();
-
-    //     return Ok(_taskManagerService.GetAllTasks());
-    // }
-    /// <summary>
-    /// Obtiene todas las tareas que pertenecen a un usuario mediante ID.
-    /// </summary>
-    /// <returns>Lista de tareas con el nombre del usuario asignado.</returns>
+    
     [Authorize]
     [HttpGet("user/{userId:int}")] // GET /api/tareas
     public IActionResult GetAllTaskByUser(int userId)
