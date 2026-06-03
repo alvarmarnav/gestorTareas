@@ -499,7 +499,7 @@ public class TaskManagerServiceTests
         var parentTask = Composite(id: 3, ownerId: _taskOwnerA.CurrentUserId);
         _mockRepository.Setup(r => r.GetTaskById(parentTask.Id)).Returns(parentTask);
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<UnauthorizedAccessException>(() =>
             _taskService.CreateSubTask(parentTask.Id, CreateSubTaskDto(), _taskOwnerB));
 
         _mockRepository.Verify(r => r.CreateTask(It.IsAny<Task>()), Times.Never);
@@ -808,7 +808,7 @@ public class TaskManagerServiceTests
     public void GetTaskById_WhenUserIsOwner_ShouldReturnTask()
     {
         var newTask = Simple(id: 1, ownerId: _taskOwnerA.CurrentUserId);
-        _mockRepository.Setup(r => r.GetTaskById(newTask.Id)).Returns(newTask);
+        _mockRepository.Setup(r => r.GetTaskByIdWithRelations(newTask.Id)).Returns(newTask);
 
         var result = _taskService.GetTaskById(newTask.Id, _taskOwnerA);
 
@@ -820,7 +820,7 @@ public class TaskManagerServiceTests
     [Test]
     public void GetTaskById_WhenTaskDoesNotExist_ShouldThrowKeyNotFoundException()
     {
-        _mockRepository.Setup(r => r.GetTaskById(999)).Returns((Task?)null);
+        _mockRepository.Setup(r => r.GetTaskByIdWithRelations(999)).Returns((Task?)null);
 
         Assert.Throws<KeyNotFoundException>(() => _taskService.GetTaskById(999, _taskOwnerC));
     }
@@ -829,7 +829,7 @@ public class TaskManagerServiceTests
     public void GetTaskById_WhenDifferentUserAndNotCollaborator_ShouldThrowUnauthorizedAccessException()
     {
         var newTask = Simple(id: 1, ownerId: _taskOwnerC.CurrentUserId);
-        _mockRepository.Setup(r => r.GetTaskById(newTask.Id)).Returns(newTask);
+        _mockRepository.Setup(r => r.GetTaskByIdWithRelations(newTask.Id)).Returns(newTask);
 
         Assert.Throws<UnauthorizedAccessException>(() => _taskService.GetTaskById(newTask.Id, _taskOwnerB));
     }
